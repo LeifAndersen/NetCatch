@@ -7,24 +7,34 @@ import android.provider.BaseColumns;
  * @author leif
  *
  */
-public class Shows implements BaseColumns {
-
-	/**
-	 * The Title of the show.
-	 * <P>Type: TEXT</P>
-	 */
-	public static final String TITLE = "title";
+public class Shows {
+	
+	public static final String AUTHORITY = "net.leifandersen.mobile.android.netcatch.providers.Shows";
 	
 	/**
-	 * The Author of the show.
-	 * <P>Type: TEXT</P>
+	 * 
+	 * @author leif
+	 *
 	 */
-	public static final String AUTHOR = "author";
+	public class ShowsBaseColumns implements BaseColumns {
 	
-	/**
-	 * The URL of the RSS feed for the show
-	 * <P>Type: TEXT</P>
-	 */
-	public static final String FEED = "feed";
-	
+		/**
+		 * The Title of the show.
+		 * <P>Type: TEXT</P>
+		 */
+		public static final String TITLE = "title";
+		
+		/**
+		 * The Author of the show.
+		 * <P>Type: TEXT</P>
+		 */
+		public static final String AUTHOR = "author";
+		
+		/**
+		 * The URL of the RSS feed for the show
+		 * <P>Type: TEXT</P>
+		 */
+		public static final String FEED = "feed";
+		
+	}
 }

@@ -1,5 +1,8 @@
 package net.leifandersen.mobile.android.netcatch.model;
 
+import java.util.HashMap;
+
+import net.leifandersen.mobile.android.netcatch.model.Shows.ShowsBaseColumns;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -24,7 +27,10 @@ public class ShowsProvider extends ContentProvider {
     private static final int DATABASE_VERSION = 2;
     private static final String SHOWS_TABLE_NAME = "shows";
 	
+    private static HashMap<String, String> sShowsProjectionMap;
+    
     private static final int SHOWS = 1;
+    private static final int SHOWS_ID = 2;
     
     private static final UriMatcher sUriMatcher;
     
@@ -42,10 +48,10 @@ public class ShowsProvider extends ContentProvider {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE " + SHOWS_TABLE_NAME + " ("
-						+ Shows._ID + " INTEGER PRIMARY KEY,"
-						+ Shows.TITLE + " TEXT,"
-						+ Shows.AUTHOR + " TEXT,"
-						+ Shows.FEED + " Text,"
+						+ ShowsBaseColumns._ID + " INTEGER PRIMARY KEY,"
+						+ ShowsBaseColumns.TITLE + " TEXT,"
+						+ ShowsBaseColumns.AUTHOR + " TEXT,"
+						+ ShowsBaseColumns.FEED + " Text,"
 						+ ");");
 		}
 	
@@ -73,6 +79,11 @@ public class ShowsProvider extends ContentProvider {
 		qb.setTables(SHOWS_TABLE_NAME);
 		switch (sUriMatcher.match(uri)) {
 		case SHOWS:
+			qb.setProjectionMap(sShowsProjectionMap);
+			break;
+		case SHOWS_ID:
+			qb.setProjectionMap(sShowsProjectionMap);
+			qb.appendWhere(ShowsBaseColumns._ID + "=" + uri.getPathSegments().get(1));
 			break;
 		default:
 			throw new IllegalArgumentException("Unkown uri" + uri);
@@ -107,5 +118,13 @@ public class ShowsProvider extends ContentProvider {
 	
 	static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        sUriMatcher.addURI(Shows.AUTHORITY, "shows", SHOWS);
+        sUriMatcher.addURI(Shows.AUTHORITY, "shows_id", SHOWS_ID);
+        
+        sShowsProjectionMap = new HashMap<String, String>();
+        sShowsProjectionMap.put(ShowsBaseColumns._ID, ShowsBaseColumns._ID);
+        sShowsProjectionMap.put(ShowsBaseColumns.TITLE, ShowsBaseColumns.TITLE);
+        sShowsProjectionMap.put(ShowsBaseColumns.AUTHOR, ShowsBaseColumns.AUTHOR);
+        sShowsProjectionMap.put(ShowsBaseColumns.FEED, ShowsBaseColumns.FEED);
 	}
 }
