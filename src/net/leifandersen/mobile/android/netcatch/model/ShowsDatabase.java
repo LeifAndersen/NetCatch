@@ -12,10 +12,12 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
  */
 public class ShowsDatabase extends SQLiteOpenHelper{
 
-	public ShowsDatabase(Context context, String name, CursorFactory factory,
-			int version) {
-		super(context, name, factory, version);
-		// TODO Auto-generated constructor stub
+    private static final String DATABASE_NAME = "shows.db";
+    private static final int DATABASE_VERSION = 2;
+    private static final String SHOWS_TABLE_NAME = "shows";
+    
+	public ShowsDatabase(Context context) {
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override
