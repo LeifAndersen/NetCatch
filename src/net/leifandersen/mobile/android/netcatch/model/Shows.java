@@ -40,6 +40,11 @@ public class Shows {
 		 * The default sort order for this table
 		 */
 		public static final String DEFAULT_SORT_ORDER = "modified DESC";
+
+		/**
+		 * The MIME type of a {@link #CONTENT_URI} sub-directory of a single show.
+		 */
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.leifandersen.show";
 		
 	}
 }

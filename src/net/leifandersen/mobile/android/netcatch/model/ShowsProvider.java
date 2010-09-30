@@ -31,7 +31,7 @@ public class ShowsProvider extends ContentProvider {
     private static HashMap<String, String> sShowsProjectionMap;
     
     private static final int SHOWS = 1;
-    private static final int SHOWS_ID = 2;
+    private static final int SHOW_ID = 2;
     
     private static final UriMatcher sUriMatcher;
     
@@ -82,7 +82,7 @@ public class ShowsProvider extends ContentProvider {
 		case SHOWS:
 			qb.setProjectionMap(sShowsProjectionMap);
 			break;
-		case SHOWS_ID:
+		case SHOW_ID:
 			qb.setProjectionMap(sShowsProjectionMap);
 			qb.appendWhere(ShowsBaseColumns._ID + "=" + uri.getPathSegments().get(1));
 			break;
@@ -114,8 +114,12 @@ public class ShowsProvider extends ContentProvider {
 
 	@Override
 	public String getType(Uri uri) {
-		// TODO Auto-generated method stub
-		return null;
+		switch(sUriMatcher.match(uri)) {
+		case SHOW_ID:
+			return ShowsBaseColumns.CONTENT_ITEM_TYPE;
+		default:
+			throw new IllegalArgumentException("Unkown URI" + uri);
+		}
 	}
 
 	@Override
@@ -134,7 +138,7 @@ public class ShowsProvider extends ContentProvider {
 	static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(Shows.AUTHORITY, "shows", SHOWS);
-        sUriMatcher.addURI(Shows.AUTHORITY, "shows_id", SHOWS_ID);
+        sUriMatcher.addURI(Shows.AUTHORITY, "shows_id", SHOW_ID);
         
         sShowsProjectionMap = new HashMap<String, String>();
         sShowsProjectionMap.put(ShowsBaseColumns._ID, ShowsBaseColumns._ID);
