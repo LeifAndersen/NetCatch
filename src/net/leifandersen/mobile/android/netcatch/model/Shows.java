@@ -36,5 +36,10 @@ public class Shows {
 		 */
 		public static final String FEED = "feed";
 		
+		/**
+		 * The default sort order for this table
+		 */
+		public static final String DEFAULT_SORT_ORDER = "modified DESC";
+		
 	}
 }

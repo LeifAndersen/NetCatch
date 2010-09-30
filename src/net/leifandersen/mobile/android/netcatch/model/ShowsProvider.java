@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -88,7 +89,21 @@ public class ShowsProvider extends ContentProvider {
 		default:
 			throw new IllegalArgumentException("Unkown uri" + uri);
 		}
-		return null;
+		
+		// If no order is specified, use this default one.
+		String orderBy;
+		if (TextUtils.isEmpty(sortOrder))
+			orderBy = Shows.ShowsBaseColumns.DEFAULT_SORT_ORDER;
+		else
+			orderBy = sortOrder;
+		
+		// Get the database
+		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+		Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+		
+		// Tell the cursor what URI to watch.
+		c.setNotificationUri(getContext().getContentResolver(), uri);
+		return c;
 	}
 	
 	@Override
