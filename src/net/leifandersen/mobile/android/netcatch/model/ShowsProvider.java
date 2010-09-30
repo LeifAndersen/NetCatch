@@ -26,6 +26,7 @@ public class ShowsProvider extends SQLiteOpenHelper{
 					+ Shows._ID + " INTEGER PRIMARY KEY,"
 					+ Shows.TITLE + " TEXT,"
 					+ Shows.AUTHOR + " TEXT,"
+					+ Shows.FEED + " Text,"
 					+ ");");
 	}
 
