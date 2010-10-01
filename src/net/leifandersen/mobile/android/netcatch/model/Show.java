@@ -13,8 +13,9 @@ public class Show {
 	String author;
 	String feed;
 	List<Episode> episodes;
+	
 	public Show() {
-		// TODO
+		
 	}
 	
 	/**
