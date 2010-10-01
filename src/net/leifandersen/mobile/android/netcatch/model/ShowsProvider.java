@@ -118,8 +118,8 @@ public class ShowsProvider extends ContentProvider {
 			count = db.delete(SHOWS_TABLE_NAME, where, whereArgs);
 			break;
 		case SHOW_ID:
-			String noteId = uri.getPathSegments().get(1);
-			count = db.delete(SHOWS_TABLE_NAME, ShowsBaseColumns._ID + "=" + noteId
+			String showId = uri.getPathSegments().get(1);
+			count = db.delete(SHOWS_TABLE_NAME, ShowsBaseColumns._ID + "=" + showId
 					+ (!TextUtils.isEmpty(where) ? "And (" + where + ")" : ""), whereArgs);
 			break;
 		default:
@@ -179,10 +179,27 @@ public class ShowsProvider extends ContentProvider {
 	}
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int update(Uri uri, ContentValues values, String where,
+			String[] whereArgs) {
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		int count;
+		switch (sUriMatcher.match(uri)) {
+		case SHOWS:
+			count = db.update(SHOWS_TABLE_NAME, values, where, whereArgs);
+			break;
+		
+		case SHOW_ID:
+			String showId = uri.getPathSegments().get(1);
+			count = db.update(SHOWS_TABLE_NAME, values, ShowsBaseColumns._ID + "=" + showId
+			+ (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;
+		
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		
+		getContext().getContentResolver().notifyChange(uri, null);
+		return count;
 	}
 	
 	static {
