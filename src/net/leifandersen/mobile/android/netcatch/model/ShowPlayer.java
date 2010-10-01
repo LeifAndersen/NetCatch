@@ -1,5 +1,7 @@
 package net.leifandersen.mobile.android.netcatch.model;
 
+import java.util.List;
+
 import android.content.Context;
 import android.media.MediaPlayer;
 
@@ -9,14 +11,12 @@ public class ShowPlayer {
 	String episodeTitle;
 	String showTitle;
 	String author;
+	Episode currentEpisode;
+	List<Episode> showQue;
 	
-	// Should not be initualizable.
-	private ShowPlayer() {
+	public ShowPlayer(Episode episode) {
 		mPlayer = new MediaPlayer();
-	}
-	
-	public static ShowPlayer getShowPlayer(Context context) {
-		return new ShowPlayer();
+		currentEpisode = episode;
 	}
 	
 	public String getEpisodeTitle() {
