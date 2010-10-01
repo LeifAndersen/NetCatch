@@ -110,9 +110,23 @@ public class ShowsProvider extends ContentProvider {
 	}
 	
 	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int delete(Uri uri, String where, String[] whereArgs) {
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		int count;
+		switch (sUriMatcher.match(uri)) {
+		case SHOWS:
+			count = db.delete(SHOWS_TABLE_NAME, where, whereArgs);
+			break;
+		case SHOW_ID:
+			String noteId = uri.getPathSegments().get(1);
+			count = db.delete(SHOWS_TABLE_NAME, ShowsBaseColumns._ID + "=" + noteId
+					+ (!TextUtils.isEmpty(where) ? "And (" + where + ")" : ""), whereArgs);
+			break;
+		default:
+			throw new IllegalArgumentException("Unkown URI " + uri);
+		}
+		getContext().getContentResolver().notifyChange(uri, null);
+		return count;
 	}
 
 	@Override
@@ -136,8 +150,6 @@ public class ShowsProvider extends ContentProvider {
 			values = new ContentValues(initialValues);
 		else
 			values = new ContentValues();
-		
-		Long now = Long.valueOf(System.currentTimeMillis());
 		
 		// Make sure fields are set
 		if(values.containsKey(ShowsBaseColumns.TITLE) == false) {
@@ -163,9 +175,6 @@ public class ShowsProvider extends ContentProvider {
 			return showUri;
 		}
 		
-		// throw new SQLException("Could not insert row into " + uri);
-		// Is what we want to do, but at the moment, it won't compile, so:
-		// throw new NullPointerException();
 		throw new SQLException("Failed to insert row into " + uri);
 	}
 
