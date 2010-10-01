@@ -1,8 +1,6 @@
 package net.leifandersen.mobile.android.netcatch.model;
 
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 
 import net.leifandersen.mobile.android.netcatch.model.Shows.ShowsBaseColumns;
 import android.content.ContentProvider;
@@ -12,6 +10,7 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -166,7 +165,8 @@ public class ShowsProvider extends ContentProvider {
 		
 		// throw new SQLException("Could not insert row into " + uri);
 		// Is what we want to do, but at the moment, it won't compile, so:
-		throw new NullPointerException();
+		// throw new NullPointerException();
+		throw new SQLException("Failed to insert row into " + uri);
 	}
 
 	@Override
