@@ -12,11 +12,9 @@ public class ShowPlayer {
 	String showTitle;
 	String author;
 	Episode currentEpisode;
-	List<Episode> showQue;
 	
-	public ShowPlayer(Episode episode) {
+	public ShowPlayer() {
 		mPlayer = new MediaPlayer();
-		currentEpisode = episode;
 	}
 	
 	public String getEpisodeTitle() {

@@ -20,9 +20,11 @@ public class Show {
 	
 	/**
 	 * 
-	 * @return
+	 * Gets the latest version of the RSS feed for the show.
+	 * 
+	 * @return A list of the new episodes
 	 */
-	public boolean updateShow() {
+	public List<Episode> updateShow() {
 		// TODO
 		return false;
 	}
