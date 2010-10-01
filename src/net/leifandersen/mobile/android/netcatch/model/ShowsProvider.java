@@ -1,12 +1,16 @@
 package net.leifandersen.mobile.android.netcatch.model;
 
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 import net.leifandersen.mobile.android.netcatch.model.Shows.ShowsBaseColumns;
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -118,14 +122,51 @@ public class ShowsProvider extends ContentProvider {
 		case SHOW_ID:
 			return ShowsBaseColumns.CONTENT_ITEM_TYPE;
 		default:
-			throw new IllegalArgumentException("Unkown URI" + uri);
+			throw new IllegalArgumentException("Unkown URI " + uri);
 		}
 	}
 
 	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
+	public Uri insert(Uri uri, ContentValues initialValues) {
+		// Validate the URI
+		if (sUriMatcher.match(uri) != SHOWS)
+			throw new IllegalArgumentException("Unkown URI " + uri);
+		
+		ContentValues values;
+		if (initialValues != null)
+			values = new ContentValues(initialValues);
+		else
+			values = new ContentValues();
+		
+		Long now = Long.valueOf(System.currentTimeMillis());
+		
+		// Make sure fields are set
+		if(values.containsKey(ShowsBaseColumns.TITLE) == false) {
+			Resources r = Resources.getSystem();
+			values.put(ShowsBaseColumns.TITLE, r.getString(android.R.string.untitled));
+		}
+		
+		if(values.containsKey(ShowsBaseColumns.AUTHOR) == false) {
+			Resources r = Resources.getSystem();
+			values.put(ShowsBaseColumns.AUTHOR, r.getString(android.R.string.untitled));
+		}
+		
+		if(values.containsKey(ShowsBaseColumns.FEED) == false) {
+			Resources r = Resources.getSystem();
+			values.put(ShowsBaseColumns.FEED, r.getString(android.R.string.untitled));
+		}
+	
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		long rowId = db.insert(SHOWS_TABLE_NAME, ShowsBaseColumns.FEED, values);
+		if (rowId > 0) {
+			Uri showUri = ContentUris.withAppendedId(ShowsBaseColumns.CONTENT_URI, rowId);
+			getContext().getContentResolver().notifyChange(showUri, null);
+			return showUri;
+		}
+		
+		// throw new SQLException("Could not insert row into " + uri);
+		// Is what we want to do, but at the moment, it won't compile, so:
+		throw new NullPointerException();
 	}
 
 	@Override

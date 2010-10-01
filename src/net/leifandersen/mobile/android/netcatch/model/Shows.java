@@ -1,5 +1,6 @@
 package net.leifandersen.mobile.android.netcatch.model;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -9,6 +10,8 @@ import android.provider.BaseColumns;
  */
 public class Shows {
 	
+	private Shows() { } // Prevent this class from being insantiated.
+	
 	public static final String AUTHORITY = "net.leifandersen.mobile.android.netcatch.providers.Shows";
 	
 	/**
@@ -16,8 +19,15 @@ public class Shows {
 	 * @author leif
 	 *
 	 */
-	public class ShowsBaseColumns implements BaseColumns {
+	public static final class ShowsBaseColumns implements BaseColumns {
 	
+		private ShowsBaseColumns() { } // Prevent class from being instantiated.
+		
+		/**
+		 * The content:// style URL for this table
+		 */
+		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/shows");
+		
 		/**
 		 * The Title of the show.
 		 * <P>Type: TEXT</P>
