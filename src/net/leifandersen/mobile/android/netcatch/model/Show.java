@@ -26,7 +26,7 @@ public class Show {
 	 */
 	public List<Episode> updateShow() {
 		// TODO
-		return false;
+		return null;
 	}
 	
 	/**
