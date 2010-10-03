@@ -3,7 +3,9 @@ package net.leifandersen.mobile.android.netcatch.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetCatcher {
+import android.app.Activity;
+
+public class NetCatcher extends Activity {
 
 	private ShowPlayer player;
 	private List<Episode> showQue;
