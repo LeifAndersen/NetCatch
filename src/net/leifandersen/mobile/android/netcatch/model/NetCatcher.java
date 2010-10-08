@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.net.Uri;
 
 public class NetCatcher extends Activity {
 
@@ -15,6 +17,7 @@ public class NetCatcher extends Activity {
 	public NetCatcher() {
 		player = new ShowPlayer();
 		showQue = null; // TODO, retrieve this from a database.
+		// Cursor shows = managedQuery(Uri.parse("content://net.leifandersen.mobile.android.netcatch.providers/Shows"), projection, selection, selectionArgs, sortOrder);
 		subscribedShows = null; // TODO, retrieve subscriptions from database.
 		newEpisodes = new ArrayList<Episode>();
 		
