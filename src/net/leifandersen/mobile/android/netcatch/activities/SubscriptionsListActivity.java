@@ -17,7 +17,12 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	Cursor mShows;
 
-	private class ShowAdapter extends ArrayAdapter<String> {
+	private class Show {
+		String title = "";
+		String author = "";
+	}
+	
+	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
 		}
@@ -33,8 +38,10 @@ public class SubscriptionsListActivity extends ListActivity {
 				row = convertView;
 			
 			TextView title = (TextView)row.findViewById(R.id.sc_title);
-			String subscription = getItem(position);
-			title.setText(subscription);
+			TextView author = (TextView)row.findViewById(R.id.sc_author);
+			Show subscription = getItem(position);
+			title.setText(subscription.title);
+			author.setText(subscription.author);
 			
 			registerForContextMenu(row);
 			
@@ -56,7 +63,10 @@ public class SubscriptionsListActivity extends ListActivity {
 
 		if(mShows.moveToFirst())
 			do {
-				adapter.add(mShows.getString(mShows.getColumnIndex(ShowsProvider.TITLE)));
+				Show s = new Show();
+				s.title = mShows.getString(mShows.getColumnIndex(ShowsProvider.TITLE));
+				s.author = mShows.getString(mShows.getColumnIndex(ShowsProvider.AUTHOR));
+				adapter.add(s);
 			} while (mShows.moveToNext());
 		else {
 			ContentValues values = new ContentValues();
