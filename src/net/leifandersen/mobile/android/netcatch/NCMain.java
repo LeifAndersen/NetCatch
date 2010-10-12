@@ -1,19 +1,15 @@
 package net.leifandersen.mobile.android.netcatch;
 
-import net.leifandersen.mobile.android.netcatch.model.NetCatcher;
 import android.app.Activity;
 import android.os.Bundle;
 
 public class NCMain extends Activity {
     /** Called when the activity is first created. */
 	
-	NetCatcher mNC;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		mNC = new NetCatcher();
 	}
 	
 	@Override
