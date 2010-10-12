@@ -4,14 +4,14 @@
       android:versionCode="1"
       android:versionName="1.0">
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
-        <activity android:label="@string/app_name" android:name=".activities.NCMain">
+        <activity android:label="@string/app_name" android:name=".activities.NCMain" android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-    <activity android:name=".activities.SubscriptionsListActivity"></activity>
+    <activity android:name=".activities.SubscriptionsListActivity" android:theme="@android:style/Theme.NoTitleBar"></activity>
 
 <provider android:name=".providers.ShowsProvider" android:authorities="net.leifandersen.provider.Shows"></provider>
 </application>

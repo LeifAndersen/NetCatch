@@ -31,7 +31,7 @@ public class ShowsProvider extends ContentProvider {
 	public static final String TITLE = "title";
 	public static final String AUTHOR = "author";
 	public static final String FEED = "feed";
-
+	public static final String IMAGE = "image";
 	private static final String TAG = "ShowsProvider";
 
 	private static final int DATABASE_VERSION = 1;
@@ -42,7 +42,8 @@ public class ShowsProvider extends ContentProvider {
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
-		+ FEED + " TEXT" + ");";
+		+ FEED + " TEXT," 
+		+ IMAGE + " TEXT" + ");";
 
 	private static final String SHOW = "show";
 	
@@ -146,6 +147,8 @@ public class ShowsProvider extends ContentProvider {
 		if (values.containsKey(FEED) == false)
 			values.put(FEED, Resources.getSystem()
 					.getString(android.R.string.httpErrorBadUrl));
+		if (values.containsKey(IMAGE) == false)
+			values.put(IMAGE, "");
 		
 		// Insert the item
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
