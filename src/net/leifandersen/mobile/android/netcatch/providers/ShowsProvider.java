@@ -21,7 +21,7 @@ public class ShowsProvider extends ContentProvider {
 		"net.leifandersen.provider.Shows";
 
 	public static final Uri SUBSCRIPCTIONS_CONTENT_URI = 
-		Uri.parse("content://" + PROVIDER_NAME + "/sbuscriptions");
+		Uri.parse("content://" + PROVIDER_NAME + "/subscriptions");
 
 	private static final String PROVIDER_TYPE =
 		"vnd.leifandersen.provider.shows ";
