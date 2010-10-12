@@ -1,11 +1,8 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.Activity;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 
 public class NCMain extends Activity {
@@ -15,6 +12,11 @@ public class NCMain extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		// TODO, just starting subscriptions
+		Intent activity = new Intent();
+		activity.setClass(this, SubscriptionsListActivity.class);
+		startActivity(activity);
 	}
 
 	@Override
