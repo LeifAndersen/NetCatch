@@ -1,6 +1,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.ListActivity;
 import android.content.ContentValues;
@@ -18,12 +19,6 @@ import android.widget.TextView;
 public class SubscriptionsListActivity extends ListActivity {
 
 	Cursor mShows;
-
-	private class Show {
-		String title = "";
-		String author = "";
-		Drawable image = null;
-	}
 	
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
@@ -44,10 +39,11 @@ public class SubscriptionsListActivity extends ListActivity {
 			TextView author = (TextView)row.findViewById(R.id.sc_author);
 			ImageView image = (ImageView)row.findViewById(R.id.sc_picture);
 			Show subscription = getItem(position);
-			title.setText(subscription.title);
-			author.setText(subscription.author);
-			if (subscription.image != null)
-				image.setImageDrawable(subscription.image);
+			title.setText(subscription.getTitle());
+			author.setText(subscription.getAuthor());
+			Drawable d = subscription.getImage();
+			if (d != null)
+				image.setImageDrawable(d);
 			registerForContextMenu(row);
 			
 			return row;
@@ -69,11 +65,11 @@ public class SubscriptionsListActivity extends ListActivity {
 		if(mShows.moveToFirst())
 			do {
 				Show s = new Show();
-				s.title = mShows.getString(mShows.getColumnIndex(ShowsProvider.TITLE));
-				s.author = mShows.getString(mShows.getColumnIndex(ShowsProvider.AUTHOR));
+				s.setTitle(mShows.getString(mShows.getColumnIndex(ShowsProvider.TITLE)));
+				s.setAuthor(mShows.getString(mShows.getColumnIndex(ShowsProvider.AUTHOR)));
 				String imagePath = mShows.getString(mShows.getColumnIndex(ShowsProvider.IMAGE));
 				if (imagePath != "")
-					s.image = Drawable.createFromPath(imagePath);
+					s.setImage(Drawable.createFromPath(imagePath));
 				adapter.add(s);
 			} while (mShows.moveToNext());
 		else {
