@@ -1,5 +1,7 @@
 package net.leifandersen.mobile.android.netcatch.providers;
 
+import java.util.List;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -15,24 +17,67 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+/**
+ * Manages the content provider for all show data.
+ * 
+ * @author Leif Andersen
+ *
+ */
 public class ShowsProvider extends ContentProvider {
 
+	/**
+	 * The provider name for shows subscriptions and episodes.
+	 */
 	public static final String PROVIDER_NAME = 
 		"net.leifandersen.provider.Shows";
 
+	/**
+	 * The Subscriptions URI.
+	 */
 	public static final Uri SUBSCRIPCTIONS_CONTENT_URI = 
 		Uri.parse("content://" + PROVIDER_NAME + "/subscriptions");
 
 	private static final String PROVIDER_TYPE =
 		"vnd.leifandersen.provider.shows ";
-	
-	// For the shows table
-	public static final String _ID = "_id";
-	public static final String TITLE = "title";
-	public static final String AUTHOR = "author";
-	public static final String FEED = "feed";
-	public static final String IMAGE = "image";
+
 	private static final String TAG = "ShowsProvider";
+
+	// For the shows table
+	/**
+	 * The Row ID
+	 */
+	public static final String _ID = "_id";
+	
+	/**
+	 * The show's or episode's title
+	 */
+	public static final String TITLE = "title";
+	
+	/**
+	 * The show's or episode's author.
+	 */
+	public static final String AUTHOR = "author";
+	
+	/**
+	 * The URI of the show's RSS Feed.
+	 */
+	public static final String FEED = "feed";
+	
+	/**
+	 * The location of the show's or episode's image on the filesystem.
+	 */
+	public static final String IMAGE = "image";
+
+	// For the episodes tables
+	/**
+	 * The episode description.
+	 */
+	public static final String DESCRIPTION = "description";
+	
+	/**
+	 * The location for the actual media of the show
+	 */
+	public static final String MEDIA = "media";
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "Shows";
@@ -46,9 +91,13 @@ public class ShowsProvider extends ContentProvider {
 		+ IMAGE + " TEXT" + ");";
 
 	private static final String SHOW = "show";
-	
+	private static final String EPISODE = "episode";
+
 	private static final int SUBSCRIPTIONS = 1;
 	private static final int SUBSCRIPTION_ID = 2;
+
+	// To replace ] in a name, as SQLite doesn't like it.
+	private static final String CATCHBRAK = "~CatchBrak";
 
 	private static final UriMatcher uriMatcher;
 	static {
@@ -98,8 +147,16 @@ public class ShowsProvider extends ContentProvider {
 			qb.setTables(SUBSCRIPTIONS_TABLE_NAME);
 			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
 			break;
-		default:
-			throw new IllegalArgumentException("Unkown URI " + uri);
+		default:  // It's either an episode, or a bad request.
+			List<String> episode_request = uri.getPathSegments();
+			if (episode_request.size() < 1 || episode_request.size() > 2
+					|| !isInSubcriptions(episode_request.get(0))
+					|| (episode_request.size() == 2 && !TextUtils.isDigitsOnly(episode_request.get(1))))
+				// It's a bad request
+				throw new IllegalArgumentException("Unkown URI " + uri);
+			qb.setTables("[" + episode_request.get(0).replace("]", CATCHBRAK));
+			if(episode_request.size() == 2)
+				qb.appendWhere(_ID + "=" + episode_request.get(1));
 		}
 
 		// Set up the order;
@@ -124,40 +181,83 @@ public class ShowsProvider extends ContentProvider {
 		case SUBSCRIPTION_ID:
 			return "vnd.android.cursor.item/" + PROVIDER_TYPE;
 		default:
-			throw new IllegalArgumentException("Unkown URI " + uri);
+			List<String> episode_request = uri.getPathSegments();
+			if (episode_request.size() < 1 || episode_request.size() > 2
+					|| !isInSubcriptions(episode_request.get(0))
+					|| (episode_request.size() == 2 && !TextUtils.isDigitsOnly(episode_request.get(1))))
+				// It's a bad request
+				throw new IllegalArgumentException("Unkown URI " + uri);
+			if (episode_request.size() == 1)
+				return "vnd.android.cursor.dir/" + PROVIDER_TYPE;
+			else
+				return 	"vnd.android.cursor.item/" + PROVIDER_TYPE;
 		}
 	}
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		// Validate the URI passed in
-		if (uriMatcher.match(uri) != SUBSCRIPTIONS)
-			throw new IllegalArgumentException("Unkown URI " + uri);
-		
+
+		// Get the database
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		if (values == null)
 			values = new ContentValues();
-		
-		// Fill in empty values
-		if (values.containsKey(TITLE) == false)
-			values.put(TITLE, Resources.getSystem()
-					.getString(android.R.string.untitled));
-		if (values.containsKey(AUTHOR) == false)
-			values.put(AUTHOR, Resources.getSystem()
-					.getString(android.R.string.unknownName));
-		if (values.containsKey(FEED) == false)
-			values.put(FEED, Resources.getSystem()
-					.getString(android.R.string.httpErrorBadUrl));
-		if (values.containsKey(IMAGE) == false)
-			values.put(IMAGE, "");
-		
-		// Insert the item
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		long rowId = db.insert(SUBSCRIPTIONS_TABLE_NAME, SHOW, values);
-		if (rowId > 0) { //Added succesfully
-			Uri _uri = ContentUris.withAppendedId(SUBSCRIPCTIONS_CONTENT_URI, rowId);
-			getContext().getContentResolver().notifyChange(_uri, null);
-			return _uri;
+
+		// Validate the URI passed in
+		if (uriMatcher.match(uri) == SUBSCRIPTIONS) {
+			// Fill in empty values
+			if (values.containsKey(TITLE) == false)
+				values.put(TITLE, Resources.getSystem()
+						.getString(android.R.string.untitled));
+			if (values.containsKey(AUTHOR) == false)
+				values.put(AUTHOR, Resources.getSystem()
+						.getString(android.R.string.unknownName));
+			if (values.containsKey(FEED) == false)
+				values.put(FEED, Resources.getSystem()
+						.getString(android.R.string.httpErrorBadUrl));
+			if (values.containsKey(IMAGE) == false)
+				values.put(IMAGE, "");
+
+			// Insert the item
+			long rowId = db.insert(SUBSCRIPTIONS_TABLE_NAME, SHOW, values);
+			if (rowId > 0) { //Added succesfully
+				Uri _uri = ContentUris.withAppendedId(SUBSCRIPCTIONS_CONTENT_URI, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+				createTable("[" + values.getAsString(TITLE).replace("]", CATCHBRAK) 
+						+ "]"); // Create the table.
+				return _uri;
+			}
+		} else {
+			List<String> episode_request = uri.getPathSegments();
+			if (episode_request.size() != 1 || !isInSubcriptions(episode_request.get(0)))
+				throw new IllegalArgumentException("Unkown URI " + uri);
+
+			// Remove ] if it's in the request, to make it a valid table
+			String tableName = "[" + episode_request.get(0).replace("]", "~CatchBrak") + "]";
+
+			// Fill in empty values
+			if (values.containsKey(TITLE) == false)
+				values.put(TITLE, Resources.getSystem()
+						.getString(android.R.string.untitled));
+			if (values.containsKey(AUTHOR) == false)
+				values.put(AUTHOR, Resources.getSystem()
+						.getString(android.R.string.unknownName));
+			if (values.containsKey(DESCRIPTION) == false)
+				values.put(DESCRIPTION, "");
+			if (values.containsKey(IMAGE) == false)
+				values.put(IMAGE, "");
+			if (values.containsKey(MEDIA) == false)
+				values.put(MEDIA, "");
+
+			// Insert the item
+			long rowId = db.insert(tableName, EPISODE, values);
+			if (rowId > 0) { //Added succesfully
+				Uri _uri = ContentUris.withAppendedId(uri, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+				return _uri;
+			}
 		}
+
+		// Not a valid URI
 		throw new SQLException("Failed to insert row into " + uri);
 	}
 
@@ -166,18 +266,52 @@ public class ShowsProvider extends ContentProvider {
 			String[] selectionArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		int count;
+		Cursor c;
+		String newTitle;
+		String oldTitle;
 		switch (uriMatcher.match(uri)) {
 		case SUBSCRIPTIONS:
+			
+			// Update the shows' tables in the database
+			c = query(uri, null, selection, selectionArgs, null);
+			newTitle = values.getAsString(TITLE);
+			if (c.moveToFirst())
+				do {
+					oldTitle = c.getString(c.getColumnIndex(TITLE));
+					if (!oldTitle.equals(newTitle))
+						db.execSQL("ALTER TABLE " + "[" + oldTitle.replace("]", CATCHBRAK) + "]"
+								+ " rename to " + "[" + newTitle.replace("]", CATCHBRAK) + "]");
+				} while (c.moveToNext());
+			// Update the subscriptions
 			count = db.update(SUBSCRIPTIONS_TABLE_NAME, values, selection, selectionArgs);
 			break;
 		case SUBSCRIPTION_ID:
+			
+			// Update the show's table in the database
+			c = query(uri, null, selection, selectionArgs, null);
+			newTitle = values.getAsString(TITLE);
+			oldTitle = c.getString(c.getColumnIndex(TITLE));
+			if (!oldTitle.equals(newTitle))
+				db.execSQL("ALTER TABLE " + "[" + oldTitle.replace("]", CATCHBRAK) + "]"
+						+ " rename to " + "[" + newTitle.replace("]", CATCHBRAK) + "]");
+			
+			// Update the subscriptions
 			count = db.update(SUBSCRIPTIONS_TABLE_NAME, values, _ID + "=" +
 					uri.getPathSegments().get(1) +
 					(!TextUtils.isDigitsOnly(selection) 
 							? " And (" + selection + ')' : ""), selectionArgs);
 			break;
 		default:
-			throw new IllegalArgumentException("Unkown URI " + uri);
+			List<String> episode_request = uri.getPathSegments();
+			if (episode_request.size() != 2 || !isInSubcriptions(episode_request.get(0))
+					|| !TextUtils.isDigitsOnly(episode_request.get(1)))
+				// It's a bad request
+				throw new IllegalArgumentException("Unkown URI " + uri);
+			
+			// Only allow episodes to be updated, not the entire table.
+			count = db.update("[" + episode_request.get(0).replace("]", CATCHBRAK) + "]", values, 
+					_ID + "=" + episode_request.get(1) + (!TextUtils.isDigitsOnly(selection) 
+							? " And (" + selection + ')' : ""), selectionArgs);
 		}
 		
 		getContext().getContentResolver().notifyChange(uri, null);
@@ -187,21 +321,71 @@ public class ShowsProvider extends ContentProvider {
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int count;
+		Cursor c;
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		switch(uriMatcher.match(uri)) {
 		case SUBSCRIPTIONS:
+			
+			// Delete all other tables from the database. 
+			c = query(uri, null, selection, selectionArgs, null);
+			if(c.moveToFirst())
+				do {
+					db.execSQL("DROP TABLE IF EXISTS [" + c.getString(c.getColumnIndex(TITLE)).replace("]", CATCHBRAK) + "]");
+				} while (c.moveToNext());
+
+			// Clear out the subscriptions table.
 			count = db.delete(SUBSCRIPTIONS_TABLE_NAME, selection, selectionArgs);
 			break;
 		case SUBSCRIPTION_ID:
+			
+			// Delete the table for that show
+			c = query(uri, null, selection, selectionArgs, null);
+			db.execSQL("DROP TABLE IF EXISTS [" + c.getString(c.getColumnIndex(TITLE)).replace("]", CATCHBRAK) + "]");
+			
+			// Remove it from the subscriptions table
 			count = db.delete(SUBSCRIPTIONS_TABLE_NAME, _ID + "=" 
 					+ uri.getPathSegments().get(1)
 					+ (!TextUtils.isEmpty((selection))
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
 		default:
-			throw new IllegalArgumentException("Unkown URI " + uri);
+			List<String> episode_request = uri.getPathSegments();
+			if (episode_request.size() != 2 || !isInSubcriptions(episode_request.get(0))
+					|| !TextUtils.isDigitsOnly(episode_request.get(1)))
+				// It's a bad request
+				throw new IllegalArgumentException("Unkown URI " + uri);
+			
+			// Only allow them to delete an episode, not the whole show
+			// Subscriptions interface must be used.
+			count = db.delete(episode_request.get(0).replace("]", CATCHBRAK), _ID
+					+ "=" + episode_request.get(1) + (!TextUtils.isEmpty((selection))
+							? " AND (" + selection + ')' : ""), selectionArgs);
 		}
+		
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
+	}
+
+	private boolean isInSubcriptions(String showTitle) {
+		// Get all of the shows subscribed to
+		Cursor c = query(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
+
+		// Run through everything in the subscriptions, and return true if it's there.
+		if (c.moveToFirst())
+			do {
+				if (c.getString(c.getColumnIndex(TITLE)).equals(showTitle))
+					return true;
+			} while (c.moveToNext());
+		return false;
+	}
+
+	private String createTable(String tableName) {
+		return 	"CREATE TABLE IF NOT EXISTS " + tableName + " ("
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ TITLE + " TEXT,"
+		+ AUTHOR + " TEXT,"
+		+ DESCRIPTION + " TEXT," 
+		+ IMAGE + " TEXT,"
+		+ MEDIA + " TEXT" + ");";
 	}
 }
