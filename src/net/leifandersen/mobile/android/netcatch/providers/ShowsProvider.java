@@ -79,6 +79,11 @@ public class ShowsProvider extends ContentProvider {
 	 */
 	public static final String MEDIA = "media";
 
+	/**
+	 * Whether the episode has been played or not.
+	 */
+	public static final String PLAYED = "played";
+	
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "Shows";
 	private static final String SUBSCRIPTIONS_TABLE_NAME = "subscriptions";
@@ -247,6 +252,8 @@ public class ShowsProvider extends ContentProvider {
 				values.put(IMAGE, "");
 			if (values.containsKey(MEDIA) == false)
 				values.put(MEDIA, "");
+			if (values.containsKey(PLAYED) == false)
+				values.put(PLAYED, false);
 
 			// Insert the item
 			long rowId = db.insert(tableName, EPISODE, values);
@@ -386,6 +393,7 @@ public class ShowsProvider extends ContentProvider {
 		+ AUTHOR + " TEXT,"
 		+ DESCRIPTION + " TEXT," 
 		+ IMAGE + " TEXT,"
-		+ MEDIA + " TEXT" + ");";
+		+ MEDIA + " TEXT, "
+		+ PLAYED + " BOOLEAN" + ");";
 	}
 }

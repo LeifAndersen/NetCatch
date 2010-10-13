@@ -14,6 +14,7 @@ public class Episode {
 	private String author;
 	private String description;
 	private String media;
+	private boolean played;
 	
 	/**
 	 * @param title the title to set
@@ -69,5 +70,19 @@ public class Episode {
 	 */
 	public String getMedia() {
 		return media;
+	}
+
+	/**
+	 * @param played the played to set
+	 */
+	public void setPlayed(boolean played) {
+		this.played = played;
+	}
+
+	/**
+	 * @return the played
+	 */
+	public boolean isPlayed() {
+		return played;
 	}
 }
