@@ -34,6 +34,7 @@ public class RSSService extends Service {
 		return START_STICKY;
 	}
 
+	@SuppressWarnings("unused")
 	private static List<Episode> parseRSS(Document feed) {
 		try {
 		ArrayList<Episode> episodes = new ArrayList<Episode>();
