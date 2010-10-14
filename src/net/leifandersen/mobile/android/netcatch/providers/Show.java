@@ -14,7 +14,6 @@ public class Show {
 	private String author;
 	private String feed;
 	private Drawable image;
-	private boolean isPlayed;
 	
 	/**
 	 * @param title the title to set
@@ -70,19 +69,5 @@ public class Show {
 	 */
 	public Drawable getImage() {
 		return image;
-	}
-	
-	/**
-	 * @param isPlayed the isPlayed to set
-	 */
-	public void setPlayed(boolean isPlayed) {
-		this.isPlayed = isPlayed;
-	}
-	
-	/**
-	 * @return the isPlayed
-	 */
-	public boolean isPlayed() {
-		return isPlayed;
 	}
 }

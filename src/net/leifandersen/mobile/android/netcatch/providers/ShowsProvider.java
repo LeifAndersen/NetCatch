@@ -80,6 +80,11 @@ public class ShowsProvider extends ContentProvider {
 	public static final String MEDIA = "media";
 
 	/**
+	 * The date the show was released
+	 */
+	public static final String DATE = "date";
+	
+	/**
 	 * Whether the episode has been played or not.
 	 */
 	public static final String PLAYED = "played";
@@ -97,7 +102,8 @@ public class ShowsProvider extends ContentProvider {
 
 	private static final String SHOW = "show";
 	private static final String EPISODE = "episode";
-
+	private static final String EMPTY_DATE = "";
+	
 	private static final int SUBSCRIPTIONS = 1;
 	private static final int SUBSCRIPTION_ID = 2;
 
@@ -252,6 +258,8 @@ public class ShowsProvider extends ContentProvider {
 				values.put(IMAGE, "");
 			if (values.containsKey(MEDIA) == false)
 				values.put(MEDIA, "");
+			if (values.containsKey(DATE) == false)
+				values.put(DATE, EMPTY_DATE);
 			if (values.containsKey(PLAYED) == false)
 				values.put(PLAYED, false);
 
@@ -394,6 +402,7 @@ public class ShowsProvider extends ContentProvider {
 		+ DESCRIPTION + " TEXT," 
 		+ IMAGE + " TEXT,"
 		+ MEDIA + " TEXT, "
+		+ DATE + " TEXT, "
 		+ PLAYED + " BOOLEAN" + ");";
 	}
 }

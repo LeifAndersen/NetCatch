@@ -15,6 +15,16 @@ public class Episode {
 	private String description;
 	private String media;
 	private boolean played;
+	private String date;
+	
+	public Episode(String title, String author, String description, String media, String date, boolean played) {
+		this.title = title;
+		this.author = author;
+		this.description = description;
+		this.media = media;
+		this.date = date;
+		this.played = played;
+	}
 	
 	/**
 	 * @param title the title to set
@@ -84,5 +94,19 @@ public class Episode {
 	 */
 	public boolean isPlayed() {
 		return played;
+	}
+
+	/**
+	 * @param date the date to set
+	 */
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	/**
+	 * @return the date
+	 */
+	public String getDate() {
+		return date;
 	}
 }
