@@ -1,5 +1,7 @@
 package net.leifandersen.mobile.android.netcatch.providers;
 
+import java.io.Serializable;
+
 
 /**
  * A structure to hold an episode object designed only for packing data to pass
@@ -8,8 +10,9 @@ package net.leifandersen.mobile.android.netcatch.providers;
  * @author Leif Andersen
  *
  */
-public class Episode {
+public class Episode implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	private String title;
 	private String author;
 	private String description;

@@ -1,5 +1,7 @@
 package net.leifandersen.mobile.android.netcatch.providers;
 
+import java.io.Serializable;
+
 import android.graphics.drawable.Drawable;
 
 /**
@@ -9,7 +11,9 @@ import android.graphics.drawable.Drawable;
  * @author Leif Andersen
  *
  */
-public class Show {
+public class Show implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private String title;
 	private String author;
 	private String feed;
