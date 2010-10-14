@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -55,17 +56,33 @@ public class RSSService extends Service {
 		return START_NOT_STICKY;
 	}
 
+	
+	/**
+	 * Get the data from the service's feed.
+	 */
 	public void fetchData() {
-		List<Episode> episodes = parseRSS(getRSS(feed));
+		// Ge the episodes
+		List<Episode> episodes = parseRSS(getRSS(this, feed));
 		if(episodes == null)
 			return;
-		// TODO
+		
+		// Put the Episodes into a bundle
+		Bundle episodeBundle = new Bundle();
+		for (Episode episode : episodes) {
+			episodeBundle.putSerializable(episode.getTitle(), episode);
+		}
+		
+		// Broadcast the bundle back to the main app
+		Intent broadcast = new Intent("RSSFinish " + feed);
+		broadcast.putExtra("episodes", episodeBundle);
+		sendBroadcast(broadcast);
+		stopSelf();
 	}
 
-	private Document getRSS(String url) {
+	private static Document getRSS(Context context, String url) {
 		// Get the connectivity manager
-		ConnectivityManager manager = 
-			(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager)
+			context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
 		// If the user has set to not to do background updates, don't get it.
 		if (!manager.getBackgroundDataSetting())
@@ -82,7 +99,7 @@ public class RSSService extends Service {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
 				.newDocumentBuilder();
 			DefaultHttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet(feed);
+			HttpGet request = new HttpGet(url);
 			HttpResponse response = client.execute(request);
 			doc = builder.parse(response.getEntity().getContent());
 			return doc;
