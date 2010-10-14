@@ -16,5 +16,6 @@
 <provider android:name=".providers.ShowsProvider" android:authorities="net.leifandersen.provider.Shows"></provider>
 </application>
     <uses-sdk android:minSdkVersion="3" />
-
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest> 
