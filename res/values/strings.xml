@@ -7,4 +7,7 @@
 <string name="queue">Queue</string>
 <string name="no_subscriptions">No Subscriptions...</string>
 <string name="shows">Shows</string>
+<string name="enter_feed">Enter Feed</string>
+<string name="ok">OK</string>
+<string name="cancel">Cancel</string>
 </resources>

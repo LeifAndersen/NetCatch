@@ -1,0 +1,17 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<RelativeLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+	android:layout_width = "wrap_content"
+	android:layout_height = "wrap_content" >
+	<TextView android:id = "@+id/sfd_title"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:padding = "5px"
+		android:textSize = "20px"
+		android:gravity = "center_horizontal"
+		android:text = "@string/enter_feed" />
+	<EditText android:id = "@+id/sfd_editText"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:layout_below = "@id/sfd_title"
+		android:hint = "@string/enter_feed" />
+</RelativeLayout>
