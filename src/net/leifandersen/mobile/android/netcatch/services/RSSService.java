@@ -26,6 +26,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+/**
+ * 
+ * A simple service that takes an RSS feed and returns a list of all
+ * of the shows in that feed, or nothing if there isn't anything in that
+ * feed to begin with.
+ * 
+ * @author Leif Andersen
+ *
+ */
 public class RSSService extends Service {
 
 	public static final String FEED = "feed";
