@@ -3,13 +3,17 @@ package net.leifandersen.mobile.android.netcatch.activities;
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -40,6 +44,9 @@ public class SubscriptionsListActivity extends ListActivity {
 	private static final int NEW_FEED = 1;
 	private static final int NEW_FEED_DETAILS = 2;
 
+	private ProgressDialog progressDialog;
+	private String newFeed = "http://leifandersen.net/feed"; // TODO, replace with an actual feed
+	
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
@@ -90,7 +97,6 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent activity = new Intent();
 		switch (item.getItemId()) {
 		case R.id.sm_new_show:
 			showDialog(NEW_FEED);
@@ -114,19 +120,44 @@ public class SubscriptionsListActivity extends ListActivity {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					// TODO, actually get the feed properties!!!
-					String newFeed = "";
-					Show show = new Show("Title", "Author", newFeed, "");
+					
+					// Get the feed's data
+					// Set the broadcast reciever
+					BroadcastReceiver finishedReceiver = new BroadcastReceiver() {
+						@Override
+						public void onReceive(Context context, Intent intent) {							
+							// Get the data
+							Bundle showBundle = intent.getBundleExtra(RSSService.SHOW);
+							Show show = (Show)showBundle.get(RSSService.SHOW);
+							
+							// Add the show
+							ContentValues values = new ContentValues();
+							values.put(ShowsProvider.TITLE, show.getTitle());
+							values.put(ShowsProvider.AUTHOR, show.getAuthor());
+							values.put(ShowsProvider.FEED, show.getFeed());
+							values.put(ShowsProvider.IMAGE, show.getImagePath());
+							getContentResolver().insert(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, values);
 
-					// Add the show
-					ContentValues values = new ContentValues();
-					values.put(ShowsProvider.TITLE, show.getTitle());
-					values.put(ShowsProvider.AUTHOR, show.getAuthor());
-					values.put(ShowsProvider.FEED, show.getFeed());
-					values.put(ShowsProvider.IMAGE, show.getImagePath());
-					getContentResolver().insert(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, values);
-
-					// Refresh and return
-					refreshList();
+							progressDialog.cancel();
+							
+							// Refresh and return
+							refreshList();
+						}
+					};
+					registerReceiver(finishedReceiver, new IntentFilter(RSSService.RSSFINISH + newFeed));
+					
+					// Show a waiting dialog (that can be canceled)
+					progressDialog =
+						ProgressDialog.show(SubscriptionsListActivity.this,
+								"", getString(R.string.getting_show_details));
+					progressDialog.setCancelable(true);
+					progressDialog.show();
+					
+					// Start the service
+					Intent service = new Intent();
+					service.putExtra(RSSService.FEED, newFeed);
+					service.setClass(SubscriptionsListActivity.this, RSSService.class);
+					startService(service);
 				}
 			});
 			builder.setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {

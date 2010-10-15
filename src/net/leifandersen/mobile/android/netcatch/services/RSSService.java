@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
+import net.leifandersen.mobile.android.netcatch.providers.Show;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -38,7 +39,10 @@ import android.util.Log;
 public class RSSService extends Service {
 
 	public static final String FEED = "feed";
-
+	public static final String EPISODES = "episodes";
+	public static final String SHOW = "show";
+	public static final String RSSFINISH = "RSSFinish ";
+	
 	private String feed;
 
 	@Override
@@ -70,10 +74,23 @@ public class RSSService extends Service {
 	 * Get the data from the service's feed.
 	 */
 	public void fetchData() {
-		// Ge the episodes
-		List<Episode> episodes = parseRSS(getRSS(this, feed));
-		if(episodes == null)
-			return;
+		
+		// Download the RSS feed
+		Document feedDoc = getRSS(this, feed);
+		if (feedDoc == null)
+			stopSelf();
+		
+		// Get the show
+		Show show = getShowFromRSS(feedDoc, feed);
+		
+		// Get the episodes
+		List<Episode> episodes = getEpisodesFromRSS(feedDoc);
+		if(episodes == null || show == null)
+			stopSelf();
+		
+		// Put the Show into a bundle
+		Bundle showBundle = new Bundle();
+		showBundle.putSerializable(SHOW, show);
 		
 		// Put the Episodes into a bundle
 		Bundle episodeBundle = new Bundle();
@@ -81,9 +98,10 @@ public class RSSService extends Service {
 			episodeBundle.putSerializable(episode.getTitle(), episode);
 		}
 		
-		// Broadcast the bundle back to the main app
+		// Broadcast the bundles back to the main app
 		Intent broadcast = new Intent("RSSFinish " + feed);
-		broadcast.putExtra("episodes", episodeBundle);
+		broadcast.putExtra(EPISODES, episodeBundle);
+		broadcast.putExtra(SHOW, showBundle);
 		sendBroadcast(broadcast);
 		stopSelf();
 	}
@@ -124,9 +142,11 @@ public class RSSService extends Service {
 		}
 	}
 
-	private static List<Episode> parseRSS(Document feed) {
-		if (feed == null)
-			return null;
+	private static Show getShowFromRSS(Document feed, String feedUrl) {
+		return new Show("Title", "Leif", feedUrl, null);
+	}
+	
+	private static List<Episode> getEpisodesFromRSS(Document feed) {
 		try {
 			ArrayList<Episode> episodes = new ArrayList<Episode>();
 			NodeList items = feed.getElementsByTagName("item");
@@ -145,6 +165,7 @@ public class RSSService extends Service {
 				episodes.add(new Episode(title, author, desc, url, date, false));
 			}
 			return episodes;
+			
 		} catch (Exception e) {
 			// Any parse errors and we'll log and fail
 			Log.e("NCRSS", "Error parsing RSS", e);
