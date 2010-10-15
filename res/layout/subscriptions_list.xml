@@ -4,8 +4,8 @@
 	android:layout_height="fill_parent" >
 	<RelativeLayout android:id = "@+id/sl_titleBar"
 		android:layout_width = "fill_parent"
-		android:background = "@drawable/icon"
-		android:layout_height = "wrap_content" >
+		android:layout_height = "wrap_content"
+		android:background = "@drawable/icon" >
 	</RelativeLayout>
 	<ListView android:id="@+id/android:list"
 		android:layout_width="fill_parent"
@@ -14,7 +14,7 @@
 	<TextView android:id="@+id/android:empty"
 		android:layout_width = "wrap_content"
 		android:layout_height = "wrap_content"
-		android:text = "No Subscriptions..."
+		android:text = "@string/no_subscriptions"
 		android:textSize = "16px"
 		android:layout_centerHorizontal = "true"
 		android:layout_centerVertical = "true" />

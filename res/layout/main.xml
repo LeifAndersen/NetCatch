@@ -1,12 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent" >
+	<RelativeLayout android:id = "@+id/m_titleBar"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:background = "@drawable/icon" >
+	</RelativeLayout>
+	<TextView android:id="@+id/m_queue"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:layout_below = "@id/m_titleBar"
+		android:paddingLeft = "10px"
+		android:paddingRight = "10px"
+		android:paddingTop = "2px"
+		android:paddingBottom = "2px"
+		android:text = "@string/queue"
+		android:textSize = "20px"
+		android:layout_centerHorizontal = "true"  />
+	<TextView android:id="@+id/m_new_shows"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:layout_below = "@id/m_queue"
+		android:paddingLeft = "10px"
+		android:paddingRight = "10px"
+		android:paddingTop = "2px"
+		android:paddingBottom = "2px"
+		android:text = "@string/new_episodes"
+		android:textSize = "20px"
+		android:layout_centerHorizontal = "true" />
+	<TextView android:id="@+id/m_subscriptions"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:layout_below = "@id/m_new_shows"
+		android:paddingLeft = "10px"
+		android:paddingRight = "10px"
+		android:paddingTop = "2px"
+		android:paddingBottom = "2px"
+		android:text = "@string/shows"
+		android:textSize = "20px"
+		android:layout_centerHorizontal = "true" />
+</RelativeLayout>

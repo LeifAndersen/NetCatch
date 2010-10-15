@@ -2,4 +2,9 @@
 <resources>
     <string name="hello">Hello World, NCMain!</string>
     <string name="app_name">NetCatch</string>
+<string name="new_show">New Show</string>
+<string name="new_episodes">New Episodes</string>
+<string name="queue">Queue</string>
+<string name="no_subscriptions">No Subscriptions...</string>
+<string name="shows">Shows</string>
 </resources>
