@@ -18,7 +18,19 @@ public class Show implements Serializable {
 	private String author;
 	private String feed;
 	private Drawable image;
+	private String imagePath;
 	
+	public Show() {
+		
+	}
+	
+	public Show(String title, String author, String feed, String imagePath) {
+		this.title = title;
+		this.author = author;
+		this.feed = feed;
+		this.imagePath = imagePath;
+	}
+
 	/**
 	 * @param title the title to set
 	 */
@@ -73,5 +85,19 @@ public class Show implements Serializable {
 	 */
 	public Drawable getImage() {
 		return image;
+	}
+
+	/**
+	 * @param imagePath the imagePath to set
+	 */
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+	/**
+	 * @return the imagePath
+	 */
+	public String getImagePath() {
+		return imagePath;
 	}
 }
