@@ -5,6 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+/**
+ * 
+ * The main activity for netcatch, provides a menu that the user
+ * can do everything else from.
+ * 
+ * @author Leif Andersen
+ *
+ */
 public class NCMain extends Activity {
 	/** Called when the activity is first created. */
 	
