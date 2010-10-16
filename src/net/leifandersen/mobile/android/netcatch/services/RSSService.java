@@ -164,24 +164,41 @@ public class RSSService extends Service {
 			NodeList items = feed.getElementsByTagName("item");
 			for(int i = 0; i < items.getLength(); i++) {
 				Element el = (Element)items.item(i);  // Safe if it's an actual feed.
-				String title = el.getElementsByTagName("title")
-					.item(0).getFirstChild().getNodeValue();
-				NodeList authorNode = el.getElementsByTagName("author");
-				String author;
 				
-				// TODO --- do this for everything in case it's not in the feed.
+				String title;
+				NodeList titleNode = el.getElementsByTagName("title");
+				if (titleNode == null || titleNode.getLength() < 1)
+					title = context.getString(R.string.default_title);
+				else
+					 title = titleNode.item(0).getFirstChild().getNodeValue();
+				
+				String author;
+				NodeList authorNode = el.getElementsByTagName("author");
 				if (authorNode == null || authorNode.getLength() < 1)
 					author = context.getString(R.string.default_author);
 				else
 					author = authorNode.item(0).getFirstChild().getNodeValue();
-				// -------
 				
-				String date = el.getElementsByTagName("pubDate")
-					.item(0).getFirstChild().getNodeValue();
-				String desc = el.getElementsByTagName("comments")
-					.item(0).getFirstChild().getNodeValue();
-				String url = el.getElementsByTagName("link")
-					.item(0).getFirstChild().getNodeValue();
+				String date;
+				NodeList dateNode = el.getElementsByTagName("pubDate");
+				if (dateNode == null || dateNode.getLength() < 1)
+					date = context.getString(R.string.default_date);
+				else
+					date = dateNode.item(0).getFirstChild().getNodeValue();
+				
+				String desc;
+				NodeList descNode = el.getElementsByTagName("comments");
+				if (descNode == null || descNode.getLength() < 1)
+					desc = context.getString(R.string.default_comments);
+				else
+					desc = descNode.item(0).getFirstChild().getNodeValue();
+				
+				String url;
+				NodeList urlNode = el.getElementsByTagName("link");
+				if (urlNode == null || urlNode.getLength() < 1)
+					url = "";
+				else 
+				url = urlNode.item(0).getFirstChild().getNodeValue();
 				episodes.add(new Episode(title, author, desc, url, date, false));
 			}
 			return episodes;
