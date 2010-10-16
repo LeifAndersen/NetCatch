@@ -11,4 +11,5 @@
 <string name="ok">OK</string>
 <string name="cancel">Cancel</string>
 <string name="getting_show_details">Getting Show Details...</string>
+<string name="default_author">Unkown Author</string>
 </resources>

@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * 
@@ -46,7 +47,7 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	private ProgressDialog progressDialog;
 	private String newFeed = "http://leifandersen.net/feed"; // TODO, replace with an actual feed
-	
+
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
@@ -120,7 +121,7 @@ public class SubscriptionsListActivity extends ListActivity {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					// TODO, actually get the feed properties!!!
-					
+
 					// Get the feed's data
 					// Set the broadcast reciever
 					BroadcastReceiver finishedReceiver = new BroadcastReceiver() {
@@ -129,7 +130,7 @@ public class SubscriptionsListActivity extends ListActivity {
 							// Get the data
 							Bundle showBundle = intent.getBundleExtra(RSSService.SHOW);
 							Show show = (Show)showBundle.get(RSSService.SHOW);
-							
+
 							// Add the show
 							ContentValues values = new ContentValues();
 							values.put(ShowsProvider.TITLE, show.getTitle());
@@ -139,12 +140,22 @@ public class SubscriptionsListActivity extends ListActivity {
 							getContentResolver().insert(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, values);
 
 							progressDialog.cancel();
-							
+
 							// Refresh and return
 							refreshList();
 						}
 					};
 					registerReceiver(finishedReceiver, new IntentFilter(RSSService.RSSFINISH + newFeed));
+
+					// Set up the failed dialog
+					BroadcastReceiver failedReciever = new BroadcastReceiver() {
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							Toast.makeText(SubscriptionsListActivity.this, "Failed to fetch feed", Toast.LENGTH_LONG);
+							progressDialog.cancel();
+						}
+					};
+					registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
 					
 					// Show a waiting dialog (that can be canceled)
 					progressDialog =
@@ -152,7 +163,7 @@ public class SubscriptionsListActivity extends ListActivity {
 								"", getString(R.string.getting_show_details));
 					progressDialog.setCancelable(true);
 					progressDialog.show();
-					
+
 					// Start the service
 					Intent service = new Intent();
 					service.putExtra(RSSService.FEED, newFeed);

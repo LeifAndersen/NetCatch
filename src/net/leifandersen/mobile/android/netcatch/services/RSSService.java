@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 
@@ -42,14 +43,19 @@ public class RSSService extends Service {
 	public static final String EPISODES = "episodes";
 	public static final String SHOW = "show";
 	public static final String RSSFINISH = "RSSFinish ";
-	
+	public static final String RSSFAILED = "RSSFAILED ";
 	private String feed;
-
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
 	}
 
+	@Override
+	public void onStart(Intent intent, int startId) {
+		onStartCommand(intent, 0, startId);
+	}
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// Set up the feed for this service
@@ -78,15 +84,15 @@ public class RSSService extends Service {
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, feed);
 		if (feedDoc == null)
-			stopSelf();
+			serviceFailed();
 		
 		// Get the show
 		Show show = getShowFromRSS(feedDoc, feed);
 		
 		// Get the episodes
-		List<Episode> episodes = getEpisodesFromRSS(feedDoc);
+		List<Episode> episodes = getEpisodesFromRSS(this, feedDoc);
 		if(episodes == null || show == null)
-			stopSelf();
+			serviceFailed();
 		
 		// Put the Show into a bundle
 		Bundle showBundle = new Bundle();
@@ -99,13 +105,19 @@ public class RSSService extends Service {
 		}
 		
 		// Broadcast the bundles back to the main app
-		Intent broadcast = new Intent("RSSFinish " + feed);
+		Intent broadcast = new Intent(RSSFINISH + feed);
 		broadcast.putExtra(EPISODES, episodeBundle);
 		broadcast.putExtra(SHOW, showBundle);
 		sendBroadcast(broadcast);
 		stopSelf();
 	}
 
+	private void serviceFailed() {
+		Intent broadcast = new Intent(RSSFAILED + feed);
+		sendBroadcast(broadcast);
+		stopSelf();
+	}
+	
 	private static Document getRSS(Context context, String url) {
 		// Get the connectivity manager
 		ConnectivityManager manager = (ConnectivityManager)
@@ -146,7 +158,7 @@ public class RSSService extends Service {
 		return new Show("Title", "Leif", feedUrl, null);
 	}
 	
-	private static List<Episode> getEpisodesFromRSS(Document feed) {
+	private static List<Episode> getEpisodesFromRSS(Context context, Document feed) {
 		try {
 			ArrayList<Episode> episodes = new ArrayList<Episode>();
 			NodeList items = feed.getElementsByTagName("item");
@@ -154,8 +166,16 @@ public class RSSService extends Service {
 				Element el = (Element)items.item(i);  // Safe if it's an actual feed.
 				String title = el.getElementsByTagName("title")
 					.item(0).getFirstChild().getNodeValue();
-				String author = el.getElementsByTagName("author")
-					.item(0).getFirstChild().getNodeValue();
+				NodeList authorNode = el.getElementsByTagName("author");
+				String author;
+				
+				// TODO --- do this for everything in case it's not in the feed.
+				if (authorNode == null || authorNode.getLength() < 1)
+					author = context.getString(R.string.default_author);
+				else
+					author = authorNode.item(0).getFirstChild().getNodeValue();
+				// -------
+				
 				String date = el.getElementsByTagName("pubDate")
 					.item(0).getFirstChild().getNodeValue();
 				String desc = el.getElementsByTagName("comments")
