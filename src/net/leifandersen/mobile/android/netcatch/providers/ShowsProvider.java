@@ -2,6 +2,7 @@ package net.leifandersen.mobile.android.netcatch.providers;
 
 import java.util.List;
 
+import android.R;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -68,12 +69,12 @@ public class ShowsProvider extends ContentProvider {
 	 */
 	public static final String IMAGE = "image";
 
-	// For the episodes tables
 	/**
 	 * The episode description.
 	 */
 	public static final String DESCRIPTION = "description";
 	
+	// For the episodes tables
 	/**
 	 * The location for the actual media of the show
 	 */
@@ -97,7 +98,8 @@ public class ShowsProvider extends ContentProvider {
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
-		+ FEED + " TEXT," 
+		+ FEED + " TEXT,"
+		+ DESCRIPTION + " TEXT,"
 		+ IMAGE + " TEXT" + ");";
 
 	private static final String SHOW = "show";
@@ -225,6 +227,8 @@ public class ShowsProvider extends ContentProvider {
 			if (values.containsKey(FEED) == false)
 				values.put(FEED, Resources.getSystem()
 						.getString(android.R.string.httpErrorBadUrl));
+			if (values.containsKey(DESCRIPTION) == false)
+				values.put(DESCRIPTION, "");
 			if (values.containsKey(IMAGE) == false)
 				values.put(IMAGE, "");
 

@@ -19,16 +19,18 @@ public class Show implements Serializable {
 	private String feed;
 	private Drawable image;
 	private String imagePath;
+	private String description;
 	
 	public Show() {
 		
 	}
 	
-	public Show(String title, String author, String feed, String imagePath) {
+	public Show(String title, String author, String feed, String description, String imagePath) {
 		this.title = title;
 		this.author = author;
 		this.feed = feed;
 		this.imagePath = imagePath;
+		this.description = description;
 	}
 
 	/**
@@ -99,5 +101,19 @@ public class Show implements Serializable {
 	 */
 	public String getImagePath() {
 		return imagePath;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
 	}
 }
