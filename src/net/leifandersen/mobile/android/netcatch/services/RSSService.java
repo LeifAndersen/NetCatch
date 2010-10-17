@@ -83,16 +83,20 @@ public class RSSService extends Service {
 
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, feed);
-		if (feedDoc == null)
+		if (feedDoc == null) {
 			serviceFailed();
+			return;
+		}
 
 		// Get the show
 		Show show = getShowFromRSS(this, feedDoc, feed);
 
 		// Get the episodes
 		List<Episode> episodes = getEpisodesFromRSS(this, feedDoc);
-		if(episodes == null || show == null)
+		if(episodes == null || show == null) {
 			serviceFailed();
+			return;
+		}
 
 		// Put the Show into a bundle
 		Bundle showBundle = new Bundle();

@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -43,11 +42,11 @@ public class SubscriptionsListActivity extends ListActivity {
 	private Cursor mShows;
 
 	private static final int NEW_FEED = 1;
-	private static final int NEW_FEED_DETAILS = 2;
 
 	private ProgressDialog progressDialog;
-	private String newFeed = "http://leifandersen.net/feed"; // TODO, replace with an actual feed
-
+	private String newFeed;
+	private EditText mEditFeed;
+	
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
@@ -112,15 +111,19 @@ public class SubscriptionsListActivity extends ListActivity {
 		switch(id) {
 		case NEW_FEED:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+			// Set up the layout
 			LayoutInflater inflater = 
 				(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.subscription_feed_dialog, null);
+			mEditFeed = (EditText)layout.findViewById(R.id.sfd_editText);
 			builder.setView(layout);
 			builder.setCancelable(false);
 			builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// TODO, actually get the feed properties!!!
+					// Get the RSS feed the user entered
+					newFeed = mEditFeed.getText().toString();
 
 					// Get the feed's data
 					// Set the broadcast reciever
@@ -156,7 +159,7 @@ public class SubscriptionsListActivity extends ListActivity {
 						}
 					};
 					registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
-					
+
 					// Show a waiting dialog (that can be canceled)
 					progressDialog =
 						ProgressDialog.show(SubscriptionsListActivity.this,
