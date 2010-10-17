@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -47,7 +46,6 @@ public class SubscriptionsListActivity extends ListActivity {
 	private ProgressDialog progressDialog;
 	private String newFeed;
 	private EditText mEditFeed;
-	private Dialog mDialog;
 	
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
@@ -183,7 +181,6 @@ public class SubscriptionsListActivity extends ListActivity {
 				}
 			});
 			dialog = builder.create();
-			mDialog = dialog;
 			break;
 		default:
 			dialog = null;
