@@ -70,7 +70,7 @@ public class RSSService extends Service {
 				fetchData();	
 			}
 		});
-		t.run();
+		t.start();
 
 		return START_NOT_STICKY;
 	}

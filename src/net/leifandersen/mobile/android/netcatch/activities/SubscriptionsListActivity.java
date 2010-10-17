@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -43,9 +44,12 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	private static final int NEW_FEED = 1;
 
+	
+	// Only member variables for access within internal methods.
 	private ProgressDialog progressDialog;
 	private String newFeed;
 	private EditText mEditFeed;
+	private Dialog mDialog;
 	
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		public ShowAdapter(Context context) {
@@ -159,14 +163,14 @@ public class SubscriptionsListActivity extends ListActivity {
 						}
 					};
 					registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
-
+					
 					// Show a waiting dialog (that can be canceled)
 					progressDialog =
 						ProgressDialog.show(SubscriptionsListActivity.this,
 								"", getString(R.string.getting_show_details));
 					progressDialog.setCancelable(true);
 					progressDialog.show();
-
+					
 					// Start the service
 					Intent service = new Intent();
 					service.putExtra(RSSService.FEED, newFeed);
@@ -181,6 +185,7 @@ public class SubscriptionsListActivity extends ListActivity {
 				}
 			});
 			dialog = builder.create();
+			mDialog = dialog;
 			break;
 		default:
 			dialog = null;
