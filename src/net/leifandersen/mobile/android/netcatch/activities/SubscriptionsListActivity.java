@@ -40,8 +40,6 @@ import android.widget.Toast;
  */
 public class SubscriptionsListActivity extends ListActivity {
 
-	private Cursor mShows;
-
 	private static final int NEW_FEED = 1;
 
 	
@@ -199,19 +197,19 @@ public class SubscriptionsListActivity extends ListActivity {
 		setListAdapter(adapter);
 
 		// Get all of the shows
-		mShows = managedQuery(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
+		Cursor shows = managedQuery(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
 
 		// Populate the view
-		if(mShows.moveToFirst())
+		if(shows.moveToFirst())
 			do {
 				Show s = new Show();
-				s.setTitle(mShows.getString(mShows.getColumnIndex(ShowsProvider.TITLE)));
-				s.setAuthor(mShows.getString(mShows.getColumnIndex(ShowsProvider.AUTHOR)));
-				String imagePath = mShows.getString(mShows.getColumnIndex(ShowsProvider.IMAGE));
+				s.setTitle(shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)));
+				s.setAuthor(shows.getString(shows.getColumnIndex(ShowsProvider.AUTHOR)));
+				String imagePath = shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
 				if (imagePath != "")
 					s.setImage(Drawable.createFromPath(imagePath));
 				adapter.add(s);
-			} while (mShows.moveToNext());
+			} while (shows.moveToNext());
 	}
 
 }
