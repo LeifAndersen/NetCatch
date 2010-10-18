@@ -237,8 +237,8 @@ public class ShowsProvider extends ContentProvider {
 			if (rowId > 0) { //Added succesfully
 				Uri _uri = ContentUris.withAppendedId(SUBSCRIPCTIONS_CONTENT_URI, rowId);
 				getContext().getContentResolver().notifyChange(_uri, null);
-				createTable("[" + values.getAsString(TITLE).replace("]", CATCHBRAK) 
-						+ "]"); // Create the table.
+				db.execSQL(createTableString("[" + values.getAsString(TITLE).replace("]", CATCHBRAK) 
+						+ "]")); // Create the table.
 				return _uri;
 			}
 		} else {
@@ -258,8 +258,6 @@ public class ShowsProvider extends ContentProvider {
 						.getString(android.R.string.unknownName));
 			if (values.containsKey(DESCRIPTION) == false)
 				values.put(DESCRIPTION, "");
-			if (values.containsKey(IMAGE) == false)
-				values.put(IMAGE, "");
 			if (values.containsKey(MEDIA) == false)
 				values.put(MEDIA, "");
 			if (values.containsKey(DATE) == false)
@@ -398,13 +396,12 @@ public class ShowsProvider extends ContentProvider {
 		return false;
 	}
 
-	private String createTable(String tableName) {
+	private String createTableString(String tableName) {
 		return 	"CREATE TABLE IF NOT EXISTS " + tableName + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ DESCRIPTION + " TEXT," 
-		+ IMAGE + " TEXT,"
 		+ MEDIA + " TEXT, "
 		+ DATE + " TEXT, "
 		+ PLAYED + " BOOLEAN" + ");";

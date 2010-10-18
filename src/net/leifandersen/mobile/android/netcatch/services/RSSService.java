@@ -44,6 +44,7 @@ public class RSSService extends Service {
 	public static final String SHOW = "show";
 	public static final String RSSFINISH = "RSSFinish ";
 	public static final String RSSFAILED = "RSSFAILED ";
+	public static final String EPISODE_TITLES = "episode_titles";
 	private String feed;
 
 	@Override
@@ -103,11 +104,14 @@ public class RSSService extends Service {
 		showBundle.putSerializable(SHOW, show);
 
 		// Put the Episodes into a bundle
+		ArrayList<String> titles = new ArrayList<String>();
 		Bundle episodeBundle = new Bundle();
 		for (Episode episode : episodes) {
+			titles.add(episode.getTitle());
 			episodeBundle.putSerializable(episode.getTitle(), episode);
 		}
-
+		episodeBundle.putStringArrayList(EPISODE_TITLES, titles);
+		
 		// Broadcast the bundles back to the main app
 		Intent broadcast = new Intent(RSSFINISH + feed);
 		broadcast.putExtra(EPISODES, episodeBundle);

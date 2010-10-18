@@ -1,6 +1,9 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
+import java.util.ArrayList;
+
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
@@ -16,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -131,9 +135,10 @@ public class SubscriptionsListActivity extends ListActivity {
 						@Override
 						public void onReceive(Context context, Intent intent) {							
 							// Get the data
+							// Get the show
 							Bundle showBundle = intent.getBundleExtra(RSSService.SHOW);
 							Show show = (Show)showBundle.get(RSSService.SHOW);
-
+							
 							// Add the show
 							ContentValues values = new ContentValues();
 							values.put(ShowsProvider.TITLE, show.getTitle());
@@ -141,6 +146,24 @@ public class SubscriptionsListActivity extends ListActivity {
 							values.put(ShowsProvider.FEED, show.getFeed());
 							values.put(ShowsProvider.IMAGE, show.getImagePath());
 							getContentResolver().insert(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, values);
+							
+							// Get the episodes, add to database.
+							// TODO, clear the database, remember to keep
+							// episodes for isPlayed later.
+							Bundle episodeBundle = intent.getBundleExtra(RSSService.EPISODES);
+							ArrayList<String> titles = episodeBundle.getStringArrayList(RSSService.EPISODE_TITLES);
+							for (String title : titles) {
+								// TODO, check for isPlayed
+								
+								Episode episode = (Episode)episodeBundle.get(title);
+								values = new ContentValues();
+								values.put(ShowsProvider.TITLE, episode.getTitle());
+								values.put(ShowsProvider.AUTHOR, episode.getAuthor());
+								values.put(ShowsProvider.DATE, episode.getDate());
+								values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
+								getContentResolver().insert(Uri.parse("content://" + ShowsProvider.PROVIDER_NAME
+										+ "/"+ show.getTitle()), values);
+							}
 
 							progressDialog.cancel();
 
@@ -154,8 +177,8 @@ public class SubscriptionsListActivity extends ListActivity {
 					BroadcastReceiver failedReciever = new BroadcastReceiver() {
 						@Override
 						public void onReceive(Context context, Intent intent) {
-							Toast.makeText(SubscriptionsListActivity.this, "Failed to fetch feed", Toast.LENGTH_LONG);
 							progressDialog.cancel();
+							Toast.makeText(SubscriptionsListActivity.this, "Failed to fetch feed", Toast.LENGTH_LONG);
 						}
 					};
 					registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
