@@ -15,4 +15,5 @@
 <string name="default_title">Unkown Title</string>
 <string name="default_date">Unkown Date</string>
 <string name="default_comments">No Description</string>
+<string name="no_episodes">No episodes in feed...</string>
 </resources>
