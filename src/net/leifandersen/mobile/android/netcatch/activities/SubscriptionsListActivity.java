@@ -148,18 +148,16 @@ public class SubscriptionsListActivity extends ListActivity {
 							getContentResolver().insert(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, values);
 							
 							// Get the episodes, add to database.
-							// TODO, clear the database, remember to keep
-							// episodes for isPlayed later.
+							// Database doesn't need to be cleared, as it shouldn't have existed.
 							Bundle episodeBundle = intent.getBundleExtra(RSSService.EPISODES);
 							ArrayList<String> titles = episodeBundle.getStringArrayList(RSSService.EPISODE_TITLES);
-							for (String title : titles) {
-								// TODO, check for isPlayed
-								
+							for (String title : titles) {								
 								Episode episode = (Episode)episodeBundle.get(title);
 								values = new ContentValues();
 								values.put(ShowsProvider.TITLE, episode.getTitle());
 								values.put(ShowsProvider.AUTHOR, episode.getAuthor());
 								values.put(ShowsProvider.DATE, episode.getDate());
+								values.put(ShowsProvider.PLAYED, episode.isPlayed());
 								values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
 								getContentResolver().insert(Uri.parse("content://" + ShowsProvider.PROVIDER_NAME
 										+ "/"+ show.getTitle()), values);
