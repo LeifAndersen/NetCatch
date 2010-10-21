@@ -2,8 +2,12 @@ package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
+import net.leifandersen.mobile.android.netcatch.providers.Show;
+import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.ListActivity;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +15,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+/**
+ * 
+ * @author Leif Andersen
+ *
+ */
 public class EpisodesListActivity extends ListActivity {
 
+	public String SHOW_NAME;
+	
 	String mShowName;
 	
 	private class EpisodeAdapter extends ArrayAdapter<Episode> {
@@ -52,8 +63,13 @@ public class EpisodesListActivity extends ListActivity {
 		setContentView(R.layout.episodes_list);
 
 		// Get the show name
-		mShowName = ""; // TODOo
-		
+		// If no show was passed in, the activity was called poorly, abort.
+		Bundle b = getIntent().getExtras();
+		if (b != null) {
+			mShowName = b.getString(SHOW_NAME);
+		} else
+			finish();
+			
 		// Set the List Adapter
 		refreshList();
 	}
@@ -62,8 +78,21 @@ public class EpisodesListActivity extends ListActivity {
 		mAdapter = new EpisodeAdapter(this);
 		setListAdapter(mAdapter);
 		
-		// TODO Add the elements
-		
+		// Get a list of all of the elements.
+		// TODO, make sure to get it in the write order!
+		// Add the list to the adapter
+		Cursor c = managedQuery(Uri.parse("content://" + ShowsProvider.PROVIDER_NAME + "/" + mShowName),
+				null, null, null, null);
+		if (c.moveToFirst()) {
+			do {
+				Episode ep = new Episode(c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
+						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
+						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
+						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
+						c.getString(c.getColumnIndex(ShowsProvider.DATE)),
+						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool
+				mAdapter.add(ep);
+			} while (c.moveToNext());
+		}		
 	}
-	
 }
