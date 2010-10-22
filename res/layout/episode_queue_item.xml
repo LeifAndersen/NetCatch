@@ -41,11 +41,11 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
 		android:layout_centerVertical="true"
-		android:background="@drawable/icon" />
+		android:background="@drawable/down_button" />
 	<Button android:id="@+id/eqi_move_up"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
 		android:layout_toLeftOf="@id/eqi_move_down"
-		android:background="@drawable/icon" />
+		android:background="@drawable/up_button" />
 </RelativeLayout>
