@@ -18,9 +18,10 @@
 		<provider android:name=".providers.ShowsProvider"
 			android:authorities="net.leifandersen.provider.Shows"></provider>
 		<service android:name=".services.RSSService"></service>
-	
-<activity android:name=".activities.EpisodesListActivity"></activity>
-</application>
+
+		<activity android:name=".activities.EpisodesListActivity"
+			android:theme="@android:style/Theme.NoTitleBar"></activity>
+	</application>
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>

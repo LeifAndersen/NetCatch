@@ -16,4 +16,5 @@
 <string name="default_date">Unkown Date</string>
 <string name="default_comments">No Description</string>
 <string name="no_episodes">No episodes in feed...</string>
+<string name="nothing_in_queue">Nothing in queue...</string>
 </resources>

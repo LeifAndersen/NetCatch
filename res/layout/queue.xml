@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<RelativeLayout android:id = "@+id/qu_titleBar"
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content"
+		android:background = "@drawable/icon" >
+	</RelativeLayout>
+	<ListView android:id="@+id/android:list"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_below="@id/qu_titleBar" />
+	<TextView android:id="@+id/android:empty"
+		android:layout_width = "wrap_content"
+		android:layout_height = "wrap_content"
+		android:text = "@string/nothing_in_queue"
+		android:textSize = "16px"
+		android:layout_centerHorizontal = "true"
+		android:layout_centerVertical = "true" />
+</RelativeLayout>

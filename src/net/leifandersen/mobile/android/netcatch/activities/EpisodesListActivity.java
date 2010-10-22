@@ -2,7 +2,6 @@ package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
-import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.ListActivity;
 import android.content.Context;
