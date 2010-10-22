@@ -7,12 +7,18 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true"
 		android:padding="5px"
+		android:maxHeight="50px"
+		android:minHeight="50px"
+		android:maxWidth="50px"
+		android:minWidth="50px"
+		android:focusable="false"
 		android:src="@drawable/default_image" />
 	<TextView android:id="@+id/sc_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_toRightOf="@id/sc_picture"
 		android:layout_margin="2px"
+		android:focusable="false"
 		android:text="Title"
 		android:textSize="20px"
 		android:textStyle="bold" />
@@ -22,6 +28,7 @@
 		android:layout_below="@id/sc_title"
 		android:layout_toRightOf="@id/sc_picture"
 		android:layout_margin="2px"
+		android:focusable="false"
 		android:text="Author"
 		android:textSize="15px" />
 </RelativeLayout>

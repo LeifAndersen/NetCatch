@@ -31,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,9 +82,8 @@ public class SubscriptionsListActivity extends ListActivity {
 			if (d != null)
 				image.setImageDrawable(d);
 			registerForContextMenu(row);
-
-			row.setOnClickListener(new OnClickListener() {
-				
+			
+			row.setOnClickListener(new OnClickListener() {	
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent();
@@ -93,7 +93,6 @@ public class SubscriptionsListActivity extends ListActivity {
 					startActivity(i);
 				}
 			});
-			
 			return row;
 		}
 	}
@@ -126,6 +125,16 @@ public class SubscriptionsListActivity extends ListActivity {
 		return false;
 	}
 
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		Intent i = new Intent();
+		i.setClass(SubscriptionsListActivity.this, EpisodesListActivity.class);
+		i.putExtra(EpisodesListActivity.SHOW_NAME, 
+				((TextView)v.findViewById(R.id.sc_title)).getText());
+		startActivity(i);
+	}
+	
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;

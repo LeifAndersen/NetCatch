@@ -37,13 +37,13 @@ public class EpisodesListActivity extends ListActivity {
 			LayoutInflater inflater = getLayoutInflater();
 			View row;
 			if(convertView == null)
-				row = inflater.inflate(R.layout.episode, null);
+				row = inflater.inflate(R.layout.episode_list_item, null);
 			else
 				row = convertView;
 			
-			TextView title = (TextView)row.findViewById(R.id.ep_title);
-			TextView description = (TextView)row.findViewById(R.id.ep_description);
-			TextView date = (TextView)row.findViewById(R.id.ep_release_date);
+			TextView title = (TextView)row.findViewById(R.id.eli_title);
+			TextView description = (TextView)row.findViewById(R.id.eli_description);
+			TextView date = (TextView)row.findViewById(R.id.eli_release_date);
 			Episode episode = getItem(position);
 			title.setText(episode.getTitle());
 			description.setText(episode.getDescription());

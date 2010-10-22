@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content" >
+	<TextView android:id="@+id/eli_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="1px"
+		android:focusable="false"
+		android:text="Title"
+		android:textSize="20px"
+		android:textStyle="bold" />
+	<TextView android:id="@+id/eli_description"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/eli_title"
+		android:layout_margin="1px"
+		android:focusable="false"
+		android:text="Description"
+		android:textSize="13px" />
+	<TextView android:id="@+id/eli_release_date"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/eli_description"
+		android:focusable="false"
+		android:text="Release date"
+		android:textSize="8px" />
+</RelativeLayout>
