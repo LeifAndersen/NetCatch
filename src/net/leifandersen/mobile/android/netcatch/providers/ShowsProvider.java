@@ -2,7 +2,6 @@ package net.leifandersen.mobile.android.netcatch.providers;
 
 import java.util.List;
 
-import android.R;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -167,7 +166,7 @@ public class ShowsProvider extends ContentProvider {
 					|| (episode_request.size() == 2 && !TextUtils.isDigitsOnly(episode_request.get(1))))
 				// It's a bad request
 				throw new IllegalArgumentException("Unkown URI " + uri);
-			qb.setTables("[" + episode_request.get(0).replace("]", CATCHBRAK));
+			qb.setTables('[' + episode_request.get(0).replace("]", CATCHBRAK) + ']');
 			if(episode_request.size() == 2)
 				qb.appendWhere(_ID + "=" + episode_request.get(1));
 		}
@@ -384,8 +383,10 @@ public class ShowsProvider extends ContentProvider {
 	}
 
 	private boolean isInSubcriptions(String showTitle) {
+		return true;
+		// TODO, get the actual return statement to work
 		// Get all of the shows subscribed to
-		Cursor c = query(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
+		/*Cursor c = query(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
 
 		// Run through everything in the subscriptions, and return true if it's there.
 		if (c.moveToFirst())
@@ -393,7 +394,7 @@ public class ShowsProvider extends ContentProvider {
 				if (c.getString(c.getColumnIndex(TITLE)).equals(showTitle))
 					return true;
 			} while (c.moveToNext());
-		return false;
+		return false;*/
 	}
 
 	private String createTableString(String tableName) {

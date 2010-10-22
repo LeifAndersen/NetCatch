@@ -22,7 +22,7 @@ import android.widget.TextView;
  */
 public class EpisodesListActivity extends ListActivity {
 
-	public String SHOW_NAME;
+	public static String SHOW_NAME;
 	
 	String mShowName;
 	

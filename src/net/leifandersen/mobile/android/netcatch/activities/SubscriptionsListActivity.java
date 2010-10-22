@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,6 +53,10 @@ public class SubscriptionsListActivity extends ListActivity {
 	private EditText mEditFeed;
 	
 	private class ShowAdapter extends ArrayAdapter<Show> {
+		
+		// Only member variables for access within internal methods.
+		private String mTitle;
+		
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
 		}
@@ -77,6 +82,18 @@ public class SubscriptionsListActivity extends ListActivity {
 				image.setImageDrawable(d);
 			registerForContextMenu(row);
 
+			row.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent();
+					i.setClass(SubscriptionsListActivity.this, EpisodesListActivity.class);
+					i.putExtra(EpisodesListActivity.SHOW_NAME, 
+							((TextView)v.findViewById(R.id.sc_title)).getText());
+					startActivity(i);
+				}
+			});
+			
 			return row;
 		}
 	}
