@@ -2,12 +2,16 @@ package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
+import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.ListActivity;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 public class QueueListActivity extends ListActivity {
 
@@ -19,27 +23,59 @@ public class QueueListActivity extends ListActivity {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			return super.getView(position, convertView, parent);
+			// TODO, fill out the image too.
+			LayoutInflater inflater = getLayoutInflater();
+			View row;
+			if(convertView == null)
+				row = inflater.inflate(R.layout.episode_queue_item, null);
+			else
+				row = convertView;
+			
+			TextView title = (TextView)row.findViewById(R.id.eqi_title);
+			TextView description = (TextView)row.findViewById(R.id.eqi_description);
+			TextView date = (TextView)row.findViewById(R.id.eqi_release_date);
+			Episode episode = getItem(position);
+			title.setText(episode.getTitle());
+			description.setText(episode.getDescription());
+			date.setText(episode.getDate());
+			
+			registerForContextMenu(row);
+			return row;
 		}
 	}
 	
-	private QueueAdapter mQueueAdapter;
+	private QueueAdapter mAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.queue);
 		
-		// Set the adapter
-		mQueueAdapter = new QueueAdapter(this);
-		setListAdapter(mQueueAdapter);
-		
 		// Refresh the list
 		refreshList();
 	}
 	
 	private void refreshList() {
-		
+		// Reset the view, 
+		mAdapter = new QueueAdapter(this);
+		setListAdapter(mAdapter);
+
+		// Get a list of all of the elements.
+		// TODO, make sure to get it in the write order!
+		// Add the list to the adapter
+		// TODO Also get image
+		Cursor c = managedQuery(ShowsProvider.QUEUE_CONTENT_URI,
+				null, null, null, null);
+		if (c.moveToFirst()) {
+			do {
+				Episode ep = new Episode(c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
+						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
+						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
+						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
+						c.getString(c.getColumnIndex(ShowsProvider.DATE)),
+						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool
+				mAdapter.add(ep);
+			} while (c.moveToNext());
+		}	
 	}
 }

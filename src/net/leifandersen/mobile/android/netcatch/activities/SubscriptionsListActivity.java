@@ -56,15 +56,13 @@ public class SubscriptionsListActivity extends ListActivity {
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		
 		// Only member variables for access within internal methods.
-		private String mTitle;
 		
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
 		}
 
 		@Override
-		public View getView(int position, View convertView,
-				ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 			LayoutInflater inflater = getLayoutInflater();
 			View row;
 			if(convertView == null)
@@ -97,7 +95,7 @@ public class SubscriptionsListActivity extends ListActivity {
 		}
 	}
 
-	ShowAdapter adapter;
+	ShowAdapter mAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -237,8 +235,8 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	private void refreshList() {
 		// Reset the view, 
-		adapter = new ShowAdapter(this);
-		setListAdapter(adapter);
+		mAdapter = new ShowAdapter(this);
+		setListAdapter(mAdapter);
 
 		// Get all of the shows
 		Cursor shows = managedQuery(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
@@ -252,7 +250,7 @@ public class SubscriptionsListActivity extends ListActivity {
 				String imagePath = shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
 				if (imagePath != "")
 					s.setImage(Drawable.createFromPath(imagePath));
-				adapter.add(s);
+				mAdapter.add(s);
 			} while (shows.moveToNext());
 	}
 

@@ -31,8 +31,7 @@ public class EpisodesListActivity extends ListActivity {
 		}
 
 		@Override
-		public View getView(int position, View convertView,
-				ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 			LayoutInflater inflater = getLayoutInflater();
 			View row;
 			if(convertView == null)

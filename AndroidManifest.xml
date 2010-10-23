@@ -21,6 +21,8 @@
 
 		<activity android:name=".activities.EpisodesListActivity"
 			android:theme="@android:style/Theme.NoTitleBar"></activity>
+		<activity android:name=".activities.QueueListActivity"
+			android:theme="@android:style/Theme.NoTitleBar"></activity>
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
