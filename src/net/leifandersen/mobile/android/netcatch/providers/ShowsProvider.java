@@ -37,6 +37,18 @@ public class ShowsProvider extends ContentProvider {
 	public static final Uri SUBSCRIPCTIONS_CONTENT_URI = 
 		Uri.parse("content://" + PROVIDER_NAME + "/subscriptions");
 
+	/**
+	 * The queue URI
+	 */
+	public static final Uri QUEUE_CONTENT_URI = 
+		Uri.parse("content://" + PROVIDER_NAME + "/queue");
+	
+	/**
+	 * New episodes URI
+	 */
+	public static final Uri NEW_EPISODES_CONTENT_URI =
+		Uri.parse("content://" + PROVIDER_NAME + "/new");
+	
 	private static final String PROVIDER_TYPE =
 		"vnd.leifandersen.provider.shows ";
 
@@ -89,25 +101,72 @@ public class ShowsProvider extends ContentProvider {
 	 */
 	public static final String PLAYED = "played";
 	
+	// For the queue
+	/**
+	 * Show the episode is from
+	 */
+	public static final String SHOW_TITLE = "show_title";
+	
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "Shows";
 	private static final String SUBSCRIPTIONS_TABLE_NAME = "subscriptions";
+	private static final String QUEUE_TABLE_NAME = "queue";
+	private static final String NEW_EPISODES_TABLE_NAME = "newepisodes";
 	private static final String DATABASE_CREATE = 
+		// Subscriptions table
 		"CREATE TABLE " + SUBSCRIPTIONS_TABLE_NAME + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ FEED + " TEXT,"
 		+ DESCRIPTION + " TEXT,"
-		+ IMAGE + " TEXT" + ");";
+		+ IMAGE + " TEXT" + ");"
+		// Queue Table
+		+ "CREATE TABLE " + QUEUE_TABLE_NAME + " ("
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ TITLE + " TEXT,"
+		+ SHOW_TITLE + " TEXT,"
+		+ IMAGE + " TEXT,"
+		+ AUTHOR + " TEXT,"
+		+ DESCRIPTION + " TEXT," 
+		+ MEDIA + " TEXT, "
+		+ DATE + " TEXT, "
+		+ PLAYED + " BOOLEAN" + ");"
+		// New Episodes Table
+		+ "CREATE TABLE " + NEW_EPISODES_TABLE_NAME + " ("
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ TITLE + " TEXT,"
+		+ SHOW_TITLE + " TEXT,"
+		+ IMAGE + " TEXT,"
+		+ AUTHOR + " TEXT,"
+		+ DESCRIPTION + " TEXT," 
+		+ MEDIA + " TEXT, "
+		+ DATE + " TEXT, "
+		+ PLAYED + " BOOLEAN" + ");";
 
+	private static String createTableString(String tableName) {
+		return 	"CREATE TABLE IF NOT EXISTS " + tableName + " ("
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ TITLE + " TEXT,"
+		+ AUTHOR + " TEXT,"
+		+ DESCRIPTION + " TEXT," 
+		+ MEDIA + " TEXT, "
+		+ DATE + " TEXT, "
+		+ PLAYED + " BOOLEAN" + ");";
+	}
+	
 	private static final String SHOW = "show";
 	private static final String EPISODE = "episode";
+	private static final String SPECIAL_EPISODE = "specialepisode";
 	private static final String EMPTY_DATE = "";
 	
 	private static final int SUBSCRIPTIONS = 1;
 	private static final int SUBSCRIPTION_ID = 2;
-
+	private static final int QUEUE = 3;
+	private static final int QUEUE_ID = 4;
+	private static final int NEW_EPISODES = 5;
+	private static final int NEW_EPISODE_ID = 6;
+	
 	// To replace ] in a name, as SQLite doesn't like it.
 	private static final String CATCHBRAK = "~CatchBrak";
 
@@ -116,6 +175,10 @@ public class ShowsProvider extends ContentProvider {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(PROVIDER_NAME, "subscriptions", SUBSCRIPTIONS);
 		uriMatcher.addURI(PROVIDER_NAME, "subscriptions/#", SUBSCRIPTION_ID);
+		uriMatcher.addURI(PROVIDER_NAME, "queue", QUEUE);
+		uriMatcher.addURI(PROVIDER_NAME, "queue/#", QUEUE_ID);
+		uriMatcher.addURI(PROVIDER_NAME, "new", NEW_EPISODES);
+		uriMatcher.addURI(PROVIDER_NAME, "new/#", NEW_EPISODE_ID);
 	}
 
 	private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -159,6 +222,20 @@ public class ShowsProvider extends ContentProvider {
 			qb.setTables(SUBSCRIPTIONS_TABLE_NAME);
 			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
 			break;
+		case QUEUE:
+			qb.setTables(QUEUE_TABLE_NAME);
+			break;
+		case QUEUE_ID:
+			qb.setTables(QUEUE_TABLE_NAME);
+			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
+			break;
+		case NEW_EPISODES:
+			qb.setTables(NEW_EPISODES_TABLE_NAME);
+			break;
+		case NEW_EPISODE_ID:
+			qb.setTables(NEW_EPISODES_TABLE_NAME);
+			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
+			break;
 		default:  // It's either an episode, or a bad request.
 			List<String> episode_request = uri.getPathSegments();
 			if (episode_request.size() < 1 || episode_request.size() > 2
@@ -188,9 +265,13 @@ public class ShowsProvider extends ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		switch (uriMatcher.match(uri)) {
-		case SUBSCRIPTIONS: // Get all subscriptions
+		case SUBSCRIPTIONS:
+		case QUEUE:
+		case NEW_EPISODES:
 			return "vnd.android.cursor.dir/" + PROVIDER_TYPE;
 		case SUBSCRIPTION_ID:
+		case QUEUE_ID:
+		case NEW_EPISODE_ID:
 			return "vnd.android.cursor.item/" + PROVIDER_TYPE;
 		default:
 			List<String> episode_request = uri.getPathSegments();
@@ -214,8 +295,11 @@ public class ShowsProvider extends ContentProvider {
 		if (values == null)
 			values = new ContentValues();
 
+		long rowId;
+		
 		// Validate the URI passed in
-		if (uriMatcher.match(uri) == SUBSCRIPTIONS) {
+		switch (uriMatcher.match(uri)) {
+		case SUBSCRIPTIONS:
 			// Fill in empty values
 			if (values.containsKey(TITLE) == false)
 				values.put(TITLE, Resources.getSystem()
@@ -232,7 +316,7 @@ public class ShowsProvider extends ContentProvider {
 				values.put(IMAGE, "");
 
 			// Insert the item
-			long rowId = db.insert(SUBSCRIPTIONS_TABLE_NAME, SHOW, values);
+			rowId = db.insert(SUBSCRIPTIONS_TABLE_NAME, SHOW, values);
 			if (rowId > 0) { //Added succesfully
 				Uri _uri = ContentUris.withAppendedId(SUBSCRIPCTIONS_CONTENT_URI, rowId);
 				getContext().getContentResolver().notifyChange(_uri, null);
@@ -240,7 +324,65 @@ public class ShowsProvider extends ContentProvider {
 						+ "]")); // Create the table.
 				return _uri;
 			}
-		} else {
+		case QUEUE:
+			// Fill in empty values
+			if (values.containsKey(TITLE) == false)
+				values.put(TITLE, Resources.getSystem()
+						.getString(android.R.string.untitled));
+			if (values.containsKey(AUTHOR) == false)
+				values.put(AUTHOR, Resources.getSystem()
+						.getString(android.R.string.unknownName));
+			if (values.containsKey(DESCRIPTION) == false)
+				values.put(DESCRIPTION, "");
+			if (values.containsKey(MEDIA) == false)
+				values.put(MEDIA, "");
+			if (values.containsKey(DATE) == false)
+				values.put(DATE, EMPTY_DATE);
+			if (values.containsKey(PLAYED) == false)
+				values.put(PLAYED, false);
+			if (values.containsKey(IMAGE) == false)
+				values.put(IMAGE, "");
+			if (values.containsKey(SHOW_TITLE) == false)
+				values.put(SHOW_TITLE, "");
+			
+			// Insert the item
+			rowId = db.insert(QUEUE_TABLE_NAME, SPECIAL_EPISODE, values);
+			if (rowId > 0) { //Added succesfully
+				Uri _uri = ContentUris.withAppendedId(uri, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+				return _uri;
+			}
+			
+		case NEW_EPISODES:
+			// Fill in empty values
+			if (values.containsKey(TITLE) == false)
+				values.put(TITLE, Resources.getSystem()
+						.getString(android.R.string.untitled));
+			if (values.containsKey(AUTHOR) == false)
+				values.put(AUTHOR, Resources.getSystem()
+						.getString(android.R.string.unknownName));
+			if (values.containsKey(DESCRIPTION) == false)
+				values.put(DESCRIPTION, "");
+			if (values.containsKey(MEDIA) == false)
+				values.put(MEDIA, "");
+			if (values.containsKey(DATE) == false)
+				values.put(DATE, EMPTY_DATE);
+			if (values.containsKey(PLAYED) == false)
+				values.put(PLAYED, false);
+			if (values.containsKey(IMAGE) == false)
+				values.put(IMAGE, "");
+			if (values.containsKey(SHOW_TITLE) == false)
+				values.put(SHOW_TITLE, "");
+			
+			// Insert the item
+			rowId = db.insert(NEW_EPISODES_TABLE_NAME, SPECIAL_EPISODE, values);
+			if (rowId > 0) { //Added succesfully
+				Uri _uri = ContentUris.withAppendedId(uri, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+				return _uri;
+			}
+			
+		default:
 			List<String> episode_request = uri.getPathSegments();
 			if (episode_request.size() != 1 || !isInSubcriptions(episode_request.get(0)))
 				throw new IllegalArgumentException("Unkown URI " + uri);
@@ -265,7 +407,7 @@ public class ShowsProvider extends ContentProvider {
 				values.put(PLAYED, false);
 
 			// Insert the item
-			long rowId = db.insert(tableName, EPISODE, values);
+			rowId = db.insert(tableName, EPISODE, values);
 			if (rowId > 0) { //Added succesfully
 				Uri _uri = ContentUris.withAppendedId(uri, rowId);
 				getContext().getContentResolver().notifyChange(_uri, null);
@@ -298,6 +440,7 @@ public class ShowsProvider extends ContentProvider {
 						db.execSQL("ALTER TABLE " + "[" + oldTitle.replace("]", CATCHBRAK) + "]"
 								+ " rename to " + "[" + newTitle.replace("]", CATCHBRAK) + "]");
 				} while (c.moveToNext());
+			
 			// Update the subscriptions
 			count = db.update(SUBSCRIPTIONS_TABLE_NAME, values, selection, selectionArgs);
 			break;
@@ -313,6 +456,24 @@ public class ShowsProvider extends ContentProvider {
 			
 			// Update the subscriptions
 			count = db.update(SUBSCRIPTIONS_TABLE_NAME, values, _ID + "=" +
+					uri.getPathSegments().get(1) +
+					(!TextUtils.isDigitsOnly(selection) 
+							? " And (" + selection + ')' : ""), selectionArgs);
+			break;
+		case QUEUE:
+			count = db.update(QUEUE_TABLE_NAME, values, selection, selectionArgs);
+			break;
+		case QUEUE_ID:
+			count = db.update(QUEUE_TABLE_NAME, values, _ID + "=" +
+					uri.getPathSegments().get(1) +
+					(!TextUtils.isDigitsOnly(selection) 
+							? " And (" + selection + ')' : ""), selectionArgs);
+			break;
+		case NEW_EPISODES:
+			count = db.update(NEW_EPISODES_TABLE_NAME, values, selection, selectionArgs);
+			break;
+		case NEW_EPISODE_ID:
+			count = db.update(NEW_EPISODES_TABLE_NAME, values, _ID + "=" +
 					uri.getPathSegments().get(1) +
 					(!TextUtils.isDigitsOnly(selection) 
 							? " And (" + selection + ')' : ""), selectionArgs);
@@ -364,6 +525,24 @@ public class ShowsProvider extends ContentProvider {
 					+ (!TextUtils.isEmpty((selection))
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
+		case QUEUE:
+			count = db.delete(QUEUE_TABLE_NAME, selection, selectionArgs);
+			break;
+		case QUEUE_ID:
+			count = db.delete(QUEUE_TABLE_NAME, _ID + "=" 
+					+ uri.getPathSegments().get(1)
+					+ (!TextUtils.isEmpty((selection))
+							? " AND (" + selection + ')' : ""), selectionArgs);
+			break;
+		case NEW_EPISODES:
+			count = db.delete(NEW_EPISODES_TABLE_NAME, selection, selectionArgs);
+			break;
+		case NEW_EPISODE_ID:
+			count = db.delete(NEW_EPISODES_TABLE_NAME, _ID + "=" 
+					+ uri.getPathSegments().get(1)
+					+ (!TextUtils.isEmpty((selection))
+							? " AND (" + selection + ')' : ""), selectionArgs);
+			break;
 		default:
 			List<String> episode_request = uri.getPathSegments();
 			if (episode_request.size() != 2 || !isInSubcriptions(episode_request.get(0))
@@ -395,16 +574,5 @@ public class ShowsProvider extends ContentProvider {
 					return true;
 			} while (c.moveToNext());
 		return false;*/
-	}
-
-	private String createTableString(String tableName) {
-		return 	"CREATE TABLE IF NOT EXISTS " + tableName + " ("
-		+ _ID + " INTEGER PRIMARY KEY,"
-		+ TITLE + " TEXT,"
-		+ AUTHOR + " TEXT,"
-		+ DESCRIPTION + " TEXT," 
-		+ MEDIA + " TEXT, "
-		+ DATE + " TEXT, "
-		+ PLAYED + " BOOLEAN" + ");";
 	}
 }
