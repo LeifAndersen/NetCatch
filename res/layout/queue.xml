@@ -18,4 +18,8 @@
 		android:textSize = "16px"
 		android:layout_centerHorizontal = "true"
 		android:layout_centerVertical = "true" />
+	<ViewStub android:id="@+id/sl_player"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true" />
 </RelativeLayout>
