@@ -18,8 +18,16 @@
 		android:textSize = "16px"
 		android:layout_centerHorizontal = "true"
 		android:layout_centerVertical = "true" />
-	<ViewStub android:id="@+id/sl_player"
+	<ViewStub android:id="@+id/qu_small_player"
+		android:inflatedId="@+id/qu_small_import"
+		android:layout="@layout/media_controls_light"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true" />
+		android:layout_gravity="bottom" />
+	<ViewStub android:id="@+id/qu_player"
+		android:inflatedId="@+id/qu_import"
+		android:layout="@layout/media_controls"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom" />
 </RelativeLayout>
