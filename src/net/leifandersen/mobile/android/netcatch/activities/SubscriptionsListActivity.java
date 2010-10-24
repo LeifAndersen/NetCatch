@@ -53,35 +53,46 @@ public class SubscriptionsListActivity extends ListActivity {
 	private String newFeed;
 	private EditText mEditFeed;
 	
+	private static class ViewHolder {
+		TextView title;
+		TextView author;
+		ImageView image;
+	}
+	
 	private class ShowAdapter extends ArrayAdapter<Show> {
 		
-		// Only member variables for access within internal methods.
+		LayoutInflater mInflater;
+		
+
 		
 		public ShowAdapter(Context context) {
 			super(context, R.layout.subscriptions_list);
+			mInflater = getLayoutInflater();
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = getLayoutInflater();
-			View row;
-			if(convertView == null)
-				row = inflater.inflate(R.layout.subscription, null);
+			ViewHolder holder;
+			if(convertView == null) {
+				convertView = mInflater.inflate(R.layout.subscription, null);
+				holder = new ViewHolder();
+				holder.title = (TextView)convertView.findViewById(R.id.sc_title);
+				holder.author = (TextView)convertView.findViewById(R.id.sc_author);
+				holder.image = (ImageView)convertView.findViewById(R.id.sc_picture);
+				convertView.setTag(holder);
+			}
 			else
-				row = convertView;
-
-			TextView title = (TextView)row.findViewById(R.id.sc_title);
-			TextView author = (TextView)row.findViewById(R.id.sc_author);
-			ImageView image = (ImageView)row.findViewById(R.id.sc_picture);
+				holder = (ViewHolder)convertView.getTag();
+			
 			Show subscription = getItem(position);
-			title.setText(subscription.getTitle());
-			author.setText(subscription.getAuthor());
+			holder.title.setText(subscription.getTitle());
+			holder.author.setText(subscription.getAuthor());
 			Drawable d = subscription.getImage();
 			if (d != null)
-				image.setImageDrawable(d);
-			registerForContextMenu(row);
+				holder.image.setImageDrawable(d);
+			registerForContextMenu(convertView);
 			
-			row.setOnClickListener(new OnClickListener() {	
+			convertView.setOnClickListener(new OnClickListener() {	
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent();
@@ -91,14 +102,14 @@ public class SubscriptionsListActivity extends ListActivity {
 					startActivity(i);
 				}
 			});
-			return row;
+			return convertView;
 		}
 	}
 
 	ShowAdapter mAdapter;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.subscriptions_list);
 

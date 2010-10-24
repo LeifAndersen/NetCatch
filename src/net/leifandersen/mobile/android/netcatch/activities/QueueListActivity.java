@@ -15,32 +15,43 @@ import android.widget.TextView;
 
 public class QueueListActivity extends ListActivity {
 
+	private static class ViewHolder {
+		TextView title;
+		TextView description;
+		TextView date;
+	}
+	
 	private class QueueAdapter extends ArrayAdapter<Episode> {
+		
+		LayoutInflater mInflater;
 		
 		public QueueAdapter(Context context) {
 			super(context, R.layout.episode_queue_item);
+			mInflater = getLayoutInflater();
 		}
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO, fill out the image too.
-			LayoutInflater inflater = getLayoutInflater();
-			View row;
-			if(convertView == null)
-				row = inflater.inflate(R.layout.episode_queue_item, null);
+			ViewHolder holder;
+			if(convertView == null) {
+				convertView = mInflater.inflate(R.layout.episode_queue_item, null);
+				holder = new ViewHolder();
+				holder.title = (TextView)convertView.findViewById(R.id.eqi_title);
+				holder.description = (TextView)convertView.findViewById(R.id.eqi_description);
+				holder.date = (TextView)convertView.findViewById(R.id.eqi_release_date);
+				convertView.setTag(holder);
+			}
 			else
-				row = convertView;
+				holder = (ViewHolder)convertView.getTag();
 			
-			TextView title = (TextView)row.findViewById(R.id.eqi_title);
-			TextView description = (TextView)row.findViewById(R.id.eqi_description);
-			TextView date = (TextView)row.findViewById(R.id.eqi_release_date);
 			Episode episode = getItem(position);
-			title.setText(episode.getTitle());
-			description.setText(episode.getDescription());
-			date.setText(episode.getDate());
+			holder.title.setText(episode.getTitle());
+			holder.description.setText(episode.getDescription());
+			holder.date.setText(episode.getDate());
 			
-			registerForContextMenu(row);
-			return row;
+			registerForContextMenu(convertView);
+			return convertView;
 		}
 	}
 	
