@@ -23,11 +23,13 @@
 		android:layout="@layout/media_controls_light"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
 		android:layout_gravity="bottom" />
 	<ViewStub android:id="@+id/sl_player_stub"
 		android:inflatedId="@+id/sl_player"
 		android:layout="@layout/media_controls"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
 		android:layout_gravity="bottom" />
 </RelativeLayout>

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -21,7 +22,8 @@ import android.widget.TextView;
  */
 public class EpisodesListActivity extends ListActivity {
 
-	public static String SHOW_NAME;
+	private View mPlayer;
+	static String SHOW_NAME;
 	
 	String mShowName;
 	
@@ -82,6 +84,9 @@ public class EpisodesListActivity extends ListActivity {
 			
 		// Set the List Adapter
 		refreshList();
+		
+		// Start the widget
+		mPlayer = ((ViewStub)findViewById(R.id.el_small_player_stub)).inflate();
 	}
 
 	private void refreshList() {
