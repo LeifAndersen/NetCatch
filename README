@@ -1,1 +1,19 @@
-Feel free to jump in now if you want, although I haven't made any documentation yet, and the code isn't really all there yet.
+Netcatch is a codeword for a podcatcher I've been working on for a few weeks now, it is written for Android and I'm mainly using a Droid X as my testing unit.
+
+Thank you for checking out this project.  It's still very much pre-alpha software, as in it's not functional yet, but I would appreciate any help you are willing to give.
+
+Currently this software can:
+* Subscribe to feeds
+* Download content from that feed, and parse the XML
+* Display the information in a list (although the pictures won't show up).
+* Show you a queue of episodes.
+* Have a Pseudo mediaplayer gui that's no where's near completion.
+
+Some of the things planned before the first market release (although this may change).
+* Finished up the gui
+* Actually play the episode, or let the user choose another mediaplayer they have on their phone.
+* Google Listen Integration
+* A directory of good podcasts
+* Easieer subscribing
+* Actually listening to when the user goes to feed, and catch that broadcast.
+* Be awesome
