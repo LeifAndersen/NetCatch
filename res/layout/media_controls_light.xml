@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content">
+	<ImageButton android:id="@+id/mcl_play"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="50px" android:maxHeight="50px"
+		android:minWidth="50px" android:minHeight="50px" />
+	<ImageButton android:id="@+id/mcl_controls"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/mcl_play"
+		android:maxWidth="50px" android:maxHeight="50px"
+		android:minWidth="50px" android:minHeight="50px" />
+	<TextView android:id="@+id/mcl_info"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/mcl_controls" />
+</RelativeLayout>

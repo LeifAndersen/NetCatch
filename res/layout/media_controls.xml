@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<Chronometer android:id="@+id/ml_chronometer_1" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+	<SeekBar android:id="@+id/ml_seek"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/ml_chronometer_1" android:progress="0"/>
+	<Chronometer android:id="@+id/ml_chronometer_2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/ml_seek" />
+	<ImageButton android:id="@+id/ml_rewind"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ml_seek"
+		android:minHeight="75px" android:minWidth="75px"
+		android:maxWidth="75px" android:maxHeight="75px" />
+	<ImageButton android:id="@+id/ml_prev"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ml_rewind"
+		android:maxHeight="75px" android:maxWidth="75px"
+		android:minHeight="75px" android:minWidth="75px" />
+	<ImageButton android:id="@+id/ml_play"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_below="@id/ml_seek"
+		android:layout_toRightOf="@id/ml_rewind"
+		android:minWidth="150px" android:minHeight="150px"
+		android:maxHeight="150px" android:maxWidth="150px" />
+	<ImageButton android:id="@+id/ml_fast_forward"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/ml_play"
+		android:layout_below="@id/ml_seek"
+		android:minHeight="75px" android:maxWidth="75px"
+		android:maxHeight="75px" android:minWidth="75px" />
+	<ImageButton android:id="@+id/ml_next"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/ml_play"
+		android:layout_below="@id/ml_fast_forward"
+		android:minHeight="75px" android:minWidth="75px"
+		android:maxHeight="75px" android:maxWidth="75px" />
+</RelativeLayout>
