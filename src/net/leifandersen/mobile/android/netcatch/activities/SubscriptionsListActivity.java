@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -46,7 +47,8 @@ import android.widget.Toast;
 public class SubscriptionsListActivity extends ListActivity {
 
 	private static final int NEW_FEED = 1;
-
+	
+	private View mPlayer;
 	
 	// Only member variables for access within internal methods.
 	private ProgressDialog progressDialog;
@@ -115,6 +117,9 @@ public class SubscriptionsListActivity extends ListActivity {
 
 		// Set up the list
 		refreshList();
+		
+		// Start the widget
+		mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
 	}
 
 	@Override
