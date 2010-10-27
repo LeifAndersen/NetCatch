@@ -13,34 +13,34 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_toRightOf="@id/ml_seek" />
-	<ImageButton android:id="@+id/ml_rewind"
+	<ImageButton android:id="@+id/ml_rewind_bak"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/ml_seek"
 		android:minHeight="75px" android:minWidth="75px"
 		android:maxWidth="75px" android:maxHeight="75px" />
-	<ImageButton android:id="@+id/ml_prev"
+	<ImageButton android:id="@+id/ml_rewind"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/ml_rewind"
+		android:layout_below="@id/ml_rewind_bak"
 		android:maxHeight="75px" android:maxWidth="75px"
 		android:minHeight="75px" android:minWidth="75px" />
 	<ImageButton android:id="@+id/ml_play"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_below="@id/ml_seek"
-		android:layout_toRightOf="@id/ml_rewind"
+		android:layout_toRightOf="@id/ml_rewind_bak"
 		android:minWidth="150px" android:minHeight="150px"
 		android:maxHeight="150px" android:maxWidth="150px" />
-	<ImageButton android:id="@+id/ml_fast_forward"
+	<ImageButton android:id="@+id/ml_next"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_toRightOf="@id/ml_play"
 		android:layout_below="@id/ml_seek"
 		android:minHeight="75px" android:maxWidth="75px"
 		android:maxHeight="75px" android:minWidth="75px" />
-	<ImageButton android:id="@+id/ml_next"
+	<ImageButton android:id="@+id/ml_fast_forward"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_toRightOf="@id/ml_play"
-		android:layout_below="@id/ml_fast_forward"
+		android:layout_below="@id/ml_next"
 		android:minHeight="75px" android:minWidth="75px"
 		android:maxHeight="75px" android:maxWidth="75px" />
 </RelativeLayout>
