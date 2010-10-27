@@ -1,9 +1,10 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 
 /**
  * 
@@ -13,7 +14,7 @@ import android.os.Bundle;
  * @author Leif Andersen
  *
  */
-public class NCMain extends Activity {
+public class NCMain extends ListActivity {
 	/** Called when the activity is first created. */
 	
 	@Override
@@ -21,10 +22,7 @@ public class NCMain extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		// TODO, just starting subscriptions
-		Intent activity = new Intent();
-		activity.setClass(this, SubscriptionsListActivity.class);
-		startActivity(activity);
+		setListAdapter(new ArrayAdapter<String>(this, android.R.layout.test_list_item));
 	}
 
 	@Override
