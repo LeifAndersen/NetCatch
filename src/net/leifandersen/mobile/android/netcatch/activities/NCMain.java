@@ -2,6 +2,7 @@ package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Adapter;
@@ -19,9 +20,13 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 public class NCMain extends ListActivity {
 	/** Called when the activity is first created. */
-	
+
+	private static final int QUEUE = 1;
+	private static final int NEW_EPISODES = 2;
+	private static final int SHOWS = 3;
+
 	ArrayAdapter<String> mAdapter;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,10 +37,20 @@ public class NCMain extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		// TODO Auto-generated method stub
 		super.onListItemClick(l, v, position, id);
+		Intent i = new Intent();
+		switch (position) {
+		case QUEUE:
+			i.setClass(this, QueueListActivity.class);
+		case NEW_EPISODES:
+			i.setClass(this, QueueListActivity.class);
+		case SHOWS:
+		default:
+			i.setClass(this, SubscriptionsListActivity.class);
+		}
+		startActivity(i);
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
