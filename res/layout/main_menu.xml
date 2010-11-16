@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/menu_new_task"
+	<item android:id="@+id/new_show_item"
 		android:title="@string/new_show" />
+	<item android:id="@+id/preferences_item"
+		android:title="@string/preferences" />
 </menu>

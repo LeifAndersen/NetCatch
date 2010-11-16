@@ -131,9 +131,15 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent activity;
 		switch (item.getItemId()) {
-		case R.id.sm_new_show:
+		case R.id.new_show_item:
 			showDialog(NEW_FEED);
+			return true;
+		case R.id.preferences:
+			activity = new Intent();
+			activity.setClass(this, Preferences.class);
+			startActivity(activity);
 			return true;
 		}
 		return false;

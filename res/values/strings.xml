@@ -17,8 +17,9 @@
 <string name="default_comments">No Description</string>
 <string name="no_episodes">No episodes in feed...</string>
 <string name="nothing_in_queue">Nothing in queue...</string>
-<string-array name="main_menu"><item>Queue</item>
+<string name="preferences">Preferences</string><string-array name="main_menu"><item>Queue</item>
 <item>New Episodes</item>
 <item>Shows</item>
 </string-array>
+
 </resources>

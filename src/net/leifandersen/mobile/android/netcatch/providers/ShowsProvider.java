@@ -112,28 +112,16 @@ public class ShowsProvider extends ContentProvider {
 	private static final String SUBSCRIPTIONS_TABLE_NAME = "subscriptions";
 	private static final String QUEUE_TABLE_NAME = "queue";
 	private static final String NEW_EPISODES_TABLE_NAME = "newepisodes";
-	private static final String DATABASE_CREATE = 
-		// Subscriptions table
+	private static final String SUBSCRIPTIONS_TABLE_CREATE = 
 		"CREATE TABLE " + SUBSCRIPTIONS_TABLE_NAME + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ FEED + " TEXT,"
 		+ DESCRIPTION + " TEXT,"
-		+ IMAGE + " TEXT" + ");"
-		// Queue Table
-		+ "CREATE TABLE " + QUEUE_TABLE_NAME + " ("
-		+ _ID + " INTEGER PRIMARY KEY,"
-		+ TITLE + " TEXT,"
-		+ SHOW_TITLE + " TEXT,"
-		+ IMAGE + " TEXT,"
-		+ AUTHOR + " TEXT,"
-		+ DESCRIPTION + " TEXT," 
-		+ MEDIA + " TEXT, "
-		+ DATE + " TEXT, "
-		+ PLAYED + " BOOLEAN" + ");"
-		// New Episodes Table
-		+ "CREATE TABLE " + NEW_EPISODES_TABLE_NAME + " ("
+		+ IMAGE + " TEXT" + ");";
+	private static final String QUEUE_TABLE_CREATE =
+		"CREATE TABLE " + QUEUE_TABLE_NAME + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ SHOW_TITLE + " TEXT,"
@@ -143,8 +131,23 @@ public class ShowsProvider extends ContentProvider {
 		+ MEDIA + " TEXT, "
 		+ DATE + " TEXT, "
 		+ PLAYED + " BOOLEAN" + ");";
-
-	private static String createTableString(String tableName) {
+	private static final String NEW_EPISODES_TABLE_CREATE = 
+		"CREATE TABLE " + NEW_EPISODES_TABLE_NAME + " ("
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ TITLE + " TEXT,"
+		+ SHOW_TITLE + " TEXT,"
+		+ IMAGE + " TEXT,"
+		+ AUTHOR + " TEXT,"
+		+ DESCRIPTION + " TEXT," 
+		+ MEDIA + " TEXT, "
+		+ DATE + " TEXT, "
+		+ PLAYED + " BOOLEAN" + ");";
+	private static final String DATABASE_CREATE = 
+		SUBSCRIPTIONS_TABLE_CREATE +
+		QUEUE_TABLE_CREATE +
+		NEW_EPISODES_TABLE_CREATE;
+	
+	private static final String createTableString(final String tableName) {
 		return 	"CREATE TABLE IF NOT EXISTS " + tableName + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
@@ -196,6 +199,8 @@ public class ShowsProvider extends ContentProvider {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS subscriptions");
+			db.execSQL("DROP TABLE IF EXISTS queue");
+			db.execSQL("DROP TABLE IF EXISTS newepisodes");
 			onCreate(db);
 		}
 	}
