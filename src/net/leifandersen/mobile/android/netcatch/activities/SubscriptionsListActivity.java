@@ -47,13 +47,9 @@ import android.widget.Toast;
 public class SubscriptionsListActivity extends ListActivity {
 
 	private static final int NEW_FEED = 1;
+	private static final int PREFERENCES = 2;
 	
 	private View mPlayer;
-	
-	// Only member variables for access within internal methods.
-	private ProgressDialog progressDialog;
-	private String newFeed;
-	private EditText mEditFeed;
 	
 	private static class ViewHolder {
 		TextView title;
@@ -159,6 +155,7 @@ public class SubscriptionsListActivity extends ListActivity {
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
 		switch(id) {
+		
 		case NEW_FEED:
 			dialog = new SubscriptionDialog(this);
 			break;

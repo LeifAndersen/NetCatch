@@ -7,23 +7,22 @@ import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class SubscriptionDialog extends AlertDialog {
+public class SubscriptionDialog extends Dialog {
 
 	private Context ctx;
 	private EditText mEditFeed;
@@ -47,9 +46,12 @@ public class SubscriptionDialog extends AlertDialog {
 		// Set up other properties
 		setTitle(ctx.getString(R.string.enter_feed));
 		setCancelable(false);
-		setButton(BUTTON_POSITIVE, ctx.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+		
+		// Set up the OK button click
+		((Button)findViewById(R.id.ok_button)).setOnClickListener(new View.OnClickListener() {
+			
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(View v) {
 				// Get the RSS feed the user entered
 				newFeed = mEditFeed.getText().toString();
 
@@ -116,8 +118,9 @@ public class SubscriptionDialog extends AlertDialog {
 				ctx.startService(service);
 			}
 		});
+		
 		// Get the textbox, for retreiving text later.
-		mEditFeed = (EditText)layout.findViewById(R.id.sfd_editText);
+		mEditFeed = (EditText)layout.findViewById(R.id.edit_text);
 	}
 	
 }
