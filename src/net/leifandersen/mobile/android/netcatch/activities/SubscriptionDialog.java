@@ -43,6 +43,9 @@ public class SubscriptionDialog extends Dialog {
 		View layout = inflater.inflate(R.layout.subscription_feed_dialog, null);
 		setContentView(layout);
 		
+		// Get the textbox, for retreiving text later.
+		mEditFeed = (EditText)layout.findViewById(R.id.edit_text);
+		
 		// Set up other properties
 		setTitle(ctx.getString(R.string.enter_feed));
 		setCancelable(false);
@@ -116,11 +119,17 @@ public class SubscriptionDialog extends Dialog {
 				service.putExtra(RSSService.FEED, newFeed);
 				service.setClass(ctx, RSSService.class);
 				ctx.startService(service);
+				dismiss();
 			}
 		});
 		
-		// Get the textbox, for retreiving text later.
-		mEditFeed = (EditText)layout.findViewById(R.id.edit_text);
+		// Set up the cancle button
+		((Button)findViewById(R.id.cancel_button)).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
 	}
-	
 }

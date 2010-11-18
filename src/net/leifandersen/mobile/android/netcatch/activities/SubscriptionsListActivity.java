@@ -1,25 +1,14 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
-import java.util.ArrayList;
-
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
-import net.leifandersen.mobile.android.netcatch.services.RSSService;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,11 +19,9 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * 
@@ -47,7 +34,6 @@ import android.widget.Toast;
 public class SubscriptionsListActivity extends ListActivity {
 
 	private static final int NEW_FEED = 1;
-	private static final int PREFERENCES = 2;
 	
 	private View mPlayer;
 	
