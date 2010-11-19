@@ -106,6 +106,7 @@ public class ShowsProvider extends ContentProvider {
 	 * Show the episode is from
 	 */
 	public static final String SHOW_TITLE = "show_title";
+
 	
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "Shows";
@@ -191,7 +192,11 @@ public class ShowsProvider extends ContentProvider {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(DATABASE_CREATE);
+			// Create the tables
+			// Must be seperate commands
+			db.execSQL(SUBSCRIPTIONS_TABLE_CREATE);
+			db.execSQL(QUEUE_TABLE_CREATE);
+			db.execSQL(NEW_EPISODES_TABLE_CREATE);
 		}
 
 		@Override
