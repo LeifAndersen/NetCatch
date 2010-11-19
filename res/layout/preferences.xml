@@ -4,13 +4,13 @@
 	android:layout_height="fill_parent" 
 	xmlns:android="http://schemas.android.com/apk/res/android" >
 	<PreferenceCategory
-		android:title="Sample Activity">
+		android:title="@string/downloading">
        	<CheckBoxPreference
-			android:title="Sample Preference"
-			android:defaultValue="false"
-			android:summaryOff="Off"
-			android:summaryOn="On"
-			android:key="clockType" />
+			android:title="@string/download_audio"
+			android:defaultValue="true"
+			android:summaryOff="@string/download_only"
+			android:summaryOn="@string/download_all"
+			android:key="download" />
 	</PreferenceCategory>
 </PreferenceScreen>
 		

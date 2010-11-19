@@ -22,4 +22,10 @@
 <item>Shows</item>
 </string-array>
 
+<string name="downloading">Downloading</string>
+<string name="download_audio">Download Audio</string>
+
+
+<string name="download_only">Only Download Specific Shows</string>
+<string name="download_all">Download Episodes from all shows</string>
 </resources>
