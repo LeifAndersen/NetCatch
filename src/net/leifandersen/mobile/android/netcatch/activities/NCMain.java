@@ -1,6 +1,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ public class NCMain extends ListActivity {
 	private static final int QUEUE = 0;
 	private static final int NEW_EPISODES = 1;
 	private static final int SHOWS = 2;
+	
+	private static final int NEW_FEED = 1;
 
 	ArrayAdapter<String> mAdapter;
 
@@ -68,15 +71,29 @@ public class NCMain extends ListActivity {
 		Intent activity;
 		switch (item.getItemId()) {
 		case R.id.new_show_item:
-			Toast.makeText(this, "Building interface still", Toast.LENGTH_LONG);
+			showDialog(NEW_FEED);
 			return true;
-		case R.id.preferences:
+		case R.id.preferences_item:
 			activity = new Intent();
 			activity.setClass(this, Preferences.class);
 			startActivity(activity);
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		Dialog dialog = null;
+		switch(id) {
+		
+		case NEW_FEED:
+			dialog = new SubscriptionDialog(this);
+			break;
+		default:
+			dialog = null;
+		}
+		return dialog;
 	}
 	
 	@Override

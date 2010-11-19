@@ -117,8 +117,9 @@ public class SubscriptionsListActivity extends ListActivity {
 		switch (item.getItemId()) {
 		case R.id.new_show_item:
 			showDialog(NEW_FEED);
+			refreshList();
 			return true;
-		case R.id.preferences:
+		case R.id.preferences_item:
 			activity = new Intent();
 			activity.setClass(this, Preferences.class);
 			startActivity(activity);

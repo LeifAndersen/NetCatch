@@ -48,7 +48,7 @@ public class SubscriptionDialog extends Dialog {
 		
 		// Set up other properties
 		setTitle(ctx.getString(R.string.enter_feed));
-		setCancelable(false);
+		setCancelable(true);
 		
 		// Set up the OK button click
 		((Button)findViewById(R.id.ok_button)).setOnClickListener(new View.OnClickListener() {
