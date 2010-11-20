@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, NCMain!</string>
-    <string name="app_name">NetCatch</string>
-<string name="new_show">New Show</string>
-<string name="new_episodes">New Episodes</string>
-<string name="queue">Queue</string>
-<string name="no_subscriptions">No Subscriptions...</string>
-<string name="shows">Shows</string>
-<string name="enter_feed">Enter Feed</string>
-<string name="ok">OK</string>
-<string name="cancel">Cancel</string>
-<string name="getting_show_details">Getting Show Details...</string>
-<string name="default_author">Unkown Author</string>
-<string name="default_title">Unkown Title</string>
-<string name="default_date">Unkown Date</string>
-<string name="default_comments">No Description</string>
-<string name="no_episodes">No episodes in feed...</string>
-<string name="nothing_in_queue">Nothing in queue...</string>
-<string name="preferences">Preferences</string><string-array name="main_menu"><item>Queue</item>
-<item>New Episodes</item>
-<item>Shows</item>
-</string-array>
-
-<string name="downloading">Downloading</string>
-<string name="download_audio">Download Audio</string>
-
-
-<string name="download_only">Only Download Specific Shows</string>
-<string name="download_all">Download Episodes from all shows</string>
+	<string name="hello">Hello World, NCMain!</string>
+	<string name="app_name">NetCatch</string>
+	<string name="new_show">New Show</string>
+	<string name="new_episodes">New Episodes</string>
+	<string name="queue">Queue</string>
+	<string name="no_subscriptions">No Subscriptions...</string>
+	<string name="shows">Shows</string>
+	<string name="enter_feed">Enter Feed</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+	<string name="getting_show_details">Getting Show Details...</string>
+	<string name="default_author">Unkown Author</string>
+	<string name="default_title">Unkown Title</string>
+	<string name="default_date">Unkown Date</string>
+	<string name="default_comments">No Description</string>
+	<string name="no_episodes">No episodes in feed...</string>
+	<string name="nothing_in_queue">Nothing in queue...</string>
+	<string name="preferences">Preferences</string>
+	<string name="downloading">Downloading</string>
+	<string name="download_audio">Download Audio</string>
+	<string name="download_only">Only Download Specific Shows</string>
+	<string name="download_all">Download Episodes from all shows</string>
+	<string name="sync">Sync</string>
+	<string name="google_reader">Google Reader</string>
+	<string name="gpodder">GPodder.net</string>
+	<string name="sync_preferences">Sync Preferences</string>
+	<string name="media_player_preferences">Media Player Settings</string>
+	<string name="use_widget">Use Widget</string>
+	<string-array name="main_menu">
+		<item>Queue</item>
+		<item>New Episodes</item>
+		<item>Shows</item>
+	</string-array>
+	<string name="no_sync">Don\'t Sync</string>
 </resources>

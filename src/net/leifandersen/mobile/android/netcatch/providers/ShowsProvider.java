@@ -143,10 +143,6 @@ public class ShowsProvider extends ContentProvider {
 		+ MEDIA + " TEXT, "
 		+ DATE + " TEXT, "
 		+ PLAYED + " BOOLEAN" + ");";
-	private static final String DATABASE_CREATE = 
-		SUBSCRIPTIONS_TABLE_CREATE +
-		QUEUE_TABLE_CREATE +
-		NEW_EPISODES_TABLE_CREATE;
 	
 	private static final String createTableString(final String tableName) {
 		return 	"CREATE TABLE IF NOT EXISTS " + tableName + " ("

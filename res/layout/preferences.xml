@@ -3,14 +3,31 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent" 
 	xmlns:android="http://schemas.android.com/apk/res/android" >
-	<PreferenceCategory
-		android:title="@string/downloading">
-       	<CheckBoxPreference
-			android:title="@string/download_audio"
+	<PreferenceCategory android:title="@string/downloading">
+       	<CheckBoxPreference android:title="@string/download_audio"
 			android:defaultValue="true"
 			android:summaryOff="@string/download_only"
 			android:summaryOn="@string/download_all"
 			android:key="download" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/media_player_preferences">
+		<CheckBoxPreference android:title="@string/use_widget"
+			android:defaultValue="false"
+			android:summaryOff="@string/use_widget"
+			android:summaryOn="@string/use_widget"
+			android:key="widget_enable" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/sync_preferences">
+		<CheckBoxPreference android:title="@string/google_reader"
+			android:defaultValue="false"
+			android:summaryOff="@string/no_sync"
+			android:summaryOn="@string/sync"
+			android:key="google_reader_sync" />
+		<CheckBoxPreference android:title="@string/gpodder"
+			android:defaultValue="false"
+			android:summaryOff="@string/no_sync"
+			android:summaryOn="@string/sync"
+			android:key="gpodder_sync" />
 	</PreferenceCategory>
 </PreferenceScreen>
 		
