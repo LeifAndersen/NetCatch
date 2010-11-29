@@ -176,8 +176,6 @@ public class ShowsProvider extends ContentProvider {
 		+ DESCRIPTION + " TEXT," 
 		+ MEDIA + " TEXT, "
 		+ DATE + " TEXT, "
-		+ LENGTH + " INTEGER,"
-		+ POSITION + " INTEGER,"
 		+ PLAYED + " BOOLEAN" + ");";
 	
 	private static final String createTableString(final String tableName) {
@@ -188,6 +186,8 @@ public class ShowsProvider extends ContentProvider {
 		+ DESCRIPTION + " TEXT," 
 		+ MEDIA + " TEXT, "
 		+ DATE + " TEXT, "
+		+ LENGTH + " INTEGER,"
+		+ POSITION + " INTEGER,"
 		+ PLAYED + " BOOLEAN" + ");";
 	}
 	
