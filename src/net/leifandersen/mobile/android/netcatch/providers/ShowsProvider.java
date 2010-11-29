@@ -85,6 +85,26 @@ public class ShowsProvider extends ContentProvider {
 	 */
 	public static final String DESCRIPTION = "description";
 	
+	/**
+	 * The frequency the show should be updated.
+	 */
+	public static final String UPDATE_FREQUENCY = "update_frequency";
+	
+	/**
+	 * The amount of episodes to keep.
+	 */
+	public static final String EPISODES_TO_KEEP = "episodes_to_keep";
+	
+	/**
+	 * How long an episode stays on the device.
+	 */
+	public static final String EPISODE_EXPIRATION_TIME = "episode_expiration_time";
+	
+	/**
+	 * The last time the show was updated.	
+	 */
+	public static final String PREVIOUS_UPDATE_TIME = "previous_update_time";
+	
 	// For the episodes tables
 	/**
 	 * The location for the actual media of the show
@@ -100,6 +120,16 @@ public class ShowsProvider extends ContentProvider {
 	 * Whether the episode has been played or not.
 	 */
 	public static final String PLAYED = "played";
+	
+	/**
+	 * The length of the episode.
+	 */
+	public static final String LENGTH = "length";
+	
+	/**
+	 * The last position the user was listening at.
+	 */
+	public static final String POSITION = "position";
 	
 	// For the queue
 	/**
@@ -120,7 +150,11 @@ public class ShowsProvider extends ContentProvider {
 		+ AUTHOR + " TEXT,"
 		+ FEED + " TEXT,"
 		+ DESCRIPTION + " TEXT,"
-		+ IMAGE + " TEXT" + ");";
+		+ IMAGE + " TEXT," 
+		+ UPDATE_FREQUENCY + " INTEGER," 
+		+ EPISODES_TO_KEEP + " INTEGER,"
+		+ EPISODE_EXPIRATION_TIME + " INTEGER," 
+		+ PREVIOUS_UPDATE_TIME + " INTEGER" + ");";
 	private static final String QUEUE_TABLE_CREATE =
 		"CREATE TABLE " + QUEUE_TABLE_NAME + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
@@ -142,6 +176,8 @@ public class ShowsProvider extends ContentProvider {
 		+ DESCRIPTION + " TEXT," 
 		+ MEDIA + " TEXT, "
 		+ DATE + " TEXT, "
+		+ LENGTH + " INTEGER,"
+		+ POSITION + " INTEGER,"
 		+ PLAYED + " BOOLEAN" + ");";
 	
 	private static final String createTableString(final String tableName) {
@@ -320,7 +356,16 @@ public class ShowsProvider extends ContentProvider {
 				values.put(DESCRIPTION, "");
 			if (values.containsKey(IMAGE) == false)
 				values.put(IMAGE, "");
-
+			if (values.containsKey(UPDATE_FREQUENCY) == false)
+				values.put(UPDATE_FREQUENCY, -1);
+			if (values.containsKey(EPISODES_TO_KEEP) == false)
+				values.put(EPISODES_TO_KEEP, -1);
+			if (values.containsKey(EPISODE_EXPIRATION_TIME) == false)
+				values.put(EPISODE_EXPIRATION_TIME, -1);
+			if (values.containsKey(PREVIOUS_UPDATE_TIME) == false)
+				values.put(PREVIOUS_UPDATE_TIME, -1);
+			
+			
 			// Insert the item
 			rowId = db.insert(SUBSCRIPTIONS_TABLE_NAME, SHOW, values);
 			if (rowId > 0) { //Added succesfully
@@ -409,6 +454,10 @@ public class ShowsProvider extends ContentProvider {
 				values.put(MEDIA, "");
 			if (values.containsKey(DATE) == false)
 				values.put(DATE, EMPTY_DATE);
+			if (values.containsKey(LENGTH) == false)
+				values.put(LENGTH, -1);
+			if (values.containsKey(POSITION) == false)
+				values.put(POSITION, -1);
 			if (values.containsKey(PLAYED) == false)
 				values.put(PLAYED, false);
 
