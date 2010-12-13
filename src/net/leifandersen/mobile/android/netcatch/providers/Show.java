@@ -2,6 +2,7 @@ package net.leifandersen.mobile.android.netcatch.providers;
 
 import java.io.Serializable;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 /**
@@ -17,7 +18,7 @@ public class Show implements Serializable {
 	private String title;
 	private String author;
 	private String feed;
-	private Drawable image;
+	private Bitmap image;
 	private String imagePath;
 	private String description;
 	
@@ -78,14 +79,14 @@ public class Show implements Serializable {
 	/**
 	 * @param image the image to set
 	 */
-	public void setImage(Drawable image) {
+	public void setImage(Bitmap image) {
 		this.image = image;
 	}
 	
 	/**
 	 * @return the image
 	 */
-	public Drawable getImage() {
+	public Bitmap getImage() {
 		return image;
 	}
 

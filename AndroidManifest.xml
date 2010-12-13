@@ -28,4 +28,5 @@
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<supports-screens android:largeScreens="true" android:normalScreens="true" android:smallScreens="false" android:anyDensity="true"></supports-screens>
 </manifest> 

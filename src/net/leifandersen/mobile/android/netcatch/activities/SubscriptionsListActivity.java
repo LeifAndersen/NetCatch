@@ -1,25 +1,22 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
+import java.util.ArrayList;
+
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import android.app.Activity;
 import android.app.Dialog;
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,74 +28,29 @@ import android.widget.TextView;
  * @author Leif Andersen
  *
  */
-public class SubscriptionsListActivity extends ListActivity {
+public class SubscriptionsListActivity extends Activity {
 
 	private static final int NEW_FEED = 1;
 	
 	private View mPlayer;
 	
-	private static class ViewHolder {
-		TextView title;
-		TextView author;
-		ImageView image;
-	}
-	
-	private class ShowAdapter extends ArrayAdapter<Show> {
-		
-		LayoutInflater mInflater;
-		
-
-		
-		public ShowAdapter(Context context) {
-			super(context, R.layout.subscriptions_list);
-			mInflater = getLayoutInflater();
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder holder;
-			if(convertView == null) {
-				convertView = mInflater.inflate(R.layout.subscription, null);
-				holder = new ViewHolder();
-				holder.title = (TextView)convertView.findViewById(R.id.sc_title);
-				holder.author = (TextView)convertView.findViewById(R.id.sc_author);
-				holder.image = (ImageView)convertView.findViewById(R.id.sc_picture);
-				convertView.setTag(holder);
-			}
-			else
-				holder = (ViewHolder)convertView.getTag();
-			
-			Show subscription = getItem(position);
-			holder.title.setText(subscription.getTitle());
-			holder.author.setText(subscription.getAuthor());
-			Drawable d = subscription.getImage();
-			if (d != null)
-				holder.image.setImageDrawable(d);
-			registerForContextMenu(convertView);
-			
-			convertView.setOnClickListener(new OnClickListener() {	
-				@Override
-				public void onClick(View v) {
-					Intent i = new Intent();
-					i.setClass(SubscriptionsListActivity.this, EpisodesListActivity.class);
-					i.putExtra(EpisodesListActivity.SHOW_NAME, 
-							((TextView)v.findViewById(R.id.sc_title)).getText());
-					startActivity(i);
-				}
-			});
-			return convertView;
-		}
-	}
-
-	ShowAdapter mAdapter;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.subscriptions_list);
-
-		// Set up the list
-		refreshList();
+		setContentView(R.layout.feeds_list);
+		
+			/*Just using this to test the ListAdapter*/
+			ArrayList<Show> testShows = new ArrayList<Show>();
+			Show bol = new Show("Buzz Out Loud", "CNet Podcasts", "http://buzzoutloudpodcast.cnet.com", "Podcast of Indeterminate Length", null);
+			bol.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.bol));
+			testShows.add(bol);
+			Show engadget = new Show("Engadget", "Engadget", "http://engadgetpodcast.com", "The Engadget.com Podcast", null);
+			engadget.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.engadget));
+			testShows.add(engadget);		
+		
+		TexturedListAdapter tla = new TexturedListAdapter(this, testShows);
+		ListView lv = (ListView)findViewById(R.id.feeds_list);
+		lv.setAdapter(tla);
 		
 		// Start the widget
 		mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
@@ -106,8 +58,8 @@ public class SubscriptionsListActivity extends ListActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflator = getMenuInflater();
-		inflator.inflate(R.layout.subscriptions_menu, menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.layout.subscriptions_menu, menu);
 		return true;
 	}
 
@@ -117,7 +69,6 @@ public class SubscriptionsListActivity extends ListActivity {
 		switch (item.getItemId()) {
 		case R.id.new_show_item:
 			showDialog(NEW_FEED);
-			refreshList();
 			return true;
 		case R.id.preferences_item:
 			activity = new Intent();
@@ -126,16 +77,6 @@ public class SubscriptionsListActivity extends ListActivity {
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		Intent i = new Intent();
-		i.setClass(SubscriptionsListActivity.this, EpisodesListActivity.class);
-		i.putExtra(EpisodesListActivity.SHOW_NAME, 
-				((TextView)v.findViewById(R.id.sc_title)).getText());
-		startActivity(i);
 	}
 	
 	@Override
@@ -152,6 +93,7 @@ public class SubscriptionsListActivity extends ListActivity {
 		return dialog;
 	}
 
+	/*
 	private void refreshList() {
 		// Reset the view, 
 		mAdapter = new ShowAdapter(this);
@@ -171,6 +113,6 @@ public class SubscriptionsListActivity extends ListActivity {
 					s.setImage(Drawable.createFromPath(imagePath));
 				mAdapter.add(s);
 			} while (shows.moveToNext());
-	}
+	}*/
 
 }
