@@ -53,7 +53,7 @@ public class SubscriptionsListActivity extends Activity {
 		lv.setAdapter(tla);
 		
 		// Start the widget
-		mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
+		//mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
 	}
 
 	@Override
