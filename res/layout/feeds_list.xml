@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/background"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="@drawable/background_gradient"
+	>
+	<FrameLayout
+		android:id="@+id/header"
+		android:layout_width="fill_parent"
+		android:layout_height="95px"
+		android:background="@drawable/ninepatch_blue_back_large"
+		>
+		<ImageView
+			android:id="@+id/btn_refresh"
+			android:layout_width="90px"
+			android:layout_height="90px"
+			android:layout_gravity="right|top"			
+			android:src="@drawable/btn_refresh"
+			android:scaleType="center"
+			/>
+		<TextView
+			android:id="@+id/title_text"
+			android:layout_width="wrap_content"
+			android:layout_height="90px"
+			android:paddingLeft="30px"
+			android:layout_marginRight="90px"
+			android:gravity="center_vertical"
+			android:text="NetCatch"
+			android:textColor="@android:color/white"
+			android:textStyle="bold"
+			android:textSize="24sp"
+			android:shadowColor="#A5000000"
+			android:shadowDx="1"
+			android:shadowDy="1"
+			android:shadowRadius="3"
+			/>
+	</FrameLayout>
+	
+	<ListView
+		android:id="@+id/feeds_list"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:divider="@null"
+		android:cacheColorHint="#00000000"
+		android:paddingTop="20dp"
+		/>
+</LinearLayout>
