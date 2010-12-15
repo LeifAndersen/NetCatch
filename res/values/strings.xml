@@ -28,6 +28,7 @@
 	<string name="sync_preferences">Sync Preferences</string>
 	<string name="media_player_preferences">Media Player Settings</string>
 	<string name="use_widget">Use Widget</string>
+	<string name="theme">Set Theme</string>
 	<string-array name="main_menu">
 		<item>Queue</item>
 		<item>New Episodes</item>

@@ -34,7 +34,9 @@ public class NCMain extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
 
 	private static final int NEW_FEED = 1;
+	private static final int COLOR_CHANGE_ACTIVITY_RESULT = 10;
 	private static Typeface vera, veraBold;
+	private static HomeScreenViewHolder homeViews;
 	public static ColorFilter overlay = null;
 	
 	@Override
@@ -53,7 +55,7 @@ public class NCMain extends Activity implements OnClickListener {
 		 * 
 		 * @author Kevin Coppock
 		 */
-		HomeScreenViewHolder homeViews = new HomeScreenViewHolder();
+		homeViews = new HomeScreenViewHolder();
 		homeViews.titleText = (TextView)findViewById(R.id.title_text);
 		homeViews.playerEpisodeTitle = (TextView)findViewById(R.id.player_episode_title);
 		homeViews.playerEpisodeTime = (TextView)findViewById(R.id.player_episode_time);
@@ -106,6 +108,10 @@ public class NCMain extends Activity implements OnClickListener {
 			activity = new Intent();
 			activity.setClass(this, Preferences.class);
 			startActivity(activity);
+			return true;
+		case R.id.theme_item:
+			Intent i = new Intent(this, ColorChoiceDialogActivity.class);
+			startActivityForResult(i, COLOR_CHANGE_ACTIVITY_RESULT);
 			return true;
 		}
 		return false;
@@ -163,10 +169,6 @@ public class NCMain extends Activity implements OnClickListener {
 			break;
 		case R.id.icon_new:
 			//implement
-			//temporary for testing
-			i = new Intent(this, ColorChoiceDialogActivity.class);
-			startActivity(i);
-			break;
 		}
 	};
 	
@@ -234,5 +236,21 @@ public class NCMain extends Activity implements OnClickListener {
 		for (TextView tv : params) {
 			tv.setTypeface(tf);
 		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent i) {
+		switch(requestCode) {
+		case COLOR_CHANGE_ACTIVITY_RESULT:
+			if(resultCode == RESULT_CANCELED) return;
+			overlay = new PorterDuffColorFilter(i.getIntExtra("color", 0), PorterDuff.Mode.MULTIPLY);
+			setColorOverlay(
+					homeViews.iconQueue,
+					homeViews.iconFeeds,
+					homeViews.iconNew,
+					homeViews.miniPlayer,
+					homeViews.header);
+		}
+		
 	}
 }
