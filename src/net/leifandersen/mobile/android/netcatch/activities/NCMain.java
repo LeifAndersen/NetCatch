@@ -4,6 +4,10 @@ import net.leifandersen.mobile.android.netcatch.R;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,7 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -25,55 +32,59 @@ import android.widget.TextView;
 public class NCMain extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
 
-	private static final int QUEUE = 0;
-	private static final int NEW_EPISODES = 1;
-	private static final int SHOWS = 2;
-	private static Typeface vera, veraBold;
 	private static final int NEW_FEED = 1;
-
-	public void onClick(View v) {
-		Intent i;
-		switch (v.getId()) {
-		case R.id.icon_feeds:
-			i = new Intent(this, SubscriptionsListActivity.class);
-			startActivity(i);
-			break;
-		case R.id.icon_queue:
-			i = new Intent(this, QueueListActivity.class);
-			startActivity(i);
-			break;
-		case R.id.icon_new:
-			//implement
-			break;
-		}
-	};
+	private static Typeface vera, veraBold;
+	public static ColorFilter overlay = null;
 	
-	TexturedListAdapter mAdapter;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_new_theme);
 		
+		//replace color here with color retrieved from SharedPreferences ~Kevin
+		overlay = new PorterDuffColorFilter(Color.parseColor("#FF0084FF"), PorterDuff.Mode.MULTIPLY);
 		vera = Typeface.createFromAsset(getAssets(), "Vera.ttf");
 		veraBold = Typeface.createFromAsset(getAssets(), "VeraBd.ttf");
 		
-		TextView titleText = (TextView)findViewById(R.id.title_text);
-		TextView playerEpisodeTitle = (TextView)findViewById(R.id.player_episode_title);
-		TextView playerEpisodeTime = (TextView)findViewById(R.id.player_episode_time);
+		/* Any new additions to the layout XML which require modification should be
+		 * added to the HomeScreenViewHolder, set in the following block, and added
+		 * to their respective layout modification method (setTypeface, etc.)
+		 * 
+		 * @author Kevin Coppock
+		 */
+		HomeScreenViewHolder homeViews = new HomeScreenViewHolder();
+		homeViews.titleText = (TextView)findViewById(R.id.title_text);
+		homeViews.playerEpisodeTitle = (TextView)findViewById(R.id.player_episode_title);
+		homeViews.playerEpisodeTime = (TextView)findViewById(R.id.player_episode_time);
+		homeViews.iconFeedsText = (TextView)findViewById(R.id.icon_feeds_text);
+		homeViews.iconNewText = (TextView)findViewById(R.id.icon_new_text);
+		homeViews.iconQueueText = (TextView)findViewById(R.id.icon_queue_text);
+		homeViews.miniPlayer = (RelativeLayout)findViewById(R.id.player);
+		homeViews.header = (FrameLayout)findViewById(R.id.header);
+		homeViews.iconQueue = (ImageButton)findViewById(R.id.icon_queue);
+		homeViews.iconFeeds = (ImageButton)findViewById(R.id.icon_feeds);
+		homeViews.iconNew = (ImageButton)findViewById(R.id.icon_new);
+
+		setTypeface(vera, 
+				homeViews.playerEpisodeTime);
+		setTypeface(veraBold, 
+				homeViews.titleText, 
+				homeViews.playerEpisodeTitle,
+				homeViews.iconFeedsText,
+				homeViews.iconNewText,
+				homeViews.iconQueueText);
 		
-		titleText.setTypeface(veraBold);
-		playerEpisodeTitle.setTypeface(veraBold);
-		playerEpisodeTime.setTypeface(vera);
+		//need to change to pull color from SharedPreferences ~Kevin
+		setColorOverlay( 
+				homeViews.iconQueue,
+				homeViews.iconFeeds,
+				homeViews.iconNew,
+				homeViews.miniPlayer,
+				homeViews.header);		
 		
-		ImageButton icon_queue = (ImageButton)findViewById(R.id.icon_queue);
-		icon_queue.setOnClickListener(this);
-		
-		ImageButton icon_feeds = (ImageButton)findViewById(R.id.icon_feeds);
-		icon_feeds.setOnClickListener(this);
-		
-		ImageButton icon_new = (ImageButton)findViewById(R.id.icon_new);
-		icon_new.setOnClickListener(this);
+		homeViews.iconQueue.setOnClickListener(this);
+		homeViews.iconFeeds.setOnClickListener(this);
+		homeViews.iconNew.setOnClickListener(this);
 	}	
 
 	@Override
@@ -136,5 +147,84 @@ public class NCMain extends Activity implements OnClickListener {
 	@Override
 	public void onStop() {
 		super.onStop();
+	}
+
+	public void onClick(View v) {
+		Intent i;
+		switch (v.getId()) {
+		case R.id.icon_feeds:
+			i = new Intent(this, SubscriptionsListActivity.class);
+			startActivity(i);
+			break;
+		case R.id.icon_queue:
+			i = new Intent(this, QueueListActivity.class);
+			startActivity(i);
+			break;
+		case R.id.icon_new:
+			//implement
+			break;
+		}
+	};
+	
+	static class HomeScreenViewHolder {
+		TextView
+			titleText,
+			playerEpisodeTitle,
+			playerEpisodeTime,
+			iconFeedsText,
+			iconNewText,
+			iconQueueText;
+		ImageButton
+			iconNew,
+			iconQueue,
+			iconFeeds;
+		RelativeLayout
+			miniPlayer;
+		FrameLayout
+			header;
+	}
+	
+	/* This is intended for changing the theme according to user preferences. Not the most
+	 * versatile method right now, will have to modify if other types of views need overriding.
+	 * 
+	 * @author Kevin Coppock 12/14/2010
+	 */
+	public static void setColorOverlay(ColorFilter cf, Object...params) {
+		for (Object v : params) {
+			if(v.getClass() == RelativeLayout.class 
+					|| v.getClass() == FrameLayout.class
+					|| v.getClass() == LinearLayout.class) {
+				((View)v).getBackground().setColorFilter(cf);
+			} else if (v.getClass() == ImageButton.class) {
+				((ImageButton)v).getDrawable().setColorFilter(cf);
+			}
+		}
+	}
+	
+	//constructor assuming the default ColorFilter
+	public static void setColorOverlay(Object...params) {
+		if(overlay != null) {
+			for (Object v : params) {
+				if(v.getClass() == RelativeLayout.class 
+						|| v.getClass() == FrameLayout.class
+						|| v.getClass() == LinearLayout.class) {
+					((View)v).getBackground().setColorFilter(overlay);
+				} else if (v.getClass() == ImageButton.class) {
+					((ImageButton)v).getDrawable().setColorFilter(overlay);
+				}
+			}
+		}
+	}
+	
+	/* This is just for purposes of simplifying the typeface change for the home screen,
+	 * as many TextViews can be passed as necessary, to ease additional TextView additions
+	 * to the layout.
+	 * 
+	 * @author Kevin Coppock 12/14/2010
+	 */
+	private void setTypeface(Typeface tf, TextView...params) {
+		for (TextView tv : params) {
+			tv.setTypeface(tf);
+		}
 	}
 }

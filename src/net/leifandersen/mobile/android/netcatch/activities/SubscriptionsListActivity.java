@@ -4,21 +4,22 @@ import java.util.ArrayList;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
-import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewStub;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 /**
  * 
@@ -38,6 +39,10 @@ public class SubscriptionsListActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.feeds_list);
+		
+		LinearLayout background = (LinearLayout)findViewById(R.id.background);
+		FrameLayout header = (FrameLayout)findViewById(R.id.header);
+		NCMain.setColorOverlay(background, header);
 		
 			/*Just using this to test the ListAdapter*/
 			ArrayList<Show> testShows = new ArrayList<Show>();
