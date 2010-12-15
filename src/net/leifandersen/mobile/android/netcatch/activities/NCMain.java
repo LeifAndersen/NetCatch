@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -162,6 +163,9 @@ public class NCMain extends Activity implements OnClickListener {
 			break;
 		case R.id.icon_new:
 			//implement
+			//temporary for testing
+			i = new Intent(this, ColorChoiceDialogActivity.class);
+			startActivity(i);
 			break;
 		}
 	};
@@ -197,6 +201,8 @@ public class NCMain extends Activity implements OnClickListener {
 				((View)v).getBackground().setColorFilter(cf);
 			} else if (v.getClass() == ImageButton.class) {
 				((ImageButton)v).getDrawable().setColorFilter(cf);
+			} else if (v.getClass() == ImageView.class) {
+				((ImageView)v).getDrawable().setColorFilter(overlay);
 			}
 		}
 	}
@@ -211,6 +217,8 @@ public class NCMain extends Activity implements OnClickListener {
 					((View)v).getBackground().setColorFilter(overlay);
 				} else if (v.getClass() == ImageButton.class) {
 					((ImageButton)v).getDrawable().setColorFilter(overlay);
+				} else if (v.getClass() == ImageView.class) {
+					((ImageView)v).getDrawable().setColorFilter(overlay);
 				}
 			}
 		}
