@@ -28,7 +28,10 @@
 	<string name="sync_preferences">Sync Preferences</string>
 	<string name="media_player_preferences">Media Player Settings</string>
 	<string name="use_widget">Use Widget</string>
-	<string name="theme">Set Theme</string>
+	<string name="theme_preference_summary">Set a color overlay for NetCatch</string>
+	<string name="theme_preference_title">Set Theme Color</string>
+	<string name="null_feed_title">No Feed Data Returned</string>
+	<string name="null_feed_info">Null</string>
 	<string-array name="main_menu">
 		<item>Queue</item>
 		<item>New Episodes</item>

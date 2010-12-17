@@ -3,9 +3,5 @@
 	<item android:id="@+id/new_show_item"
 		android:title="@string/new_show" />
 	<item android:id="@+id/preferences_item"
-		android:title="@string/preferences" />
-	<item 
-		android:id="@+id/theme_item"
-		android:title="@string/theme"
-		/>	
+		android:title="@string/preferences" />	
 </menu>

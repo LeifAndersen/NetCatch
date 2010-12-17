@@ -7,16 +7,15 @@ import net.leifandersen.mobile.android.netcatch.providers.Show;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,16 +31,19 @@ import android.widget.ListView;
 public class SubscriptionsListActivity extends Activity {
 
 	private static final int NEW_FEED = 1;
-	
-	private View mPlayer;
+	private LinearLayout background;
+	private FrameLayout header;
+	protected SharedPreferences sharedPrefs;
+	//private View mPlayer;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.feeds_list);
+		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		LinearLayout background = (LinearLayout)findViewById(R.id.background);
-		FrameLayout header = (FrameLayout)findViewById(R.id.header);
+		background = (LinearLayout)findViewById(R.id.background);
+		header = (FrameLayout)findViewById(R.id.header);
 		NCMain.setColorOverlay(background, header);
 		
 			/*Just using this to test the ListAdapter*/
@@ -96,6 +98,17 @@ public class SubscriptionsListActivity extends Activity {
 			dialog = null;
 		}
 		return dialog;
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		int x = sharedPrefs.getInt("theme_color", -1);
+		if(x != -1) {
+			NCMain.overlay = null;
+			NCMain.overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
+			NCMain.setColorOverlay(background, header);
+		}
 	}
 
 	/*

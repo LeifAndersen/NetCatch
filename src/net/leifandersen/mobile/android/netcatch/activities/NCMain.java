@@ -4,12 +4,15 @@ import net.leifandersen.mobile.android.netcatch.R;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,14 +41,17 @@ public class NCMain extends Activity implements OnClickListener {
 	private static Typeface vera, veraBold;
 	private static HomeScreenViewHolder homeViews;
 	public static ColorFilter overlay = null;
+	protected SharedPreferences sharedPrefs;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_new_theme);
 		
-		//replace color here with color retrieved from SharedPreferences ~Kevin
-		overlay = new PorterDuffColorFilter(Color.parseColor("#FF0084FF"), PorterDuff.Mode.MULTIPLY);
+		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		overlay = null;
+		overlay = new PorterDuffColorFilter(sharedPrefs.getInt("theme_color", Color.parseColor("#FFAAAAAA")), PorterDuff.Mode.MULTIPLY);
+		
 		vera = Typeface.createFromAsset(getAssets(), "Vera.ttf");
 		veraBold = Typeface.createFromAsset(getAssets(), "VeraBd.ttf");
 		
@@ -109,10 +115,6 @@ public class NCMain extends Activity implements OnClickListener {
 			activity.setClass(this, Preferences.class);
 			startActivity(activity);
 			return true;
-		case R.id.theme_item:
-			Intent i = new Intent(this, ColorChoiceDialogActivity.class);
-			startActivityForResult(i, COLOR_CHANGE_ACTIVITY_RESULT);
-			return true;
 		}
 		return false;
 	}
@@ -139,6 +141,18 @@ public class NCMain extends Activity implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		int x = sharedPrefs.getInt("theme_color", -1);
+		if(x != -1) {
+			overlay = null;
+			overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
+			setColorOverlay(overlay,
+					homeViews.iconQueue,
+					homeViews.iconFeeds,
+					homeViews.iconNew,
+					homeViews.miniPlayer,
+					homeViews.header);	
+		}
 	}
 
 	@Override
