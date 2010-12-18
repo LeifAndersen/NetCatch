@@ -16,6 +16,13 @@
 			android:summaryOff="@string/use_widget"
 			android:summaryOn="@string/use_widget"
 			android:key="widget_enable" />
+		<Preference
+			android:key="theme_color"
+			android:title="@string/theme_preference_title"
+			android:summary="@string/theme_preference_summary"
+			>
+			<intent android:action="net.leifandersen.mobile.android.netcatch.activities.ColorChoiceDialogActivity" />
+		</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/sync_preferences">
 		<CheckBoxPreference android:title="@string/google_reader"
