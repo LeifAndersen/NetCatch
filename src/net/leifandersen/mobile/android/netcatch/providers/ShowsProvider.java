@@ -27,6 +27,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.SystemClock;
+import android.provider.Settings.System;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -47,9 +49,15 @@ public class ShowsProvider extends ContentProvider {
 	/**
 	 * The Subscriptions URI.
 	 */
-	public static final Uri SUBSCRIPCTIONS_CONTENT_URI = 
+	public static final Uri SHOWS_CONTENT_URI = 
 		Uri.parse("content://" + PROVIDER_NAME + "/shows");
 
+	/**
+	 * The Episodes URI
+	 */
+	public static final Uri EPISODES_CONTENT_URI = 
+		Uri.parse("content://" + PROVIDER_NAME + "/episodes");
+	
 	/**
 	 * The queue URI
 	 */
@@ -147,7 +155,7 @@ public class ShowsProvider extends ContentProvider {
 	/**
 	 * The last position the user was listening at.
 	 */
-	public static final String POSITION = "position";
+	public static final String BOOKMARK = "position";
 
 	// For the queue
 	/**
@@ -162,54 +170,54 @@ public class ShowsProvider extends ContentProvider {
 	private static final String EPISODES_TABLE_NAME = "episdoes";
 	private static final String SHOW_TABLE_CREATE = 
 		"CREATE TABLE " + SHOWS_TABLE_NAME + " ("
-		+ SHOW_ID + " INTEGER PRIMARY KEY,"
+		+ SHOW_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ FEED + " TEXT,"
 		+ DESCRIPTION + " TEXT,"
 		+ IMAGE + " TEXT," 
 		+ UPDATE_FREQUENCY + " INTEGER," 
-		+ EPISODES_TO_KEEP + " INTEGER," 
-		+ PREVIOUS_UPDATE_TIME + " INTEGER" + ");";
+		+ EPISODES_TO_KEEP + " INTEGER" + ");";
 	private static final String QUEUE_TABLE_CREATE =
 		"CREATE TABLE " + QUEUE_TABLE_NAME + " ("
-		+ QUEUE_ID + " INTEGER PRIMARY KEY,"
-		+ EPISODE_ID + " INTEGER" + ");";
+		+ QUEUE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+		+ "FOREIGN KEY (" + EPISODE_ID + ") REFERENCES " + 
+		EPISODES_TABLE_NAME + " (" + EPISODE_ID + ")" + ");";
 	private static final String EPISODE_TABLE_CREATE = 
 		"CREATE TABLE  " + EPISODES_TABLE_NAME + " ("
-		+ EPISODE_ID + " INTEGER PRIMARY KEY,"
-		+ SHOW_ID + " INTEGER,"
+		+ EPISODE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+		+ "FOREIGN KEY (" + SHOW_ID +") REFERENCES " +
+		SHOWS_TABLE_NAME + " (" + SHOW_ID + "), "
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ DESCRIPTION + " TEXT," 
 		+ MEDIA + " TEXT, "
-		+ DATE + " TEXT, "
-		+ LENGTH + " INTEGER,"
-		+ POSITION + " INTEGER,"
-		+ EPISODE_EXPIRATION_TIME + " INTEGER,"
+		+ DATE + " INTEGER, "
+		+ BOOKMARK + " INTEGER,"
 		+ PLAYED + " BOOLEAN" + ");";
 
 	private static final String SHOW = "show";
 	private static final String EPISODE = "episode";
-	private static final String SPECIAL_EPISODE = "specialepisode";
-	private static final String EMPTY_DATE = "";
+	private static final String QUEUE_STRING = "queue";
 
 	private static final int SHOWS = 1;
 	private static final int SHOW_ID_CASE = 2;
 	private static final int EPISODES = 3;
-	private static final int EPISODE_ID_CASE = 4;
-	private static final int QUEUE = 5;
-	private static final int QUEUE_ID_CASE = 6;
-	private static final int NEW_EPISODES = 7;
-	private static final int NEW_EPISODE_ID = 8;
+	private static final int SHOW_ID_EPISODES = 4;
+	private static final int EPISODE_ID_CASE = 5;
+	private static final int QUEUE = 6;
+	private static final int QUEUE_ID_CASE = 7;
+	private static final int NEW_EPISODES = 8;
+	private static final int NEW_EPISODE_ID = 9;
 
 	private static final UriMatcher uriMatcher;
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(PROVIDER_NAME, "shows", SHOWS);
-		uriMatcher.addURI(PROVIDER_NAME, "subscriptions/#", SHOW_ID_CASE);
+		uriMatcher.addURI(PROVIDER_NAME, "show/#", SHOW_ID_CASE);
 		uriMatcher.addURI(PROVIDER_NAME, "episodes", EPISODES);
-		uriMatcher.addURI(PROVIDER_NAME, "episodes/#", EPISODE_ID_CASE);
+		uriMatcher.addURI(PROVIDER_NAME, "show/#/episodes", SHOW_ID_EPISODES);
+		uriMatcher.addURI(PROVIDER_NAME, "episode/#", EPISODE_ID_CASE);
 		uriMatcher.addURI(PROVIDER_NAME, "queue", QUEUE);
 		uriMatcher.addURI(PROVIDER_NAME, "queue/#", QUEUE_ID_CASE);
 		uriMatcher.addURI(PROVIDER_NAME, "new", NEW_EPISODES);
@@ -235,8 +243,8 @@ public class ShowsProvider extends ContentProvider {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS subscriptions");
+			db.execSQL("DROP TABLE IF EXISTS episodes");
 			db.execSQL("DROP TABLE IF EXISTS queue");
-			db.execSQL("DROP TABLE IF EXISTS newepisodes");
 			onCreate(db);
 		}
 	}
@@ -261,20 +269,26 @@ public class ShowsProvider extends ContentProvider {
 		case SHOWS:
 			qb.setTables(SHOWS_TABLE_NAME);
 			break;
+		case SHOW_ID_EPISODES:
+			qb.setTables(EPISODES_TABLE_NAME);
+			qb.appendWhere(SHOW_ID + "=" + uri.getPathSegments().get(1));
+			break;
 		case EPISODE_ID_CASE:
 			qb.appendWhere(EPISODE_ID + "=" + uri.getPathSegments().get(1));
 		case EPISODES:
-			qb.setTables(SHOWS_TABLE_NAME);
+			qb.setTables(EPISODES_TABLE_NAME);
 			break;
 		case QUEUE_ID_CASE:
-			qb.appendWhere(QUEUE_ID + "=" + uri.getPathSegments().get(1));
+			qb.appendWhere(QUEUE_ID + "=" + uri.getPathSegments().get(1) + " AND ");
 		case QUEUE:
-			qb.setTables(QUEUE_TABLE_NAME);
+			qb.appendWhere(QUEUE_TABLE_NAME + "." + 
+					EPISODE_ID + "=" + EPISODES_TABLE_NAME + "." + EPISODE_ID);
+			qb.setTables(QUEUE_TABLE_NAME + ", " + EPISODES_TABLE_NAME);
 			break;
 		case NEW_EPISODE_ID:
-			// TODO
+			qb.appendWhere(DATE + "<" + uri.getPathSegments().get(1));
 		case NEW_EPISODES:
-			// TODO
+			qb.setTables(EPISODES_TABLE_NAME);
 			break;
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
@@ -287,7 +301,7 @@ public class ShowsProvider extends ContentProvider {
 		// Get the database and run the query
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		Cursor c = qb.query(db, projection, selection, 
-				selectionArgs, null, null, null);
+				selectionArgs, null, null, sortOrder);
 
 		// Tell the cursor what uri to watch, so it knows when it's source has changed
 		c.setNotificationUri(getContext().getContentResolver(), uri);
@@ -298,6 +312,7 @@ public class ShowsProvider extends ContentProvider {
 	public String getType(Uri uri) {
 		switch (uriMatcher.match(uri)) {
 		case SHOWS:
+		case SHOW_ID_EPISODES:
 		case EPISODES:
 		case QUEUE:
 		case NEW_EPISODES:
@@ -319,7 +334,6 @@ public class ShowsProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		if (values == null)
 			values = new ContentValues();
-
 		long rowId;
 
 		// Validate the URI passed in
@@ -343,26 +357,51 @@ public class ShowsProvider extends ContentProvider {
 				values.put(UPDATE_FREQUENCY, -1);
 			if (values.containsKey(EPISODES_TO_KEEP) == false)
 				values.put(EPISODES_TO_KEEP, -1);
-			if (values.containsKey(EPISODE_EXPIRATION_TIME) == false)
-				values.put(EPISODE_EXPIRATION_TIME, -1);
-			if (values.containsKey(PREVIOUS_UPDATE_TIME) == false)
-				values.put(PREVIOUS_UPDATE_TIME, -1);
-
 
 			// Insert the item
 			rowId = db.insert(SHOWS_TABLE_NAME, SHOW, values);
 			if (rowId > 0) { //Added successfully
-				Uri _uri = ContentUris.withAppendedId(SUBSCRIPCTIONS_CONTENT_URI, rowId);
+				Uri _uri = ContentUris.withAppendedId(SHOWS_CONTENT_URI, rowId);
 				getContext().getContentResolver().notifyChange(_uri, null);
 				return _uri;
 			}
 		case EPISODES:
-			// TODO
+			// Fill in empty values
+			if(values.containsKey(SHOW_ID) == false)
+				throw new SQLException("Show not in the database");
+			if(values.containsKey(TITLE) == false)
+				values.put(TITLE, Resources.getSystem()
+						.getString(android.R.string.untitled));
+			if(values.containsKey(AUTHOR) == false)
+				values.put(AUTHOR, Resources.getSystem()
+						.getString(android.R.string.unknownName));
+			if(values.containsKey(BOOKMARK) == false)
+				values.put(BOOKMARK, 0);
+			if(values.containsKey(DATE) == false)
+				values.put(DATE, java.lang.System.currentTimeMillis());
+			
+			// Insert the item
+			rowId = db.insert(EPISODES_TABLE_NAME, EPISODE, values);
+			if (rowId > 0) { //Added successfully
+				Uri _uri = ContentUris.withAppendedId(EPISODES_CONTENT_URI, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+				return _uri;
+			}
 		case QUEUE:
-			// TODO
-
+			// Fill in empty values
+			if(values.containsKey(EPISODE_ID) == false)
+				throw new SQLException("Episode not in database");
+			
+			// Insert the item
+			rowId = db.insert(QUEUE_TABLE_CREATE, QUEUE_STRING, values);
+			if(rowId > 0) { // Added successfully
+				Uri _uri = ContentUris.withAppendedId(QUEUE_CONTENT_URI, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+			}
+		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
-			// TODO
+		case NEW_EPISODE_ID:
+			throw new IllegalArgumentException("Read Only: " + uri);
 
 		default:
 			throw new SQLException("Failed to insert row into " + uri);
@@ -374,9 +413,6 @@ public class ShowsProvider extends ContentProvider {
 			String[] selectionArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		int count = 0;
-		Cursor c;
-		String newTitle;
-		String oldTitle;
 		switch (uriMatcher.match(uri)) {
 		case SHOWS:
 			count = db.update(SHOWS_TABLE_NAME, values, selection, selectionArgs);
@@ -388,11 +424,13 @@ public class ShowsProvider extends ContentProvider {
 							? " And (" + selection + ')' : ""), selectionArgs);
 			break;
 		case EPISODES:
-			// TODO
+			count = db.update(EPISODES_TABLE_NAME, values, selection, selectionArgs);
 			break;
 		case EPISODE_ID_CASE:
-			// TODO
-			break;
+			count = db.update(EPISODES_TABLE_NAME, values, EPISODE_ID + "=" +
+					uri.getPathSegments().get(1) +
+					(!TextUtils.isDigitsOnly(selection) 
+							? " And (" + selection + ')' : ""), selectionArgs);			break;
 		case QUEUE:
 			count = db.update(QUEUE_TABLE_NAME, values, selection, selectionArgs);
 			break;
@@ -402,12 +440,10 @@ public class ShowsProvider extends ContentProvider {
 					(!TextUtils.isDigitsOnly(selection) 
 							? " And (" + selection + ')' : ""), selectionArgs);
 			break;
+		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
-			// TODO
-			break;
 		case NEW_EPISODE_ID:
-			// TODO
-			break;
+			throw new IllegalArgumentException("Read Only: " + uri);
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
 		}
@@ -419,7 +455,6 @@ public class ShowsProvider extends ContentProvider {
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int count = 0;
-		Cursor c;
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		switch(uriMatcher.match(uri)) {
 		case SHOWS:
@@ -432,11 +467,13 @@ public class ShowsProvider extends ContentProvider {
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
 		case EPISODES:
-			// TODO
+			count = db.delete(EPISODES_TABLE_NAME, selection, selectionArgs);
 			break;
 		case EPISODE_ID_CASE:
-			// TODO
-			break;
+			count = db.delete(EPISODES_TABLE_NAME, EPISODE_ID + "=" 
+					+ uri.getPathSegments().get(1)
+					+ (!TextUtils.isEmpty((selection))
+							? " AND (" + selection + ')' : ""), selectionArgs);			break;
 		case QUEUE:
 			count = db.delete(QUEUE_TABLE_NAME, selection, selectionArgs);
 			break;
@@ -446,12 +483,10 @@ public class ShowsProvider extends ContentProvider {
 					+ (!TextUtils.isEmpty((selection))
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
+		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
-			// TODO
-			break;
 		case NEW_EPISODE_ID:
-			// TODO
-			break;
+			throw new IllegalArgumentException("Read Only: " + uri);
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
 		}
