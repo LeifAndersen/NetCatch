@@ -87,7 +87,7 @@ public class SubscriptionDialog extends Dialog {
 						values.put(ShowsProvider.AUTHOR, show.getAuthor());
 						values.put(ShowsProvider.FEED, show.getFeed());
 						values.put(ShowsProvider.IMAGE, show.getImagePath());
-						ctx.getContentResolver().insert(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, values);
+						ctx.getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
 						
 						// Get the episodes, add to database.
 						// Database doesn't need to be cleared, as it shouldn't have existed.
