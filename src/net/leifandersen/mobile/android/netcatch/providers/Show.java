@@ -28,13 +28,14 @@ import android.graphics.drawable.Drawable;
 public class Show implements Serializable {
 
 	public static final int NO_ID = -1;
+	public static final int DEFAULT = -1;
 	
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String title;
 	private String author;
 	private String feed;
-	private Bitmap image;
+	private Drawable image;
 	private String imagePath;
 	private String description;
 	private int episodesToKeep;
@@ -111,16 +112,16 @@ public class Show implements Serializable {
 	}
 	
 	/**
-	 * @param image the image to set
+	 * @param drawable the image to set
 	 */
-	public void setImage(Bitmap image) {
-		this.image = image;
+	public void setImage(Drawable drawable) {
+		this.image = drawable;
 	}
 	
 	/**
 	 * @return the image
 	 */
-	public Bitmap getImage() {
+	public Drawable getImage() {
 		return image;
 	}
 

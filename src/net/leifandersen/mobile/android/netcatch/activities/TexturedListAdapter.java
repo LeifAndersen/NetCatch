@@ -21,6 +21,7 @@ import net.leifandersen.mobile.android.netcatch.providers.Show;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +78,7 @@ public class TexturedListAdapter extends BaseAdapter {
 				updateDate.setTypeface(vera);
 			
 			if(s.getImage() == null) art.setImageResource(R.drawable.image_album_background);
-			else art.setImageDrawable(new BitmapDrawable(s.getImage()));
+			else art.setImageDrawable(s.getImage());
 		}
 		return v;
 	}

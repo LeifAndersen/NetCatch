@@ -17,13 +17,17 @@ import java.util.ArrayList;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
+import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -59,18 +63,7 @@ public class ShowsListActivity extends Activity {
 		header = (FrameLayout)findViewById(R.id.header);
 		NCMain.setColorOverlay(background, header);
 		
-			/*Just using this to test the ListAdapter*/
-			ArrayList<Show> testShows = new ArrayList<Show>();
-			Show bol = new Show("Buzz Out Loud", "CNet Podcasts", "http://buzzoutloudpodcast.cnet.com", "Podcast of Indeterminate Length", "", -1, -1);
-			bol.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.bol));
-			testShows.add(bol);
-			Show engadget = new Show("Engadget", "Engadget", "http://engadgetpodcast.com", "The Engadget.com Podcast", "", -1, -1);
-			engadget.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.engadget));
-			testShows.add(engadget);		
-		
-		TexturedListAdapter tla = new TexturedListAdapter(this, testShows);
-		ListView lv = (ListView)findViewById(R.id.feeds_list);
-		lv.setAdapter(tla);
+		refreshList();
 		
 		// Start the widget
 		//mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
@@ -123,27 +116,32 @@ public class ShowsListActivity extends Activity {
 			NCMain.setColorOverlay(background, header);
 		}
 	}
-
-	/*
+	
 	private void refreshList() {
 		// Reset the view, 
-		mAdapter = new ShowAdapter(this);
-		setListAdapter(mAdapter);
+		ArrayList<Show> showsList = new ArrayList<Show>();
 
 		// Get all of the shows
-		Cursor shows = managedQuery(ShowsProvider.SUBSCRIPCTIONS_CONTENT_URI, null, null, null, null);
+		Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
 
 		// Populate the view
 		if(shows.moveToFirst())
 			do {
-				Show s = new Show();
-				s.setTitle(shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)));
-				s.setAuthor(shows.getString(shows.getColumnIndex(ShowsProvider.AUTHOR)));
 				String imagePath = shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
+				Show s = new Show(shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)),
+						shows.getString(shows.getColumnIndex(ShowsProvider.AUTHOR)),
+						shows.getString(shows.getColumnIndex(ShowsProvider.FEED)),
+						shows.getString(shows.getColumnIndex(ShowsProvider.DESCRIPTION)),
+						imagePath, Show.DEFAULT, Show.DEFAULT);
 				if (imagePath != "")
 					s.setImage(Drawable.createFromPath(imagePath));
-				mAdapter.add(s);
+				else // TODO, really draw the image
+					s.setImage(Drawable.createFromPath(imagePath));
 			} while (shows.moveToNext());
-	}*/
-
+		
+		// Update the adapter
+		TexturedListAdapter tla = new TexturedListAdapter(this, showsList);
+		ListView lv = (ListView)findViewById(R.id.feeds_list);
+		lv.setAdapter(tla);
+	}
 }

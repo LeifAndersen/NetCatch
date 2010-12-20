@@ -77,28 +77,6 @@ public class SubscriptionDialog extends Dialog {
 				BroadcastReceiver finishedReceiver = new BroadcastReceiver() {
 					@Override
 					public void onReceive(Context context, Intent intent) {							
-						// Get the data
-						// Get the show
-						Bundle showBundle = intent.getBundleExtra(RSSService.SHOW);
-						Show show = (Show)showBundle.get(RSSService.SHOW);
-						
-						// Add the show
-						ContentValues values = new ContentValues();
-						values.put(ShowsProvider.TITLE, show.getTitle());
-						values.put(ShowsProvider.AUTHOR, show.getAuthor());
-						values.put(ShowsProvider.FEED, show.getFeed());
-						values.put(ShowsProvider.IMAGE, show.getImagePath());
-						values.put(ShowsProvider.DESCRIPTION, show.getDescription());
-						values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
-						values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
-						ctx.getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
-						
-						// Get the id for the show just added.
-						Cursor c = ctx.getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
-						c.moveToFirst();
-						int id = c.getInt(c.getColumnIndex(ShowsProvider._ID));
-						
-
 						progressDialog.cancel();
 					}
 				};

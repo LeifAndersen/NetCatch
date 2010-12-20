@@ -167,7 +167,7 @@ public class ShowsProvider extends ContentProvider {
 	private static final String EPISODES_TABLE_NAME = "episdoes";
 	private static final String SHOW_TABLE_CREATE = 
 		"CREATE TABLE " + SHOWS_TABLE_NAME + " ("
-		+ _ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+		+ _ID + " INTEGER PRIMARY KEY,"
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ FEED + " TEXT,"
@@ -176,23 +176,26 @@ public class ShowsProvider extends ContentProvider {
 		+ UPDATE_FREQUENCY + " INTEGER," 
 		+ EPISODES_TO_KEEP + " INTEGER,"
 		+ PREVIOUS_UPDATE_TIME + " INTEGER" + ");";
-	private static final String QUEUE_TABLE_CREATE =
-		"CREATE TABLE " + QUEUE_TABLE_NAME + " ("
-		+ _ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-		+ "FOREIGN KEY (" + EPISODE_ID + ") REFERENCES " + 
-		EPISODES_TABLE_NAME + " (" + EPISODE_ID + ")" + ");";
 	private static final String EPISODE_TABLE_CREATE = 
 		"CREATE TABLE  " + EPISODES_TABLE_NAME + " ("
-		+ _ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-		+ "FOREIGN KEY (" + SHOW_ID +") REFERENCES " +
-		SHOWS_TABLE_NAME + " (" + SHOW_ID + "), "
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ SHOW_ID + " INTEGER NOT NULL,"
+
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ DESCRIPTION + " TEXT," 
 		+ MEDIA + " TEXT, "
 		+ DATE + " INTEGER, "
 		+ BOOKMARK + " INTEGER,"
-		+ PLAYED + " BOOLEAN" + ");";
+		+ PLAYED + " BOOLEAN,"
+		+ "FOREIGN KEY (" + SHOW_ID + ") REFERENCES " +
+		SHOWS_TABLE_NAME + " (" + _ID + ")" + ");";
+	private static final String QUEUE_TABLE_CREATE =
+		"CREATE TABLE " + QUEUE_TABLE_NAME + " ("
+		+ _ID + " INTEGER PRIMARY KEY,"
+		+ EPISODE_ID + " INTEGER NOT NULL,"
+		+ "FOREIGN KEY (" + EPISODE_ID + ") REFERENCES " + 
+		EPISODES_TABLE_NAME + " (" + _ID + ")" + ");";
 
 	private static final String SHOW = "show";
 	private static final String EPISODE = "episode";
