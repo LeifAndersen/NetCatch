@@ -77,6 +77,11 @@ public class ShowsProvider extends ContentProvider {
 
 	private static final String TAG = "ShowsProvider";
 
+	/**
+	 * The last ID case
+	 */
+	public static final String LATEST_ID = "last_insert_rowid()";
+	
 	// For the shows table
 	/**
 	 * The Row ID
@@ -210,7 +215,7 @@ public class ShowsProvider extends ContentProvider {
 	private static final int QUEUE_ID_CASE = 7;
 	private static final int NEW_EPISODES = 8;
 	private static final int NEW_EPISODE_ID = 9;
-	private static final int LATEST_ID = 10;
+	private static final int LATEST_ID_CASE = 10;
 	
 	private static final UriMatcher uriMatcher;
 	static {
@@ -224,7 +229,7 @@ public class ShowsProvider extends ContentProvider {
 		uriMatcher.addURI(PROVIDER_NAME, "queue/#", QUEUE_ID_CASE);
 		uriMatcher.addURI(PROVIDER_NAME, "new", NEW_EPISODES);
 		uriMatcher.addURI(PROVIDER_NAME, "new/#", NEW_EPISODE_ID);
-		uriMatcher.addURI(PROVIDER_NAME, "id", LATEST_ID);
+		uriMatcher.addURI(PROVIDER_NAME, "id", LATEST_ID_CASE);
 	}
 
 	private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -292,9 +297,9 @@ public class ShowsProvider extends ContentProvider {
 		case NEW_EPISODES:
 			qb.setTables(EPISODES_TABLE_NAME);
 			break;
-		case LATEST_ID:
+		case LATEST_ID_CASE:
 			SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-			Cursor c = db.rawQuery(" SELECT last_insert_rowid();", null);
+			Cursor c = db.rawQuery("SELECT last_insert_rowid();", null);
 			c.setNotificationUri(getContext().getContentResolver(), uri);
 			return c;
 		default:
@@ -328,7 +333,7 @@ public class ShowsProvider extends ContentProvider {
 		case EPISODE_ID_CASE:
 		case QUEUE_ID_CASE:
 		case NEW_EPISODE_ID:
-		case LATEST_ID:
+		case LATEST_ID_CASE:
 			return "vnd.android.cursor.item/" + PROVIDER_TYPE;
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
@@ -411,7 +416,7 @@ public class ShowsProvider extends ContentProvider {
 		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
-		case LATEST_ID:
+		case LATEST_ID_CASE:
 			throw new IllegalArgumentException("Read Only: " + uri);
 
 		default:
@@ -454,7 +459,7 @@ public class ShowsProvider extends ContentProvider {
 		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
-		case LATEST_ID:
+		case LATEST_ID_CASE:
 			throw new IllegalArgumentException("Read Only: " + uri);
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
@@ -498,7 +503,7 @@ public class ShowsProvider extends ContentProvider {
 		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
-		case LATEST_ID:
+		case LATEST_ID_CASE:
 			throw new IllegalArgumentException("Read Only: " + uri);
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
