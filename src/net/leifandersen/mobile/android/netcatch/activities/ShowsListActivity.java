@@ -41,7 +41,7 @@ import android.widget.ListView;
  * @author Leif Andersen
  *
  */
-public class SubscriptionsListActivity extends Activity {
+public class ShowsListActivity extends Activity {
 
 	private static final int NEW_FEED = 1;
 	private LinearLayout background;
@@ -61,10 +61,10 @@ public class SubscriptionsListActivity extends Activity {
 		
 			/*Just using this to test the ListAdapter*/
 			ArrayList<Show> testShows = new ArrayList<Show>();
-			Show bol = new Show("Buzz Out Loud", "CNet Podcasts", "http://buzzoutloudpodcast.cnet.com", "Podcast of Indeterminate Length", null);
+			Show bol = new Show("Buzz Out Loud", "CNet Podcasts", "http://buzzoutloudpodcast.cnet.com", "Podcast of Indeterminate Length", "", -1, -1);
 			bol.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.bol));
 			testShows.add(bol);
-			Show engadget = new Show("Engadget", "Engadget", "http://engadgetpodcast.com", "The Engadget.com Podcast", null);
+			Show engadget = new Show("Engadget", "Engadget", "http://engadgetpodcast.com", "The Engadget.com Podcast", "", -1, -1);
 			engadget.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.engadget));
 			testShows.add(engadget);		
 		

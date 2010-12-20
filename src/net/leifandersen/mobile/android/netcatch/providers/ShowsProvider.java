@@ -13,8 +13,6 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
-import java.util.List;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -27,8 +25,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.SystemClock;
-import android.provider.Settings.System;
 import android.text.TextUtils;
 import android.util.Log;
 

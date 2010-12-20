@@ -27,6 +27,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -87,23 +88,16 @@ public class SubscriptionDialog extends Dialog {
 						values.put(ShowsProvider.AUTHOR, show.getAuthor());
 						values.put(ShowsProvider.FEED, show.getFeed());
 						values.put(ShowsProvider.IMAGE, show.getImagePath());
+						values.put(ShowsProvider.DESCRIPTION, show.getDescription());
+						values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
+						values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
 						ctx.getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
 						
-						// Get the episodes, add to database.
-						// Database doesn't need to be cleared, as it shouldn't have existed.
-						Bundle episodeBundle = intent.getBundleExtra(RSSService.EPISODES);
-						ArrayList<String> titles = episodeBundle.getStringArrayList(RSSService.EPISODE_TITLES);
-						for (String title : titles) {								
-							Episode episode = (Episode)episodeBundle.get(title);
-							values = new ContentValues();
-							values.put(ShowsProvider.TITLE, episode.getTitle());
-							values.put(ShowsProvider.AUTHOR, episode.getAuthor());
-							values.put(ShowsProvider.DATE, episode.getDate());
-							values.put(ShowsProvider.PLAYED, episode.isPlayed());
-							values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
-							ctx.getContentResolver().insert(Uri.parse("content://" + ShowsProvider.PROVIDER_NAME
-									+ "/"+ show.getTitle()), values);
-						}
+						// Get the id for the show just added.
+						Cursor c = ctx.getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
+						c.moveToFirst();
+						int id = c.getInt(c.getColumnIndex(ShowsProvider._ID));
+						
 
 						progressDialog.cancel();
 					}

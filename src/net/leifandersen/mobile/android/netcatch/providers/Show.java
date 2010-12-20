@@ -27,24 +27,45 @@ import android.graphics.drawable.Drawable;
  */
 public class Show implements Serializable {
 
+	public static final int NO_ID = -1;
+	
 	private static final long serialVersionUID = 1L;
+	private int id;
 	private String title;
 	private String author;
 	private String feed;
 	private Bitmap image;
 	private String imagePath;
 	private String description;
+	private int episodesToKeep;
+	private int updateFrequency;
 	
 	public Show() {
 		
 	}
 	
-	public Show(String title, String author, String feed, String description, String imagePath) {
+	public Show(String title, String author, String feed, String description, 
+			String imagePath, int episodesToKeep, int updateFrequency) {
+		this.id = NO_ID;
 		this.title = title;
 		this.author = author;
 		this.feed = feed;
 		this.imagePath = imagePath;
 		this.description = description;
+		this.episodesToKeep = episodesToKeep;
+		this.updateFrequency = updateFrequency;
+	}
+	
+	public Show(int id, String title, String author, String feed, String description, 
+			String imagePath, int episodesToKeep, int updateFrequency) {
+		this.id = id;
+		this.title = title;
+		this.author = author;
+		this.feed = feed;
+		this.imagePath = imagePath;
+		this.description = description;
+		this.episodesToKeep = episodesToKeep;
+		this.updateFrequency = updateFrequency;
 	}
 
 	/**
@@ -129,5 +150,47 @@ public class Show implements Serializable {
 	 */
 	public String getDescription() {
 		return description;
+	}
+
+	/**
+	 * @param episodesToKeep the episodesToKeep to set
+	 */
+	public void setEpisodesToKeep(int episodesToKeep) {
+		this.episodesToKeep = episodesToKeep;
+	}
+
+	/**
+	 * @return the episodesToKeep
+	 */
+	public int getEpisodesToKeep() {
+		return episodesToKeep;
+	}
+
+	/**
+	 * @param updateFrequency the updateFrequency to set
+	 */
+	public void setUpdateFrequency(int updateFrequency) {
+		this.updateFrequency = updateFrequency;
+	}
+
+	/**
+	 * @return the updateFrequency
+	 */
+	public int getUpdateFrequency() {
+		return updateFrequency;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
 	}
 }
