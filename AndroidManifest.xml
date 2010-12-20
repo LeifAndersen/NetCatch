@@ -36,9 +36,8 @@
 		</activity>
 
 		<activity 
-			android:name=".activities.SubscriptionsListActivity"
 			android:theme="@android:style/Theme.NoTitleBar"
-			/>
+			android:name=".activities.ShowsListActivity"/>
 
 		<provider 
 			android:name=".providers.ShowsProvider"
