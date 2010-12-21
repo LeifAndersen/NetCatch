@@ -43,8 +43,9 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * 
@@ -115,14 +116,15 @@ public class ShowsListActivity extends ListActivity {
 		}
 	}
 
-	private BroadcastReceiver refreshReceiver;
 	private static final int NEW_FEED = 1;
+	
+	private BroadcastReceiver refreshReceiver;
 	private LinearLayout background;
 	private FrameLayout header;
 	private TexturedListAdapter adapter;
 	private SharedPreferences sharedPrefs;
-	//private View mPlayer;
-
+	private List<Show> shows;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -155,6 +157,16 @@ public class ShowsListActivity extends ListActivity {
 		refreshList();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		int x = sharedPrefs.getInt("theme_color", -1);
+		if(x != -1) {
+			NCMain.overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
+			NCMain.setColorOverlay(background, header);
+		}
+	}
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -189,6 +201,20 @@ public class ShowsListActivity extends ListActivity {
 	}
 
 	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		
+		// Get the show
+		Show s = shows.get(position);
+		
+		// Start up the episode list for that show
+		Intent i = new Intent();
+		i.setClass(this, EpisodesListActivity.class);
+		i.putExtra(EpisodesListActivity.SHOW_ID, s.getId());
+		startActivity(i);
+	}
+	
+	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
 
@@ -205,21 +231,11 @@ public class ShowsListActivity extends ListActivity {
 		return dialog;
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		int x = sharedPrefs.getInt("theme_color", -1);
-		if(x != -1) {
-			NCMain.overlay = null;
-			NCMain.overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
-			NCMain.setColorOverlay(background, header);
-		}
-	}
-
 	private void refreshList() {
 		// Update the adapter
 		adapter = new TexturedListAdapter(this);
 		setListAdapter(adapter);
+		this.shows = new ArrayList<Show>();
 
 		// Get all of the shows
 		Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
@@ -228,13 +244,16 @@ public class ShowsListActivity extends ListActivity {
 		if(shows.moveToFirst())
 			do {
 				String imagePath = shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
-				Show s = new Show(shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)),
+				Show s = new Show(
+						shows.getInt(shows.getColumnIndex(ShowsProvider._ID)),
+						shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.AUTHOR)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.FEED)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						imagePath, Show.DEFAULT, Show.DEFAULT);
 				s.setImage(Drawable.createFromPath(imagePath));
 				adapter.add(s);
+				this.shows.add(s);
 			} while (shows.moveToNext());
 
 	}
