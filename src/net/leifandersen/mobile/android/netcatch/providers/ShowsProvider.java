@@ -167,7 +167,7 @@ public class ShowsProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "Shows";
 	private static final String SHOWS_TABLE_NAME = "shows";
 	private static final String QUEUE_TABLE_NAME = "queue";
-	private static final String EPISODES_TABLE_NAME = "episdoes";
+	private static final String EPISODES_TABLE_NAME = "episodes";
 	private static final String SHOW_TABLE_CREATE = 
 		"CREATE TABLE " + SHOWS_TABLE_NAME + " ("
 		+ SHOW_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

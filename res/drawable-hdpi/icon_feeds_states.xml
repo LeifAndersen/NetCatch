@@ -14,12 +14,13 @@
    limitations under the License.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item 
+    <item    	 
     	android:state_pressed="true"
         android:drawable="@drawable/icon_feeds_pressed" /> <!-- pressed -->
+    
     <item 
     	android:state_focused="true"
         android:drawable="@drawable/icon_feeds_focused" /> <!-- focused -->
-    <item 
-    	android:drawable="@drawable/icon_feeds" /> <!-- default -->
+    
+    <item android:drawable="@drawable/icon_feeds" /> <!-- default -->
 </selector>

@@ -26,24 +26,24 @@
 	<FrameLayout								
 		android:id="@+id/header"
 		android:layout_width="fill_parent"
-		android:layout_height="95px"
+		android:layout_height="60dp"
 		android:background="@drawable/ninepatch_blue_back_large"
 		>
 		<ImageView
 			android:id="@+id/btn_refresh"
-			android:layout_width="90px"
-			android:layout_height="90px"
-			android:layout_gravity="right|top"
-			
+			android:layout_width="60dp"
+			android:layout_height="fill_parent"
+			android:paddingBottom="5px"
+			android:layout_gravity="right|top"			
 			android:src="@drawable/btn_refresh"
 			android:scaleType="center"
 			/>
 		<TextView
 			android:id="@+id/title_text"
 			android:layout_width="wrap_content"
-			android:layout_height="90px"
-			android:paddingLeft="30px"
-			android:layout_marginRight="90px"
+			android:layout_height="fill_parent"
+			android:paddingLeft="15dp"
+			android:paddingBottom="5px"
 			android:gravity="center_vertical"
 			android:text="NetCatch"
 			android:textColor="@android:color/white"
@@ -61,13 +61,9 @@
 	<LinearLayout
 		android:id="@+id/icons"
 		android:layout_below="@id/header"
-		android:layout_above="@id/player"
-		android:layout_marginTop="10dp"
-		android:layout_marginBottom="10dp"
+		android:layout_marginTop="5dp"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:layout_weight="1"
-		android:gravity="center_vertical"
+		android:layout_height="wrap_content"
 		android:orientation="horizontal"
 		>
 		
@@ -86,27 +82,19 @@
 				android:layout_gravity="center"
 				android:scaleType="center"
 				android:src="@drawable/icon_queue_states"
-				/>
-			<TextView
+				/>				
+			<ImageView
 				android:id="@+id/icon_queue_text"
-				android:gravity="center_horizontal"
-				android:layout_gravity="bottom"
-				android:layout_width="fill_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="QUEUE"
-				android:textColor="@android:color/white"
-				android:textStyle="bold"
-				android:textSize="16px"
-				android:paddingBottom="11px"
-				android:shadowColor="#A5000000"
-				android:shadowDx="1"
-				android:shadowDy="1"
-				android:shadowRadius="3"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_queue_text"
 				/>
 		</FrameLayout>
 		
 		<!-- Feeds Icon -->	
-			
+				
 		<FrameLayout
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
@@ -120,24 +108,16 @@
 				android:layout_gravity="center"
 				android:scaleType="center"
 				android:src="@drawable/icon_feeds_states"
-				/>
-			<TextView
+				/>				
+			<ImageView
 				android:id="@+id/icon_feeds_text"
-				android:gravity="center_horizontal"
-				android:layout_gravity="bottom"
-				android:layout_width="fill_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="FEEDS"
-				android:textColor="@android:color/white"
-				android:textStyle="bold"
-				android:textSize="16px"
-				android:paddingBottom="11px"
-				android:shadowColor="#A5000000"
-				android:shadowDx="1"
-				android:shadowDy="1"
-				android:shadowRadius="3"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_feeds_text"
 				/>
-		</FrameLayout>
+		</FrameLayout>		
 		
 		<!-- New Icon -->
 		
@@ -154,24 +134,17 @@
 				android:layout_gravity="center"
 				android:scaleType="center"
 				android:src="@drawable/icon_new_states"
-				/>
-			<TextView
+				/>				
+			<ImageView
 				android:id="@+id/icon_new_text"
-				android:gravity="center_horizontal"
-				android:layout_gravity="bottom"
-				android:layout_width="fill_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="NEW"
-				android:textColor="@android:color/white"
-				android:textStyle="bold"
-				android:textSize="16px"
-				android:paddingBottom="11px"
-				android:shadowColor="#A5000000"
-				android:shadowDx="1"
-				android:shadowDy="1"
-				android:shadowRadius="3"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_new_text"
 				/>
-		</FrameLayout>		
+		</FrameLayout>
+				
 	</LinearLayout>
 	
 	<!-- Bottom Mini Player -->
@@ -180,9 +153,7 @@
 		android:id="@+id/player"
 		android:layout_width="fill_parent"
 		android:layout_height="80dp"
-		android:layout_marginLeft="10dp"
-		android:layout_marginRight="10dp"
-		android:layout_marginBottom="10dp"
+		android:layout_margin="5dp"
 		android:layout_alignParentBottom="true"
 		android:background="@drawable/ninepatch_blue_back_lg"
 		>
@@ -190,9 +161,9 @@
 			android:id="@+id/mini_player_album_art"
 			android:layout_width="70dp"
 			android:layout_height="70dp"
-			android:layout_margin="5px"
+			android:layout_gravity="left|center_vertical"
 			android:background="@drawable/ninepatch_album_art_drop_shadow"
-			android:src="@drawable/engadget"
+			android:src="#FF000000"
 			android:scaleType="centerCrop"
 			/>
 		<TextView
@@ -203,7 +174,7 @@
 			android:layout_alignParentTop="true"
 			android:ellipsize="marquee"
 			android:paddingTop="10px"
-			android:text="Buzz Out Loud Episode 1316"
+			android:text=""
 			android:textColor="@android:color/white"
 			android:textStyle="bold"
 			android:textSize="16sp"
@@ -219,7 +190,7 @@
 			android:layout_alignParentBottom="true"
 			android:layout_toRightOf="@id/mini_player_album_art"
 			android:paddingBottom="10px"
-			android:text="13:15 / 37:15"
+			android:text=""
 			android:textColor="@android:color/white"
 			android:textStyle="normal"
 			android:textSize="12sp"

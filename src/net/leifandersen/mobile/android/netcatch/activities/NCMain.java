@@ -24,9 +24,10 @@ import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -79,9 +80,6 @@ public class NCMain extends Activity implements OnClickListener {
 		homeViews.titleText = (TextView)findViewById(R.id.title_text);
 		homeViews.playerEpisodeTitle = (TextView)findViewById(R.id.player_episode_title);
 		homeViews.playerEpisodeTime = (TextView)findViewById(R.id.player_episode_time);
-		homeViews.iconFeedsText = (TextView)findViewById(R.id.icon_feeds_text);
-		homeViews.iconNewText = (TextView)findViewById(R.id.icon_new_text);
-		homeViews.iconQueueText = (TextView)findViewById(R.id.icon_queue_text);
 		homeViews.miniPlayer = (RelativeLayout)findViewById(R.id.player);
 		homeViews.header = (FrameLayout)findViewById(R.id.header);
 		homeViews.iconQueue = (ImageButton)findViewById(R.id.icon_queue);
@@ -92,10 +90,7 @@ public class NCMain extends Activity implements OnClickListener {
 				homeViews.playerEpisodeTime);
 		setTypeface(veraBold, 
 				homeViews.titleText, 
-				homeViews.playerEpisodeTitle,
-				homeViews.iconFeedsText,
-				homeViews.iconNewText,
-				homeViews.iconQueueText);
+				homeViews.playerEpisodeTitle);
 		
 		//need to change to pull color from SharedPreferences ~Kevin
 		setColorOverlay( 
@@ -103,7 +98,7 @@ public class NCMain extends Activity implements OnClickListener {
 				homeViews.iconFeeds,
 				homeViews.iconNew,
 				homeViews.miniPlayer,
-				homeViews.header);		
+				homeViews.header);
 		
 		homeViews.iconQueue.setOnClickListener(this);
 		homeViews.iconFeeds.setOnClickListener(this);
@@ -204,10 +199,7 @@ public class NCMain extends Activity implements OnClickListener {
 		TextView
 			titleText,
 			playerEpisodeTitle,
-			playerEpisodeTime,
-			iconFeedsText,
-			iconNewText,
-			iconQueueText;
+			playerEpisodeTime;
 		ImageButton
 			iconNew,
 			iconQueue,
