@@ -13,6 +13,9 @@
  */
 package net.leifandersen.mobile.android.netcatch.activities;
 
+import java.sql.Date;
+import java.util.Calendar;
+
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -24,7 +27,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -35,12 +37,11 @@ import android.widget.TextView;
  */
 public class EpisodesListActivity extends ListActivity {
 
-	private View mPlayer;
-	static String SHOW_NAME;
+	public static final String SHOW_ID = "id";
 	
-	String mShowName;
+	private int mShowID;
 	
-	private static class ViewHolder {
+	private static final class ViewHolder {
 		TextView title;
 		TextView description;
 		TextView date;
@@ -72,7 +73,8 @@ public class EpisodesListActivity extends ListActivity {
 			Episode episode = getItem(position);
 			holder.title.setText(episode.getTitle());
 			holder.description.setText(episode.getDescription());
-			holder.date.setText(episode.getDate());
+			// holder.date.setText(episode.getDate());
+			holder.date.setTag(new Date(episode.getDate()).toString());
 			
 			registerForContextMenu(convertView);
 			return convertView;
@@ -90,16 +92,17 @@ public class EpisodesListActivity extends ListActivity {
 		// Get the show name
 		// If no show was passed in, the activity was called poorly, abort.
 		Bundle b = getIntent().getExtras();
-		if (b != null) {
-			mShowName = b.getString(SHOW_NAME);
-		} else
-			finish();
+		if (b == null)
+			throw new IllegalArgumentException("No Bundle Given");
+		mShowID = b.getInt(SHOW_ID, -1);
+		if(mShowID == -1)
+			throw new IllegalArgumentException("No Show ID Given");
 			
 		// Set the List Adapter
 		refreshList();
 		
 		// Start the widget
-		mPlayer = ((ViewStub)findViewById(R.id.el_small_player_stub)).inflate();
+		// mPlayer = ((ViewStub)findViewById(R.id.el_small_player_stub)).inflate();
 	}
 
 	private void refreshList() {
@@ -109,15 +112,16 @@ public class EpisodesListActivity extends ListActivity {
 		// Get a list of all of the elements.
 		// TODO, make sure to get it in the write order!
 		// Add the list to the adapter
-		Cursor c = managedQuery(Uri.parse("content://" + ShowsProvider.PROVIDER_NAME + "/" + mShowName),
-				null, null, null, null);
+		Cursor c = managedQuery(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI
+				+ "/" + mShowID + "/episodes"), null, null, null, null);
 		if (c.moveToFirst()) {
 			do {
 				Episode ep = new Episode(c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
 						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
-						c.getString(c.getColumnIndex(ShowsProvider.DATE)),
+						c.getInt(c.getColumnIndex(ShowsProvider.DATE)),
+						c.getInt(c.getColumnIndex(ShowsProvider.BOOKMARK)),
 						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool
 				mAdapter.add(ep);
 			} while (c.moveToNext());

@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
+import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -33,19 +34,22 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
 /**
  * 
- * A simple service that takes an RSS feed and returns a list of all
- * of the shows in that feed, or nothing if there isn't anything in that
- * feed to begin with.
+ * A simple service that takes an RSS feed and saves the data from the RSS feed.
+ * 
+ * Requires either the show object to be pased in, or just a feed, which will create
+ * a new show object
  * 
  * @author Leif Andersen
  *
@@ -58,8 +62,14 @@ public class RSSService extends Service {
 	public static final String RSSFINISH = "RSSFinish ";
 	public static final String RSSFAILED = "RSSFAILED ";
 	public static final String EPISODE_TITLES = "episode_titles";
+	public static final String ID = "id";
+	public static final String UPDATE_METADATA = "update_metadata";
+	
+	private static final int NEW_SHOW = -1;
+	private int id;
 	private String feed;
-
+	private boolean updateMetadata;
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -73,7 +83,10 @@ public class RSSService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// Set up the feed for this service
+		id = intent.getIntExtra(ID, NEW_SHOW);
 		feed = intent.getStringExtra(FEED);
+		updateMetadata = intent.getBooleanExtra(UPDATE_METADATA, false);
+		
 		if (feed == null)
 			throw new IllegalArgumentException("No feed placed in intent");
 
@@ -94,11 +107,13 @@ public class RSSService extends Service {
 	 * Get the data from the service's feed.
 	 */
 	public void fetchData() {
-
+		
+		String feed = this.feed;
+		
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, feed);
 		if (feedDoc == null) {
-			serviceFailed();
+			serviceFailed(feed);
 			return;
 		}
 
@@ -108,32 +123,69 @@ public class RSSService extends Service {
 		// Get the episodes
 		List<Episode> episodes = getEpisodesFromRSS(this, feedDoc);
 		if(episodes == null || show == null) {
-			serviceFailed();
+			serviceFailed(feed);
 			return;
 		}
 
-		// Put the Show into a bundle
-		Bundle showBundle = new Bundle();
-		showBundle.putSerializable(SHOW, show);
-
-		// Put the Episodes into a bundle
-		ArrayList<String> titles = new ArrayList<String>();
-		Bundle episodeBundle = new Bundle();
-		for (Episode episode : episodes) {
-			titles.add(episode.getTitle());
-			episodeBundle.putSerializable(episode.getTitle(), episode);
+		// Get the show's image:
+		if(updateMetadata || id == NEW_SHOW) {
+			// TODO
 		}
-		episodeBundle.putStringArrayList(EPISODE_TITLES, titles);
 		
-		// Broadcast the bundles back to the main app
+		// Write show information
+		ContentValues values = new ContentValues();
+		values.put(ShowsProvider.TITLE, show.getTitle());
+		values.put(ShowsProvider.AUTHOR, show.getAuthor());
+		values.put(ShowsProvider.IMAGE, show.getImagePath());
+		values.put(ShowsProvider.DESCRIPTION, show.getDescription());
+		values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
+		values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
+		int id;
+		if(this.id == NEW_SHOW) {
+			// It's a new show
+			// Insert the show into the database
+			getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
+			
+			// Get the id of the new show
+			Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
+			c.moveToFirst();
+			id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
+		} else if(updateMetadata) {
+			// The show is already in the database.
+			id = this.id;
+			
+			// Update the metadata
+			getContentResolver().update(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+					+ "/" + id), values, null, null);
+			
+			// TODO clear out old episode information from db\
+		}
+		else {
+			// Set the id
+			id = this.id;
+			
+			// TODO Clear out old episode information from db
+		}
+		
+		// Write the episode information
+		for(Episode episode : episodes) {
+			values = new ContentValues();
+			values.put(ShowsProvider.SHOW_ID, id);
+			values.put(ShowsProvider.TITLE, episode.getTitle());
+			values.put(ShowsProvider.AUTHOR, episode.getAuthor());
+			values.put(ShowsProvider.DATE, episode.getDate());
+			values.put(ShowsProvider.PLAYED, episode.isPlayed());
+			values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
+			getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
+		}
+		
+		// Send out the finish broadcast
 		Intent broadcast = new Intent(RSSFINISH + feed);
-		broadcast.putExtra(EPISODES, episodeBundle);
-		broadcast.putExtra(SHOW, showBundle);
 		sendBroadcast(broadcast);
 		stopSelf();
 	}
 
-	private void serviceFailed() {
+	private void serviceFailed(String feed) {
 		Intent broadcast = new Intent(RSSFAILED + feed);
 		sendBroadcast(broadcast);
 		stopSelf();
@@ -203,7 +255,7 @@ public class RSSService extends Service {
 			else
 				desc = descNode.item(0).getFirstChild().getNodeValue();
 			
-			return new Show(title, author, feedUrl, desc, null);
+			return new Show(title, author, feedUrl, desc, null, -1, -1);
 		} catch (Exception e) {
 			// Any parse errors and we'll log and fail
 			Log.e("NCRSS", "Error parsing RSS", e);
@@ -252,7 +304,7 @@ public class RSSService extends Service {
 					url = "";
 				else 
 					url = urlNode.item(0).getFirstChild().getNodeValue();
-				episodes.add(new Episode(title, author, desc, url, date, false));
+				episodes.add(new Episode(title, author, desc, url, /* TODO date*/ 0, 0, false));
 			}
 			return episodes;
 

@@ -11,7 +11,6 @@
  *See the License for the specific language governing permissions and
  *limitations under the License.
  */
-
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
@@ -183,7 +182,7 @@ public class NCMain extends Activity implements OnClickListener {
 		Intent i;
 		switch (v.getId()) {
 		case R.id.icon_feeds:
-			i = new Intent(this, SubscriptionsListActivity.class);
+			i = new Intent(this, ShowsListActivity.class);
 			startActivity(i);
 			break;
 		case R.id.icon_queue:
@@ -191,7 +190,9 @@ public class NCMain extends Activity implements OnClickListener {
 			startActivity(i);
 			break;
 		case R.id.icon_new:
-			//implement
+			i = new Intent(this, NewEpisodeListActivity.class);
+			startActivity(i);
+			break;
 		}
 	};
 	

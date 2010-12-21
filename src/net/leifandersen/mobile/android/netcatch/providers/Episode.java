@@ -25,21 +25,58 @@ import java.io.Serializable;
  */
 public class Episode implements Serializable {
 	
+	public static final int NO_ID = -1;
+	public static final int NO_SHOW = -1;
+	
 	private static final long serialVersionUID = 1L;
 	private String title;
 	private String author;
 	private String description;
 	private String media;
 	private boolean played;
-	private String date;
+	private int date;
+	private int showId;
+	private int bookmark;
+	private int id;
 	
-	public Episode(String title, String author, String description, String media, String date, boolean played) {
+	public Episode(int id, int showId, String title, String author, String description, 
+			String media, int date, int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
 		this.media = media;
 		this.date = date;
 		this.played = played;
+		this.showId = showId;
+		this.bookmark = bookmark;
+		this.id = id;
+	}
+	
+	public Episode(int showId, String title, String author, String description, 
+			String media, int date, int bookmark, boolean played) {
+		this.title = title;
+		this.author = author;
+		this.description = description;
+		this.media = media;
+		this.date = date;
+		this.played = played;
+		this.showId = showId;
+		this.bookmark = bookmark;
+		this.id = NO_ID;
+	}
+	
+	public Episode(String title, String author, String description, 
+			String media, int date, int bookmark, boolean played) {
+		this.title = title;
+		this.author = author;
+		this.description = description;
+		this.media = media;
+		this.date = date;
+		this.played = played;
+		this.showId = showId;
+		this.bookmark = bookmark;
+		this.id = NO_ID;
+		this.showId = NO_SHOW;
 	}
 	
 	/**
@@ -115,14 +152,42 @@ public class Episode implements Serializable {
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(String date) {
+	public void setDate(int date) {
 		this.date = date;
 	}
 
 	/**
 	 * @return the date
 	 */
-	public String getDate() {
+	public int getDate() {
 		return date;
+	}
+
+	/**
+	 * @param showId the showId to set
+	 */
+	public void setShowId(int showId) {
+		this.showId = showId;
+	}
+
+	/**
+	 * @return the showId
+	 */
+	public int getShowId() {
+		return showId;
+	}
+
+	/**
+	 * @param bookmark the bookmark to set
+	 */
+	public void setBookmark(int bookmark) {
+		this.bookmark = bookmark;
+	}
+
+	/**
+	 * @return the bookmark
+	 */
+	public int getBookmark() {
+		return bookmark;
 	}
 }
