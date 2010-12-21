@@ -54,11 +54,20 @@
 	</FrameLayout>
 	
 	<ListView
-		android:id="@+id/feeds_list"
+		android:id="@+id/android:list"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:divider="@null"
 		android:cacheColorHint="#00000000"
 		android:paddingTop="20dp"
 		/>
+	<TextView android:id="@+id/android:empty"
+		android:layout_width = "wrap_content"
+		android:layout_height = "wrap_content"
+		android:text = "@string/no_subscriptions"
+		android:textSize = "16px"
+		android:cacheColorHint="#00000000"
+		android:paddingTop="20dp"
+		android:layout_centerHorizontal = "true"
+		android:layout_centerVertical = "true" />
 </LinearLayout>

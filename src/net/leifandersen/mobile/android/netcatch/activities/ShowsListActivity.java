@@ -19,15 +19,14 @@ import java.util.List;
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
-import android.app.Activity;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
@@ -40,11 +39,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 /**
@@ -55,89 +54,97 @@ import android.widget.TextView;
  * @author Leif Andersen
  *
  */
-public class ShowsListActivity extends Activity {
+public class ShowsListActivity extends ListActivity {
 
-	public class TexturedListAdapter extends BaseAdapter {
-		private List<Show> items = new ArrayList<Show>();
-		private Context context;
+	private static final class ViewHolder {
+		TextView title;
+		TextView counts;
+		TextView updateDate;
+		ImageView art;
+	}
+
+	private class TexturedListAdapter extends ArrayAdapter<Show> {
+
 		final Typeface vera, veraBold;
-		
-		public int getCount() {
-			return items.size();
-		}
-		
-		public long getItemId(int position) {
-			return position;
-		}
-		
-		public Show getItem(int position) {
-			return items.get(position);
-		}
-		
-		public TexturedListAdapter(Context context, ArrayList<Show> shows) {
+		LayoutInflater mInflator;
+
+		public TexturedListAdapter(Context context) {
+			super(context, R.layout.main_menu_list_item_textured);
 			vera = Typeface.createFromAsset(context.getAssets(), "Vera.ttf");
 			veraBold = Typeface.createFromAsset(context.getAssets(), "VeraBd.ttf");
-			this.items = shows;
-			this.context = context;
+			mInflator = getLayoutInflater();
 		}
+
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView;
+		public View getView(int position, View v, ViewGroup parent) {
+			ViewHolder holder;
 			if (v == null) {
-				LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.main_menu_list_item_textured, null);
+				// Setup the view and holder
+				v = mInflator.inflate(R.layout.main_menu_list_item_textured, null);
+				holder = new ViewHolder();
+
+				// Setup the viewholder elements
+				holder.title = (TextView)v.findViewById(R.id.list_feed_title);
+				holder.counts = (TextView)v.findViewById(R.id.list_feed_counts);
+				holder.updateDate = (TextView)v.findViewById(R.id.list_feed_update_time);
+				holder.art = (ImageView)v.findViewById(R.id.list_album_art);
+
+				// Save the viewholder
+				v.setTag(holder);
 			}
-			Show s = items.get(position);
-			if (s != null) {
-				
-				TextView title = (TextView)v.findViewById(R.id.list_feed_title);
-				TextView counts = (TextView)v.findViewById(R.id.list_feed_counts);
-				TextView updateDate = (TextView)v.findViewById(R.id.list_feed_update_time);
-				ImageView art = (ImageView)v.findViewById(R.id.list_album_art);
-				
-					//placeholders until Show class description is finalized
-					title.setText(s.getTitle());
-					title.setTypeface(veraBold);
-					
-					counts.setText(s.getDescription());
-					counts.setTypeface(vera);
-					
-					updateDate.setText(s.getFeed());
-					updateDate.setTypeface(vera);
-				
-				if(s.getImage() == null) art.setImageResource(R.drawable.image_album_background);
-				else art.setImageDrawable(s.getImage());
-			}
+			else
+				holder = (ViewHolder)v.getTag();
+
+			Show s = getItem(position);
+
+			//TODO placeholders until Show class description is finalized
+			holder.title.setText(s.getTitle());
+			holder.title.setTypeface(veraBold);
+
+			holder.counts.setText(s.getDescription());
+			holder.counts.setTypeface(vera);
+
+			holder.updateDate.setText(s.getFeed());
+			holder.updateDate.setTypeface(vera);
+
+			if(s.getImage() == null)
+				holder.art.setImageResource(R.drawable.image_album_background);
+			else
+				holder.art.setImageDrawable(s.getImage());
 			return v;
 		}
 	}
-	
-	private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
-		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			refreshList();
-		}
-	};;;
-	
+
+	private BroadcastReceiver refreshReceiver;
 	private static final int NEW_FEED = 1;
 	private LinearLayout background;
 	private FrameLayout header;
-	protected SharedPreferences sharedPrefs;
+	private TexturedListAdapter adapter;
+	private SharedPreferences sharedPrefs;
 	//private View mPlayer;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.feeds_list);
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		
+
+		// Set up the view
 		background = (LinearLayout)findViewById(R.id.background);
 		header = (FrameLayout)findViewById(R.id.header);
 		NCMain.setColorOverlay(background, header);
-		
+
+		// Set up the refresh receiver
+		refreshReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				refreshList();
+			}
+		};
+
+		// Refresh the list
 		refreshList();
-		
+
 		// Start the widget
 		//mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
 	}
@@ -147,13 +154,17 @@ public class ShowsListActivity extends Activity {
 		super.onRestart();
 		refreshList();
 	}
-	
+
 	@Override
-	protected void onStop() {
-		super.onStop();
-		unregisterReceiver(refreshReceiver);
+	protected void onDestroy() {
+		super.onDestroy();
+		try {
+			unregisterReceiver(refreshReceiver);
+		} catch (Exception e) {
+
+		}
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -176,12 +187,12 @@ public class ShowsListActivity extends Activity {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
 
-		
+
 		switch(id) {
 		case NEW_FEED:
 			dialog = new SubscriptionDialog(this);
@@ -193,7 +204,7 @@ public class ShowsListActivity extends Activity {
 		}
 		return dialog;
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -204,10 +215,11 @@ public class ShowsListActivity extends Activity {
 			NCMain.setColorOverlay(background, header);
 		}
 	}
-	
+
 	private void refreshList() {
-		// Reset the view, 
-		ArrayList<Show> showsList = new ArrayList<Show>();
+		// Update the adapter
+		adapter = new TexturedListAdapter(this);
+		setListAdapter(adapter);
 
 		// Get all of the shows
 		Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
@@ -222,12 +234,8 @@ public class ShowsListActivity extends Activity {
 						shows.getString(shows.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						imagePath, Show.DEFAULT, Show.DEFAULT);
 				s.setImage(Drawable.createFromPath(imagePath));
-				showsList.add(s);
+				adapter.add(s);
 			} while (shows.moveToNext());
-		
-		// Update the adapter
-		TexturedListAdapter tla = new TexturedListAdapter(this, showsList);
-		ListView lv = (ListView)findViewById(R.id.feeds_list);
-		lv.setAdapter(tla);
+
 	}
 }
