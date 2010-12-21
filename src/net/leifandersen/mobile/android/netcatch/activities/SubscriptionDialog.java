@@ -34,6 +34,8 @@ public class SubscriptionDialog extends Dialog {
 	private EditText mEditFeed;
 	private String newFeed;
 	private Dialog progressDialog;
+	private BroadcastReceiver finishedReceiver;
+	private BroadcastReceiver failedReciever;
 	
 	public SubscriptionDialog(Context context) {
 		super(context);
@@ -66,20 +68,24 @@ public class SubscriptionDialog extends Dialog {
 
 				// Get the feed's data
 				// Set the broadcast reciever
-				BroadcastReceiver finishedReceiver = new BroadcastReceiver() {
+				finishedReceiver = new BroadcastReceiver() {
 					@Override
 					public void onReceive(Context context, Intent intent) {							
 						progressDialog.cancel();
+						ctx.unregisterReceiver(finishedReceiver);
+						ctx.unregisterReceiver(failedReciever);
 					}
 				};
 				ctx.registerReceiver(finishedReceiver, new IntentFilter(RSSService.RSSFINISH + newFeed));
 
 				// Set up the failed dialog
-				BroadcastReceiver failedReciever = new BroadcastReceiver() {
+				failedReciever = new BroadcastReceiver() {
 					@Override
 					public void onReceive(Context context, Intent intent) {
 						progressDialog.cancel();
 						Toast.makeText(ctx, "Failed to fetch feed", Toast.LENGTH_LONG);
+						ctx.unregisterReceiver(finishedReceiver);
+						ctx.unregisterReceiver(failedReciever);
 					}
 				};
 				ctx.registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
@@ -109,4 +115,6 @@ public class SubscriptionDialog extends Dialog {
 			}
 		});
 	}
+	
+	
 }
