@@ -197,10 +197,7 @@ public class ShowsListActivity extends Activity {
 						shows.getString(shows.getColumnIndex(ShowsProvider.FEED)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						imagePath, Show.DEFAULT, Show.DEFAULT);
-				if (imagePath != "")
-					s.setImage(Drawable.createFromPath(imagePath));
-				else 
-					s.setImage(getResources().getDrawable(R.drawable.default_image));
+				s.setImage(Drawable.createFromPath(imagePath));
 				showsList.add(s);
 			} while (shows.moveToNext());
 		
