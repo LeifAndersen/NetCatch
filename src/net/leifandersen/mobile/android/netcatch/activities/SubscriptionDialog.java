@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 public class SubscriptionDialog extends Dialog {
 
+	public static final String FINISHED = "SubscriptionDialog Finished";
+	
 	private Context ctx;
 	private EditText mEditFeed;
 	private String newFeed;
@@ -70,10 +72,15 @@ public class SubscriptionDialog extends Dialog {
 				// Set the broadcast reciever
 				finishedReceiver = new BroadcastReceiver() {
 					@Override
-					public void onReceive(Context context, Intent intent) {							
+					public void onReceive(Context context, Intent intent) {
+						// Clean up
 						progressDialog.cancel();
 						ctx.unregisterReceiver(finishedReceiver);
 						ctx.unregisterReceiver(failedReciever);
+						
+						// Tell the list to refresh
+						Intent broadcast = new Intent(FINISHED);
+						ctx.sendBroadcast(broadcast);
 					}
 				};
 				ctx.registerReceiver(finishedReceiver, new IntentFilter(RSSService.RSSFINISH + newFeed));

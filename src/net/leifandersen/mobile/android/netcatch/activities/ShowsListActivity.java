@@ -21,8 +21,10 @@ import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -110,6 +112,14 @@ public class ShowsListActivity extends Activity {
 		}
 	}
 	
+	private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			refreshList();
+		}
+	};;;
+	
 	private static final int NEW_FEED = 1;
 	private LinearLayout background;
 	private FrameLayout header;
@@ -133,6 +143,18 @@ public class ShowsListActivity extends Activity {
 	}
 
 	@Override
+	protected void onRestart() {
+		super.onRestart();
+		refreshList();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unregisterReceiver(refreshReceiver);
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.layout.subscriptions_menu, menu);
@@ -145,7 +167,6 @@ public class ShowsListActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.new_show_item:
 			showDialog(NEW_FEED);
-			refreshList();
 			return true;
 		case R.id.preferences_item:
 			activity = new Intent();
@@ -159,10 +180,13 @@ public class ShowsListActivity extends Activity {
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
-		switch(id) {
+
 		
+		switch(id) {
 		case NEW_FEED:
 			dialog = new SubscriptionDialog(this);
+			registerReceiver(refreshReceiver, 
+					new IntentFilter(SubscriptionDialog.FINISHED));
 			break;
 		default:
 			dialog = null;
