@@ -15,7 +15,6 @@ package net.leifandersen.mobile.android.netcatch.providers;
 
 import java.io.Serializable;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 /**

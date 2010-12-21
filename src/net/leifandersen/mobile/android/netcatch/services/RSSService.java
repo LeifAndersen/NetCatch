@@ -41,7 +41,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 

@@ -13,6 +13,8 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
+import java.util.ArrayList;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -140,10 +142,16 @@ public class ShowsProvider extends ContentProvider {
 	public static final String SHOW_ID = "show_id";
 
 	/**
-	 * The location for the actual media of the show
+	 * The location for the actual media of the show, empty
+	 * string if not downloaded
 	 */
 	public static final String MEDIA = "media";
 
+	/**
+	 * Where the media can be found and downloaded
+	 */
+	public static final String MEDIA_URL = "media_url";
+	
 	/**
 	 * The date the show was released
 	 */
@@ -158,7 +166,8 @@ public class ShowsProvider extends ContentProvider {
 	 * The last position the user was listening at.
 	 */
 	public static final String BOOKMARK = "position";
-
+	
+	
 	// For the queue
 	/**
 	 * The ID for the queue's episode
@@ -185,11 +194,11 @@ public class ShowsProvider extends ContentProvider {
 		"CREATE TABLE  " + EPISODES_TABLE_NAME + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ SHOW_ID + " INTEGER NOT NULL,"
-
 		+ TITLE + " TEXT,"
 		+ AUTHOR + " TEXT,"
 		+ DESCRIPTION + " TEXT," 
 		+ MEDIA + " TEXT, "
+		+ MEDIA_URL + " TEXT,"
 		+ DATE + " INTEGER, "
 		+ BOOKMARK + " INTEGER,"
 		+ PLAYED + " BOOLEAN,"
@@ -250,10 +259,19 @@ public class ShowsProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
+			
+			// TODO Backup the feeds, also stored episode locations
+			ArrayList<String> feeds = new ArrayList<String>();
+			
+			// Drop the table
 			db.execSQL("DROP TABLE IF EXISTS subscriptions");
 			db.execSQL("DROP TABLE IF EXISTS episodes");
 			db.execSQL("DROP TABLE IF EXISTS queue");
+			
+			// Create the new table
 			onCreate(db);
+			
+			// TODO restore the feeds
 		}
 	}
 
@@ -394,6 +412,7 @@ public class ShowsProvider extends ContentProvider {
 				values.put(BOOKMARK, 0);
 			if(values.containsKey(DATE) == false)
 				values.put(DATE, java.lang.System.currentTimeMillis());
+			
 			
 			// Insert the item
 			rowId = db.insert(EPISODES_TABLE_NAME, EPISODE, values);

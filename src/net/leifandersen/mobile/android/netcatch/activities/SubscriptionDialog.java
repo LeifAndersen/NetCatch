@@ -13,22 +13,14 @@
  */
 package net.leifandersen.mobile.android.netcatch.activities;
 
-import java.util.ArrayList;
-
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.providers.Episode;
-import net.leifandersen.mobile.android.netcatch.providers.Show;
-import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

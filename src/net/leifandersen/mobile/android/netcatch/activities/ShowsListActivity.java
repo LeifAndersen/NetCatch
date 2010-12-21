@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -80,6 +81,7 @@ public class ShowsListActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.new_show_item:
 			showDialog(NEW_FEED);
+			refreshList();
 			return true;
 		case R.id.preferences_item:
 			activity = new Intent();
@@ -133,8 +135,9 @@ public class ShowsListActivity extends Activity {
 						imagePath, Show.DEFAULT, Show.DEFAULT);
 				if (imagePath != "")
 					s.setImage(Drawable.createFromPath(imagePath));
-				else // TODO, really draw the image
-					s.setImage(Drawable.createFromPath(imagePath));
+				else 
+					s.setImage(getResources().getDrawable(R.drawable.default_image));
+				showsList.add(s);
 			} while (shows.moveToNext());
 		
 		// Update the adapter
