@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -46,8 +47,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
@@ -216,28 +215,10 @@ public class RSSService extends Service {
 		sendBroadcast(broadcast);
 		stopSelf();
 	}
-
-	private static boolean checkNetworkState(Context context, boolean backgroundUpdate) {
-		// Get the connectivity manager
-		ConnectivityManager manager = (ConnectivityManager)
-		context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		
-		// If user has set not to do background updates, 
-		// And it's a background update, don't get it.
-		if (!manager.getBackgroundDataSetting() && backgroundUpdate)
-			return false;
-		
-		// If network is not available, bail
-		NetworkInfo netInfo = manager.getActiveNetworkInfo();
-		if(netInfo == null || netInfo.getState() != NetworkInfo.State.CONNECTED)
-			return false;
-		
-		return true;
-	}
 	
 	private static void saveImage(Context context, boolean backgroundUpdate, URL url, File file) {
 		
-		if (!checkNetworkState(context, backgroundUpdate))
+		if (!Tools.checkNetworkState(context, backgroundUpdate))
 			return;
 		
 		// Get the image
@@ -269,7 +250,7 @@ public class RSSService extends Service {
 	
 	private static Document getRSS(Context context, boolean backgroundUpdate, String url) {
 		
-		if (!checkNetworkState(context, backgroundUpdate))
+		if (!Tools.checkNetworkState(context, backgroundUpdate))
 			return null;
 
 		// Network is available get the document.

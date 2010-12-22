@@ -22,9 +22,11 @@ public class MediaDownloadService extends Service {
 	public String MEDIA_URL = "media_url";
 	public String MEDIA_LOCATION = "media_location";
 	public String MEDIA_ID = "media_id";
+	public String BACKGROUND_UPDATE = "background_update";
 	
 	private String media_url;
 	private String media_location;
+	private boolean backgroundUpdate;
 	private int id;
 	
 	@Override
@@ -42,6 +44,7 @@ public class MediaDownloadService extends Service {
 		// Get the needed peramiters
 		media_url = intent.getStringExtra(MEDIA_URL);
 		media_location = intent.getStringExtra(MEDIA_LOCATION);
+		backgroundUpdate = intent.getBooleanExtra(BACKGROUND_UPDATE, true);
 		id = intent.getIntExtra(MEDIA_ID, -1);
 		
 		// If peramiters not provided, bail
@@ -56,7 +59,10 @@ public class MediaDownloadService extends Service {
 			}
 		});
 		
-		return START_STICKY;
+		if(backgroundUpdate)
+			return START_NOT_STICKY;
+		else
+			return START_STICKY;
 	}
 	
 	private void downloadMedia() {

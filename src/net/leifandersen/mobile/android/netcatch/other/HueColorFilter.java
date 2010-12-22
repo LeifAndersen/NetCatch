@@ -11,7 +11,7 @@
  *See the License for the specific language governing permissions and
  *limitations under the License.
  */
-package net.leifandersen.mobile.android.netcatch;
+package net.leifandersen.mobile.android.netcatch.other;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
