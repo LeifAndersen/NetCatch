@@ -13,7 +13,11 @@
  */
 package net.leifandersen.mobile.android.netcatch.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +45,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -128,8 +133,16 @@ public class RSSService extends Service {
 		}
 
 		// Get the show's image:
-		if(updateMetadata || id == NEW_SHOW) {
-			// TODO
+		if(show.getImage() != null && (updateMetadata || id == NEW_SHOW)) {
+			// Setup files,  save data
+			File path = new File(Environment.
+					getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)
+					.getPath() + "/" + show.getTitle() + "/");
+			File file = new File(path, "image.png");
+			saveImage(this, show.getImagePath(), path, file);
+			
+			// Add to to class to be writen to database
+			show.setImagePath(file.getPath());
 		}
 		
 		// Write show information
@@ -191,6 +204,39 @@ public class RSSService extends Service {
 		stopSelf();
 	}
 
+	private static void saveImage(Context context, String url, File path, File file) {
+		// Get the connectivity manager
+		ConnectivityManager manager = (ConnectivityManager)
+		context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		
+		// If user has set not to do background updates, don't get it.
+		if (!manager.getBackgroundDataSetting())
+			return;
+		
+		// If network is not available, bail
+		NetworkInfo netInfo = manager.getActiveNetworkInfo();
+		if(netInfo == null || netInfo.getState() != NetworkInfo.State.CONNECTED)
+			return;
+		
+		// Get the image
+		try {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpGet request = new HttpGet(url);
+			HttpResponse response = client.execute(request);
+			path.mkdirs();
+			OutputStream os = new FileOutputStream(file);
+			InputStream is = response.getEntity().getContent();
+			byte[] data = new byte[is.available()];
+	        is.read(data);
+	        os.write(data);
+	        is.close();
+	        os.close();
+		} catch (Exception e) {
+			// Any exception is probably a newtork faiilure, bail
+			return;
+		}
+	}
+	
 	private static Document getRSS(Context context, String url) {
 		// Get the connectivity manager
 		ConnectivityManager manager = (ConnectivityManager)
@@ -202,7 +248,7 @@ public class RSSService extends Service {
 
 		// If networks is not available, bail
 		NetworkInfo netInfo = manager.getActiveNetworkInfo();
-		if(netInfo == null || manager.getActiveNetworkInfo().getState() != NetworkInfo.State.CONNECTED)
+		if(netInfo == null || netInfo.getState() != NetworkInfo.State.CONNECTED)
 			return null;
 
 		// Network is available get the document.
@@ -255,7 +301,18 @@ public class RSSService extends Service {
 			else
 				desc = descNode.item(0).getFirstChild().getNodeValue();
 			
-			return new Show(title, author, feedUrl, desc, null, -1, -1);
+			String imageUrl = null;
+			NodeList imagNode = el.getElementsByTagName("image");
+			if(imagNode != null) {
+				Element ima = (Element)imagNode.item(0);
+				NodeList urlNode = ima.getElementsByTagName("url");
+				if(urlNode == null || descNode.getLength() < 1)
+					imageUrl = null;
+				else
+					imageUrl = urlNode.item(0).getFirstChild().getNodeValue();
+			}
+			
+			return new Show(title, author, feedUrl, desc, imageUrl, -1, -1);
 		} catch (Exception e) {
 			// Any parse errors and we'll log and fail
 			Log.e("NCRSS", "Error parsing RSS", e);
