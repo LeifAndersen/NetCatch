@@ -81,4 +81,5 @@
 		android:anyDensity="true"
 		/>
 		
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
 </manifest> 
