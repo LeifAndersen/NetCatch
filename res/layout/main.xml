@@ -13,27 +13,191 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<RelativeLayout 
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/root_layout"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:background="@drawable/background_gradient" 
+	android:background="@drawable/background_tile"
 	>
-	<ListView 
-		android:id="@+id/android:list"
+	
+	<!-- FrameLayout for the NetCatch Title Bar -->
+		
+	<FrameLayout								
+		android:id="@+id/header"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:cacheColorHint="#00000000"
-		android:divider="@null"
-		android:dividerHeight="5dp" 
-		/>
-	<TextView 
-		android:id="@+id/android:empty"
-		android:layout_width = "wrap_content"
-		android:layout_height = "wrap_content"
-		android:text = "A bug has happened!"
-		android:textSize = "16px"
-		android:layout_centerHorizontal = "true"
-		android:layout_centerVertical = "true" 
-		/>
+		android:layout_height="60dp"
+		android:background="@drawable/ninepatch_blue_back_large"
+		>
+		<ImageView
+			android:id="@+id/btn_refresh"
+			android:layout_width="60dp"
+			android:layout_height="fill_parent"
+			android:paddingBottom="5px"
+			android:layout_gravity="right|top"			
+			android:src="@drawable/btn_refresh"
+			android:scaleType="center"
+			/>
+		<TextView
+			android:id="@+id/title_text"
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:paddingLeft="15dp"
+			android:paddingBottom="5px"
+			android:gravity="center_vertical"
+			android:text="NetCatch"
+			android:textColor="@android:color/white"
+			android:textStyle="bold"
+			android:textSize="24sp"
+			android:shadowColor="#A5000000"
+			android:shadowDx="1"
+			android:shadowDy="1"
+			android:shadowRadius="3"
+			/>
+	</FrameLayout>
+	
+	<!-- This layout contains the home screen icon grid -->
+	
+	<LinearLayout
+		android:id="@+id/icons"
+		android:layout_below="@id/header"
+		android:layout_marginTop="30px"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		>
+		
+		<!-- Queue Icon -->
+		
+		<FrameLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    >
+			<ImageButton
+				android:id="@+id/icon_queue"
+				android:background="@null"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_queue_states"
+				/>				
+			<ImageView
+				android:id="@+id/icon_queue_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_queue_text"
+				/>
+		</FrameLayout>
+		
+		<!-- Feeds Icon -->	
+				
+		<FrameLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    >
+			<ImageButton
+				android:id="@+id/icon_feeds"
+				android:background="@null"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_feeds_states"
+				/>				
+			<ImageView
+				android:id="@+id/icon_feeds_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_feeds_text"
+				/>
+		</FrameLayout>		
+		
+		<!-- New Icon -->
+		
+		<FrameLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    >
+			<ImageButton
+				android:id="@+id/icon_new"
+				android:background="@null"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_new_states"
+				/>				
+			<ImageView
+				android:id="@+id/icon_new_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:scaleType="center"
+				android:src="@drawable/icon_new_text"
+				/>
+		</FrameLayout>
+				
+	</LinearLayout>
+	
+	<!-- Bottom Mini Player -->
+	
+	<RelativeLayout
+		android:id="@+id/player"
+		android:layout_width="fill_parent"
+		android:layout_height="120dp"
+		android:layout_margin="5dp"
+		android:layout_alignParentBottom="true"
+		android:background="@drawable/ninepatch_blue_back_lg"
+		>
+		<ImageView
+			android:id="@+id/mini_player_album_art"
+			android:layout_width="110dp"
+			android:layout_height="110dp"
+			android:layout_gravity="left|center_vertical"
+			android:background="@drawable/ninepatch_album_art_drop_shadow"
+			android:src="#FF000000"
+			android:scaleType="centerCrop"
+			/>
+		<TextView
+			android:id="@+id/player_episode_title"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/mini_player_album_art"
+			android:layout_alignParentTop="true"
+			android:ellipsize="marquee"
+			android:paddingTop="10px"
+			android:text=""
+			android:textColor="@android:color/white"
+			android:textStyle="bold"
+			android:textSize="16sp"
+			android:shadowColor="#A5000000"
+			android:shadowDx="1"
+			android:shadowDy="1"
+			android:shadowRadius="3"
+			/>			
+		<TextView
+			android:id="@+id/player_episode_time"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_toRightOf="@id/mini_player_album_art"
+			android:paddingBottom="10px"
+			android:text=""
+			android:textColor="@android:color/white"
+			android:textStyle="normal"
+			android:textSize="12sp"
+			android:shadowColor="#A5000000"
+			android:shadowDx="1"
+			android:shadowDy="1"
+			android:shadowRadius="3"
+			/>
+	</RelativeLayout>
 </RelativeLayout>

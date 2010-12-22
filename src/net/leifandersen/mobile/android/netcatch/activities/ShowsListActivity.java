@@ -70,7 +70,7 @@ public class ShowsListActivity extends ListActivity {
 		LayoutInflater mInflator;
 
 		public TexturedListAdapter(Context context) {
-			super(context, R.layout.main_menu_list_item_textured);
+			super(context, R.layout.show);
 			vera = Typeface.createFromAsset(context.getAssets(), "Vera.ttf");
 			veraBold = Typeface.createFromAsset(context.getAssets(), "VeraBd.ttf");
 			mInflator = getLayoutInflater();
@@ -81,7 +81,7 @@ public class ShowsListActivity extends ListActivity {
 			ViewHolder holder;
 			if (v == null) {
 				// Setup the view and holder
-				v = mInflator.inflate(R.layout.main_menu_list_item_textured, null);
+				v = mInflator.inflate(R.layout.show, null);
 				holder = new ViewHolder();
 
 				// Setup the viewholder elements
@@ -128,7 +128,7 @@ public class ShowsListActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.feeds_list);
+		setContentView(R.layout.shows_list);
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Set up the view
@@ -180,7 +180,7 @@ public class ShowsListActivity extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.layout.subscriptions_menu, menu);
+		inflater.inflate(R.layout.shows_menu, menu);
 		return true;
 	}
 

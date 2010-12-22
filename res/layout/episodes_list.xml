@@ -32,18 +32,4 @@
 		android:textSize = "16px"
 		android:layout_centerHorizontal = "true"
 		android:layout_centerVertical = "true" />
-	<ViewStub android:id="@+id/el_small_player_stub"
-		android:inflatedId="@+id/el_small_player"
-		android:layout="@layout/media_controls_light"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:layout_gravity="bottom" />
-	<ViewStub android:id="@+id/el_player_stub"
-		android:inflatedId="@+id/el_player"
-		android:layout="@layout/media_controls"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:layout_gravity="bottom" />
 </RelativeLayout>

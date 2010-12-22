@@ -58,7 +58,7 @@ public class NCMain extends Activity implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_new_theme);
+		setContentView(R.layout.main);
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		overlay = null;
@@ -105,7 +105,7 @@ public class NCMain extends Activity implements OnClickListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.layout.subscriptions_menu, menu);
+		inflater.inflate(R.layout.shows_menu, menu);  // TODO Use an actual menu
 		return true;
 	}
 
