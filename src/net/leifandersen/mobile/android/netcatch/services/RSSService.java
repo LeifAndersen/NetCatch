@@ -13,11 +13,14 @@
  */
 package net.leifandersen.mobile.android.netcatch.services;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,7 @@ import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.ByteArrayBuffer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -133,16 +137,19 @@ public class RSSService extends Service {
 		}
 
 		// Get the show's image:
-		if(show.getImage() != null && (updateMetadata || id == NEW_SHOW)) {
-			// Setup files,  save data
-			File path = new File(Environment.
-					getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)
-					.getPath() + "/" + show.getTitle() + "/");
-			File file = new File(path, "image.png");
-			saveImage(this, show.getImagePath(), path, file);
-			
-			// Add to to class to be writen to database
-			show.setImagePath(file.getPath());
+		if(show.getImage() != null || (updateMetadata || id == NEW_SHOW)) {
+			try {
+				// Setup files,  save data
+				File file = new File(Environment.
+						getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)
+						.getPath() + "/" + show.getTitle() + "/image.png");
+				saveImage(this, new URL(show.getImagePath()), file);
+				
+				// Add to to class to be writen to database
+				show.setImagePath(file.getPath());
+			} catch (Exception e) {
+				// Problems are likely from malformed paths, skip this step
+			}
 		}
 		
 		// Write show information
@@ -204,7 +211,7 @@ public class RSSService extends Service {
 		stopSelf();
 	}
 
-	private static void saveImage(Context context, String url, File path, File file) {
+	private static void saveImage(Context context, URL url, File file) {
 		// Get the connectivity manager
 		ConnectivityManager manager = (ConnectivityManager)
 		context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -220,17 +227,25 @@ public class RSSService extends Service {
 		
 		// Get the image
 		try {
-			DefaultHttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet(url);
-			HttpResponse response = client.execute(request);
-			path.mkdirs();
+			// Make the file
+			file.getParentFile().mkdirs();
+			
+			// Set up the connection
+			URLConnection uCon = url.openConnection();
+			InputStream is = uCon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+			
+			// Download the data
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+            int current = 0;
+            while ((current = bis.read()) != -1) {
+                    baf.append((byte) current);
+            }
+            
+			// Write the bits to the file
 			OutputStream os = new FileOutputStream(file);
-			InputStream is = response.getEntity().getContent();
-			byte[] data = new byte[is.available()];
-	        is.read(data);
-	        os.write(data);
-	        is.close();
-	        os.close();
+			os.write(baf.toByteArray());
+			os.close();
 		} catch (Exception e) {
 			// Any exception is probably a newtork faiilure, bail
 			return;
