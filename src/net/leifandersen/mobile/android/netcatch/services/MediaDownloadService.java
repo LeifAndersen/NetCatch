@@ -13,21 +13,51 @@
  */
 package net.leifandersen.mobile.android.netcatch.services;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.apache.http.util.ByteArrayBuffer;
+
+import net.leifandersen.mobile.android.netcatch.other.Tools;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+/**
+ * A service to download media.  Can run in the background, or in the
+ * forground.  The directory for the file doesn't need to exist (the service
+ * will create it).
+ * 
+ * @author Leif Andersen
+ *
+ */
 public class MediaDownloadService extends Service {
 
+	// Input parameters
 	public String MEDIA_URL = "media_url";
 	public String MEDIA_LOCATION = "media_location";
 	public String MEDIA_ID = "media_id";
 	public String BACKGROUND_UPDATE = "background_update";
 	
+	// Output results
+	// To be used like: MEDIA_FAILED/FINISHED + media url 
+	// + ' ' + media location
+	public String MEDIA_FAILED = "media_failed ";
+	public String MEDIA_FINISHED = "media_finished ";
+	
 	private String media_url;
 	private String media_location;
 	private boolean backgroundUpdate;
 	private int id;
+	private URL url;
+	private File file;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -51,6 +81,15 @@ public class MediaDownloadService extends Service {
 		if(media_url == null || media_location == null || id == -1)
 			throw new IllegalArgumentException("Invalid parameters for MediaDownloadService");
 		
+		// Make the file and url objects, make sure path exists
+		File file = new File(media_location);
+		try {
+			url = new URL(media_url);
+		} catch (MalformedURLException e) {
+			// Bad URL given, abort
+			throw new IllegalArgumentException("Bad URL given");
+		}
+		
 		// Start the download in another thread
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -66,6 +105,48 @@ public class MediaDownloadService extends Service {
 	}
 	
 	private void downloadMedia() {
-		// TODO
+		
+		// Check network state
+		if(!Tools.checkNetworkState(this, backgroundUpdate)) {
+			serviceFailed();
+			return;
+		}
+		
+		try {
+			// Set up the connection
+			URLConnection uCon = url.openConnection();
+			InputStream is = uCon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+			
+			// Download the data
+			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+	        int current = 0;
+	        while ((current = bis.read()) != -1) {
+	                baf.append((byte) current);
+	        }
+	        
+			// Write the bits to the file
+			OutputStream os = new FileOutputStream(file);
+			os.write(baf.toByteArray());
+			os.close();
+			
+			// Finish up, send finished broadcast, stop the service
+			Intent broadcast = new Intent(MEDIA_FINISHED 
+					+ media_url + " " + media_location);
+			sendBroadcast(broadcast);
+			stopSelf();
+		} catch (Exception e) {
+			// Any exceptions at this point are likely 
+			// network problem, abort
+			serviceFailed();
+		}
+		
+	}
+	
+	private void serviceFailed() {
+		Intent broadcast = new Intent(MEDIA_FAILED 
+				+ media_url + " " + media_location);
+		sendBroadcast(broadcast);
+		stopSelf();
 	}
 }
