@@ -297,7 +297,7 @@ public class ShowsProvider extends ContentProvider {
 			break;
 		case SHOW_ID_EPISODES:
 			qb.setTables(EPISODES_TABLE_NAME);
-			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
+			qb.appendWhere(SHOW_ID + "=" + uri.getPathSegments().get(1));
 			break;
 		case EPISODE_ID_CASE:
 			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
