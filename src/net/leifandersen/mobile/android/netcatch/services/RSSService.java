@@ -73,11 +73,13 @@ public class RSSService extends Service {
 	public static final String EPISODE_TITLES = "episode_titles";
 	public static final String ID = "id";
 	public static final String UPDATE_METADATA = "update_metadata";
+	public static final String BACKGROUND_UPDATE = "background_update";
 	
 	private static final int NEW_SHOW = -1;
 	private int id;
 	private String feed;
 	private boolean updateMetadata;
+	private boolean backgroundUpdate;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -95,6 +97,7 @@ public class RSSService extends Service {
 		id = intent.getIntExtra(ID, NEW_SHOW);
 		feed = intent.getStringExtra(FEED);
 		updateMetadata = intent.getBooleanExtra(UPDATE_METADATA, false);
+		backgroundUpdate = intent.getBooleanExtra(BACKGROUND_UPDATE, true);
 		
 		if (feed == null)
 			throw new IllegalArgumentException("No feed placed in intent");
@@ -108,7 +111,10 @@ public class RSSService extends Service {
 		});
 		t.start();
 
-		return START_NOT_STICKY;
+		if (backgroundUpdate)
+			return START_NOT_STICKY;
+		else
+			return START_STICKY;
 	}
 
 
@@ -120,7 +126,7 @@ public class RSSService extends Service {
 		String feed = this.feed;
 		
 		// Download the RSS feed
-		Document feedDoc = getRSS(this, feed);
+		Document feedDoc = getRSS(this, backgroundUpdate, feed);
 		if (feedDoc == null) {
 			serviceFailed(feed);
 			return;
@@ -143,7 +149,7 @@ public class RSSService extends Service {
 				File file = new File(Environment.
 						getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)
 						.getPath() + "/" + show.getTitle() + "/image.png");
-				saveImage(this, new URL(show.getImagePath()), file);
+				saveImage(this, backgroundUpdate, new URL(show.getImagePath()), file);
 				
 				// Add to to class to be writen to database
 				show.setImagePath(file.getPath());
@@ -211,18 +217,27 @@ public class RSSService extends Service {
 		stopSelf();
 	}
 
-	private static void saveImage(Context context, URL url, File file) {
+	private static boolean checkNetworkState(Context context, boolean backgroundUpdate) {
 		// Get the connectivity manager
 		ConnectivityManager manager = (ConnectivityManager)
 		context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
-		// If user has set not to do background updates, don't get it.
-		if (!manager.getBackgroundDataSetting())
-			return;
+		// If user has set not to do background updates, 
+		// And it's a background update, don't get it.
+		if (!manager.getBackgroundDataSetting() && backgroundUpdate)
+			return false;
 		
 		// If network is not available, bail
 		NetworkInfo netInfo = manager.getActiveNetworkInfo();
 		if(netInfo == null || netInfo.getState() != NetworkInfo.State.CONNECTED)
+			return false;
+		
+		return true;
+	}
+	
+	private static void saveImage(Context context, boolean backgroundUpdate, URL url, File file) {
+		
+		if (!checkNetworkState(context, backgroundUpdate))
 			return;
 		
 		// Get the image
@@ -252,18 +267,9 @@ public class RSSService extends Service {
 		}
 	}
 	
-	private static Document getRSS(Context context, String url) {
-		// Get the connectivity manager
-		ConnectivityManager manager = (ConnectivityManager)
-		context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-		// If the user has set to not to do background updates, don't get it.
-		if (!manager.getBackgroundDataSetting())
-			return null;
-
-		// If networks is not available, bail
-		NetworkInfo netInfo = manager.getActiveNetworkInfo();
-		if(netInfo == null || netInfo.getState() != NetworkInfo.State.CONNECTED)
+	private static Document getRSS(Context context, boolean backgroundUpdate, String url) {
+		
+		if (!checkNetworkState(context, backgroundUpdate))
 			return null;
 
 		// Network is available get the document.

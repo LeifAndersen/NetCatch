@@ -107,6 +107,7 @@ public class SubscriptionDialog extends Dialog {
 				// Start the service
 				Intent service = new Intent();
 				service.putExtra(RSSService.FEED, newFeed);
+				service.putExtra(RSSService.BACKGROUND_UPDATE, false);
 				service.setClass(ctx, RSSService.class);
 				ctx.startService(service);
 				dismiss();

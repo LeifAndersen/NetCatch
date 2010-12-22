@@ -21,9 +21,11 @@ public class MediaDownloadService extends Service {
 
 	public String MEDIA_URL = "media_url";
 	public String MEDIA_LOCATION = "media_location";
+	public String MEDIA_ID = "media_id";
 	
 	private String media_url;
 	private String media_location;
+	private int id;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -40,9 +42,10 @@ public class MediaDownloadService extends Service {
 		// Get the needed peramiters
 		media_url = intent.getStringExtra(MEDIA_URL);
 		media_location = intent.getStringExtra(MEDIA_LOCATION);
+		id = intent.getIntExtra(MEDIA_ID, -1);
 		
 		// If peramiters not provided, bail
-		if(media_url == null || media_location == null)
+		if(media_url == null || media_location == null || id == -1)
 			throw new IllegalArgumentException("Invalid parameters for MediaDownloadService");
 		
 		// Start the download in another thread
