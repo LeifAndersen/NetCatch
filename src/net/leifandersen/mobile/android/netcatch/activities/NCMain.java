@@ -14,10 +14,13 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
@@ -25,6 +28,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -100,12 +104,33 @@ public class NCMain extends Activity implements OnClickListener {
 		homeViews.iconQueue.setOnClickListener(this);
 		homeViews.iconFeeds.setOnClickListener(this);
 		homeViews.iconNew.setOnClickListener(this);
-	}	
+		
+		// Set up the refresh button
+		findViewById(R.id.btn_refresh).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Get each element from the database
+				Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
+				shows.moveToFirst();
+				do {
+					String feed = shows.getString(shows.getColumnIndex(ShowsProvider.FEED));
+					Intent service = new Intent();
+					service.putExtra(RSSService.FEED, feed);
+					service.putExtra(RSSService.ID, shows.getInt(shows.getColumnIndex(ShowsProvider._ID)));
+					service.putExtra(RSSService.UPDATE_METADATA, true);
+					service.putExtra(RSSService.BACKGROUND_UPDATE, false);
+					service.setClass(NCMain.this, RSSService.class);
+					startService(service);
+					Log.w("NCMain", "Refreshing: " + feed);
+				} while(shows.moveToNext());
+			}
+		});
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.layout.shows_menu, menu);  // TODO Use an actual menu
+		inflater.inflate(R.layout.main_menu, menu);
 		return true;
 	}
 
