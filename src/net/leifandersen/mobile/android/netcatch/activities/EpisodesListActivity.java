@@ -18,6 +18,7 @@ import java.sql.Date;
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -164,8 +165,10 @@ public class EpisodesListActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							// Unsubscribe from the show
-							getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-									+ "/" + mShowID + "/episodes"), null, null);						}
+							Intent service = new Intent();
+							service.putExtra(UnsubscribeService.SHOW_ID, mShowID);
+							startService(service);
+						}
 					})
 					.setNegativeButton(getResources().getString(R.string.cancel), 
 							new DialogInterface.OnClickListener() {
