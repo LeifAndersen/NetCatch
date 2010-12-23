@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -332,6 +333,7 @@ public class RSSService extends Service {
 			ArrayList<Episode> episodes = new ArrayList<Episode>();
 			NodeList items = feed.getElementsByTagName("item");
 			for(int i = 0; i < items.getLength(); i++) {
+				// Fetch the elements
 				Element el = (Element)items.item(i);  // Safe if it's an actual feed.
 
 				String title;
@@ -368,7 +370,19 @@ public class RSSService extends Service {
 					url = "";
 				else 
 					url = urlNode.item(0).getFirstChild().getNodeValue();
-				episodes.add(new Episode(title, author, desc, url, /* TODO date*/ 0, 0, false));
+				
+				// Convert the date string into the needed integer
+				// TODO, use a non-depricated method
+				long dateMills;
+				try {
+					dateMills = Date.parse(date);
+				} catch (Exception e) {
+					dateMills = 0;
+				}
+				
+				// Add the new episode
+				// ShowId and played doesn't really matter at this point
+				episodes.add(new Episode(title, author, desc, url, dateMills, 0, false));
 			}
 			return episodes;
 

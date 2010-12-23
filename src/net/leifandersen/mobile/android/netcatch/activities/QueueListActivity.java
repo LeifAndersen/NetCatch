@@ -61,7 +61,7 @@ public class QueueListActivity extends ListActivity {
 			Episode episode = getItem(position);
 			holder.title.setText(episode.getTitle());
 			holder.description.setText(episode.getDescription());
-			holder.date.setText(episode.getDate());
+			holder.date.setText(((Long)episode.getDate()).toString());
 			
 			registerForContextMenu(convertView);
 			return convertView;

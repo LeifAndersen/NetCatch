@@ -82,7 +82,7 @@ public class MediaDownloadService extends Service {
 			throw new IllegalArgumentException("Invalid parameters for MediaDownloadService");
 		
 		// Make the file and url objects, make sure path exists
-		File file = new File(media_location);
+		file = new File(media_location);
 		try {
 			url = new URL(media_url);
 		} catch (MalformedURLException e) {
@@ -141,7 +141,6 @@ public class MediaDownloadService extends Service {
 			// network problem, abort
 			serviceFailed();
 		}
-		
 	}
 	
 	private void serviceFailed() {

@@ -232,6 +232,11 @@ public class ShowsListActivity extends ListActivity {
 	}
 	
 	@Override
+	protected Dialog onCreateDialog(int id) {
+		return onCreateDialog(id, null);
+	}
+	
+	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
 

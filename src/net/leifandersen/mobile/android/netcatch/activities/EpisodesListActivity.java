@@ -14,7 +14,6 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import java.sql.Date;
-import java.util.Calendar;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;

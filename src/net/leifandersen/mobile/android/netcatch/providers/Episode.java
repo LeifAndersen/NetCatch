@@ -34,13 +34,13 @@ public class Episode implements Serializable {
 	private String description;
 	private String media;
 	private boolean played;
-	private int date;
+	private long date;
 	private int showId;
 	private int bookmark;
 	private int id;
 	
 	public Episode(int id, int showId, String title, String author, String description, 
-			String media, int date, int bookmark, boolean played) {
+			String media, long date, int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
@@ -53,7 +53,7 @@ public class Episode implements Serializable {
 	}
 	
 	public Episode(int showId, String title, String author, String description, 
-			String media, int date, int bookmark, boolean played) {
+			String media, long date, int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
@@ -66,14 +66,14 @@ public class Episode implements Serializable {
 	}
 	
 	public Episode(String title, String author, String description, 
-			String media, int date, int bookmark, boolean played) {
+			String media, long date, int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
 		this.media = media;
 		this.date = date;
 		this.played = played;
-		this.showId = showId;
+		this.showId = NO_ID;
 		this.bookmark = bookmark;
 		this.id = NO_ID;
 		this.showId = NO_SHOW;
@@ -152,14 +152,14 @@ public class Episode implements Serializable {
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(int date) {
+	public void setDate(long date) {
 		this.date = date;
 	}
 
 	/**
 	 * @return the date
 	 */
-	public int getDate() {
+	public long getDate() {
 		return date;
 	}
 
@@ -189,5 +189,19 @@ public class Episode implements Serializable {
 	 */
 	public int getBookmark() {
 		return bookmark;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
 	}
 }

@@ -151,6 +151,11 @@ public class NCMain extends Activity implements OnClickListener {
 	}
 	
 	@Override
+	protected Dialog onCreateDialog(int id) {
+		return onCreateDialog(id, null);
+	}
+	
+	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
 		switch(id) {

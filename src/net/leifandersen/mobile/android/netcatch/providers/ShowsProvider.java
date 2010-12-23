@@ -13,8 +13,6 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
-import java.util.ArrayList;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -261,7 +259,7 @@ public class ShowsProvider extends ContentProvider {
 					+ newVersion + ", which will destroy all old data");
 			
 			// TODO Backup the feeds, also stored episode locations
-			ArrayList<String> feeds = new ArrayList<String>();
+			// ArrayList<String> feeds = new ArrayList<String>();
 			
 			// Drop the table
 			db.execSQL("DROP TABLE IF EXISTS subscriptions");
