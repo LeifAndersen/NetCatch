@@ -97,6 +97,7 @@ public class MediaDownloadService extends Service {
 				downloadMedia();
 			}
 		});
+		t.start();
 		
 		if(backgroundUpdate)
 			return START_NOT_STICKY;

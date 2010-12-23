@@ -19,6 +19,7 @@ import java.util.List;
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
@@ -33,19 +34,20 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * 
@@ -144,11 +146,26 @@ public class ShowsListActivity extends ListActivity {
 			}
 		};
 
+		// Set up the refresh button
+		findViewById(R.id.btn_refresh).setOnClickListener(new OnClickListener() {	
+			@Override
+			public void onClick(View v) {
+				// Refresh each show in the list
+				for(Show show : shows) {
+					Intent service = new Intent();
+					service.putExtra(RSSService.FEED, show.getFeed());
+					service.putExtra(RSSService.ID, show.getId());
+					service.putExtra(RSSService.UPDATE_METADATA, true);
+					service.putExtra(RSSService.BACKGROUND_UPDATE, false);
+					service.setClass(ShowsListActivity.this, RSSService.class);
+					startService(service);
+					Log.w("ShowsListAcitivity", "Refreshing: " + show.getFeed());
+				}
+			}
+		});
+		
 		// Refresh the list
 		refreshList();
-
-		// Start the widget
-		//mPlayer = ((ViewStub)findViewById(R.id.sl_small_player_stub)).inflate();
 	}
 
 	@Override

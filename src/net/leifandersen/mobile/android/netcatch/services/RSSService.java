@@ -162,6 +162,7 @@ public class RSSService extends Service {
 		values.put(ShowsProvider.TITLE, show.getTitle());
 		values.put(ShowsProvider.AUTHOR, show.getAuthor());
 		values.put(ShowsProvider.IMAGE, show.getImagePath());
+		values.put(ShowsProvider.FEED, feed);
 		values.put(ShowsProvider.DESCRIPTION, show.getDescription());
 		values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
 		values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
@@ -303,16 +304,20 @@ public class RSSService extends Service {
 			else
 				desc = descNode.item(0).getFirstChild().getNodeValue();
 			
-			String imageUrl = null;
+			String imageUrl;
 			NodeList imagNode = el.getElementsByTagName("image");
 			if(imagNode != null) {
 				Element ima = (Element)imagNode.item(0);
-				NodeList urlNode = ima.getElementsByTagName("url");
-				if(urlNode == null || descNode.getLength() < 1)
+				if (ima != null) {
+					NodeList urlNode = ima.getElementsByTagName("url");
+					if(urlNode == null || descNode.getLength() < 1)
+						imageUrl = null;
+					else
+						imageUrl = urlNode.item(0).getFirstChild().getNodeValue();
+				} else
 					imageUrl = null;
-				else
-					imageUrl = urlNode.item(0).getFirstChild().getNodeValue();
-			}
+			} else
+				 imageUrl = null;
 			
 			return new Show(title, author, feedUrl, desc, imageUrl, -1, -1);
 		} catch (Exception e) {
