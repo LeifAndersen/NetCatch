@@ -185,13 +185,17 @@ public class RSSService extends Service {
 			getContentResolver().update(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
 					+ "/" + id), values, null, null);
 			
-			// TODO clear out old episode information from db\
+			// Clear out old episode information from db
+			getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+					+ "/" + id + "/episodes"), null, null);
 		}
 		else {
 			// Set the id
 			id = this.id;
 			
-			// TODO Clear out old episode information from db
+			// Clear out old episode information from db
+			getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+					+ "/" + id + "/episodes"), null, null);
 		}
 		
 		// Write the episode information

@@ -195,6 +195,21 @@ public class ShowsListActivity extends ListActivity {
 	}
 
 	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		
+		// Get the show
+		Show s = shows.get(position);
+		
+		// Start up the episode list for that show
+		Intent i = new Intent();
+		i.setClass(this, EpisodesListActivity.class);
+		i.putExtra(EpisodesListActivity.SHOW_ID, s.getId());
+		i.putExtra(EpisodesListActivity.SHOW_NAME, s.getTitle());
+		startActivity(i);
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.layout.shows_menu, menu);
@@ -205,6 +220,11 @@ public class ShowsListActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent activity;
 		switch (item.getItemId()) {
+		case R.id.home_item:
+			activity = new Intent();
+			activity.setClass(this, NCMain.class);
+			startActivity(activity);
+			return true;
 		case R.id.new_show_item:
 			showDialog(NEW_FEED);
 			return true;
@@ -216,24 +236,10 @@ public class ShowsListActivity extends ListActivity {
 		}
 		return false;
 	}
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		
-		// Get the show
-		Show s = shows.get(position);
-		
-		// Start up the episode list for that show
-		Intent i = new Intent();
-		i.setClass(this, EpisodesListActivity.class);
-		i.putExtra(EpisodesListActivity.SHOW_ID, s.getId());
-		startActivity(i);
-	}
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		return onCreateDialog(id, null);
+		return onCreateDialog(id, new Bundle());
 	}
 	
 	@Override

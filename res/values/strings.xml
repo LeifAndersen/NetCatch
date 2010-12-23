@@ -52,4 +52,8 @@
 		<item>Shows</item>
 	</string-array>
 	<string name="no_sync">Don\'t Sync</string>
+<string name="home">Netcatch Home</string>
+<string name="unsubscribe">Unsubscribe</string>
+<string name="unsubscribe_question">Unsubscribe from \"</string>
+<string name="question_punctuation">\"\?</string>
 </resources>

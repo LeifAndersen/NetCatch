@@ -453,7 +453,7 @@ public class ShowsProvider extends ContentProvider {
 		case SHOW_ID_CASE:
 			count = db.update(SHOWS_TABLE_NAME, values, _ID + "=" +
 					uri.getPathSegments().get(1) +
-					(selection != null && !selection.equals("")
+					(!TextUtils.isEmpty(selection)
 							? " And (" + selection + ')' : ""), selectionArgs);
 			break;
 		case EPISODES:
@@ -462,7 +462,7 @@ public class ShowsProvider extends ContentProvider {
 		case EPISODE_ID_CASE:
 			count = db.update(EPISODES_TABLE_NAME, values, _ID + "=" +
 					uri.getPathSegments().get(1) +
-					(selection != null && !selection.equals("")
+					(!TextUtils.isEmpty(selection)
 							? " And (" + selection + ')' : ""), selectionArgs);			break;
 		case QUEUE:
 			count = db.update(QUEUE_TABLE_NAME, values, selection, selectionArgs);
@@ -497,7 +497,7 @@ public class ShowsProvider extends ContentProvider {
 		case SHOW_ID_CASE:
 			count = db.delete(SHOWS_TABLE_NAME, _ID + "=" 
 					+ uri.getPathSegments().get(1)
-					+ (!TextUtils.isEmpty((selection))
+					+ (!TextUtils.isEmpty(selection)
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
 		case EPISODES:
@@ -506,7 +506,7 @@ public class ShowsProvider extends ContentProvider {
 		case EPISODE_ID_CASE:
 			count = db.delete(EPISODES_TABLE_NAME, _ID + "=" 
 					+ uri.getPathSegments().get(1)
-					+ (!TextUtils.isEmpty((selection))
+					+ (!TextUtils.isEmpty(selection)
 							? " AND (" + selection + ')' : ""), selectionArgs);			break;
 		case QUEUE:
 			count = db.delete(QUEUE_TABLE_NAME, selection, selectionArgs);
@@ -514,7 +514,7 @@ public class ShowsProvider extends ContentProvider {
 		case QUEUE_ID_CASE:
 			count = db.delete(QUEUE_TABLE_NAME, _ID + "=" 
 					+ uri.getPathSegments().get(1)
-					+ (!TextUtils.isEmpty((selection))
+					+ (!TextUtils.isEmpty(selection)
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
 		case SHOW_ID_EPISODES:
