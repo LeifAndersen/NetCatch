@@ -67,7 +67,10 @@
 		</activity>
 			
 		<activity android:name=".activities.Preferences" />
-	</application>
+	<service android:name=".services.UnsubscribeService"></service>
+<service android:name=".services.MediaDownloadService"></service>
+<service android:name=".services.MediaPlayerService"></service>
+</application>
 	
 	<uses-sdk android:minSdkVersion="3" />
 	

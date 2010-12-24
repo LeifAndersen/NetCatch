@@ -167,7 +167,9 @@ public class EpisodesListActivity extends ListActivity {
 							// Unsubscribe from the show
 							Intent service = new Intent();
 							service.putExtra(UnsubscribeService.SHOW_ID, mShowID);
+							service.setClass(EpisodesListActivity.this, UnsubscribeService.class);
 							startService(service);
+							finish();
 						}
 					})
 					.setNegativeButton(getResources().getString(R.string.cancel), 

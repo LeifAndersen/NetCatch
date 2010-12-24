@@ -177,6 +177,7 @@ public class RSSService extends Service {
 			Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
 			c.moveToFirst();
 			id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
+			c.close();
 		} else if(updateMetadata) {
 			// The show is already in the database.
 			id = this.id;

@@ -419,6 +419,29 @@ public class ShowsProvider extends ContentProvider {
 				getContext().getContentResolver().notifyChange(_uri, null);
 				return _uri;
 			}
+		case SHOW_ID_EPISODES:
+			// Fill in empty values
+			if(values.containsKey(SHOW_ID) == false)
+				values.put(SHOW_ID, uri.getPathSegments().get(1));
+			if(values.containsKey(TITLE) == false)
+				values.put(TITLE, Resources.getSystem()
+						.getString(android.R.string.untitled));
+			if(values.containsKey(AUTHOR) == false)
+				values.put(AUTHOR, Resources.getSystem()
+						.getString(android.R.string.unknownName));
+			if(values.containsKey(BOOKMARK) == false)
+				values.put(BOOKMARK, 0);
+			if(values.containsKey(DATE) == false)
+				values.put(DATE, java.lang.System.currentTimeMillis());
+			
+			
+			// Insert the item
+			rowId = db.insert(EPISODES_TABLE_NAME, EPISODE, values);
+			if (rowId > 0) { //Added successfully
+				Uri _uri = ContentUris.withAppendedId(EPISODES_CONTENT_URI, rowId);
+				getContext().getContentResolver().notifyChange(_uri, null);
+				return _uri;
+			}
 		case QUEUE:
 			// Fill in empty values
 			if(values.containsKey(EPISODE_ID) == false)
@@ -430,7 +453,6 @@ public class ShowsProvider extends ContentProvider {
 				Uri _uri = ContentUris.withAppendedId(QUEUE_CONTENT_URI, rowId);
 				getContext().getContentResolver().notifyChange(_uri, null);
 			}
-		case SHOW_ID_EPISODES:
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
 		case LATEST_ID_CASE:
@@ -470,10 +492,15 @@ public class ShowsProvider extends ContentProvider {
 		case QUEUE_ID_CASE:
 			count = db.update(QUEUE_TABLE_NAME, values, _ID + "=" +
 					uri.getPathSegments().get(1) +
-					(selection != null && !selection.equals("")
+					(!TextUtils.isEmpty(selection)
 							? " And (" + selection + ')' : ""), selectionArgs);
 			break;
 		case SHOW_ID_EPISODES:
+			count = db.update(EPISODE_TABLE_CREATE, values, SHOW_ID + "=" +
+					uri.getPathSegments().get(1) +
+					(!TextUtils.isEmpty(selection)
+							? " And (" + selection + ')' : ""), selectionArgs);
+			break;
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
 		case LATEST_ID_CASE:
@@ -518,6 +545,11 @@ public class ShowsProvider extends ContentProvider {
 							? " AND (" + selection + ')' : ""), selectionArgs);
 			break;
 		case SHOW_ID_EPISODES:
+			count = db.delete(EPISODES_TABLE_NAME, SHOW_ID + "=" +
+					uri.getPathSegments().get(1) +
+					(!TextUtils.isEmpty(selection)
+							? " And (" + selection + ')' : ""), selectionArgs);
+			break;
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
 		case LATEST_ID_CASE:
