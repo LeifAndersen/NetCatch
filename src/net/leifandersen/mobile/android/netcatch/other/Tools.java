@@ -13,7 +13,11 @@
  */
 package net.leifandersen.mobile.android.netcatch.other;
 
+import net.leifandersen.mobile.android.netcatch.R;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -34,5 +38,24 @@ public class Tools {
 			return false;
 		
 		return true;
+	}
+	
+	public static Dialog createUnsubscribeDialog(Context context,
+			DialogInterface.OnClickListener positiveButton, String showName, long showID) {
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(context.getResources().getString(R.string.unsubscribe_question) 
+				+ showName + context.getResources().getString(R.string.question_punctuation))
+				.setCancelable(false)
+				.setPositiveButton(context.getResources().getString(R.string.ok), 
+						positiveButton)
+				.setNegativeButton(context.getResources().getString(R.string.cancel), 
+						new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						// Cancel the dialog 
+						dialog.cancel();
+					}
+				});
+		return builder.create();
 	}
 }

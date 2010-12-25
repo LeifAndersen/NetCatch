@@ -17,13 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
+import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -50,6 +54,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
  * 
@@ -121,6 +126,7 @@ public class ShowsListActivity extends ListActivity {
 	}
 
 	private static final int NEW_FEED = 1;
+	private static final int UNSUBSCRIBE = 2;
 
 	private BroadcastReceiver refreshReceiver;
 	private LinearLayout background;
@@ -129,6 +135,10 @@ public class ShowsListActivity extends ListActivity {
 	private SharedPreferences sharedPrefs;
 	private List<Show> shows;
 
+	// So a dialog knows what to do, because API lower than 8 doesn't
+	// have the bundle option for creating a dialog
+	private int mDialogId = -1;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -252,8 +262,14 @@ public class ShowsListActivity extends ListActivity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
-		return super.onContextItemSelected(item);
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		switch(item.getItemId()) {
+		case R.id.unsubscribe_item:
+			mDialogId = (int) info.id;
+			showDialog(UNSUBSCRIBE);
+			break;
+		}
+		return false;
 	}
 
 	@Override
@@ -264,13 +280,51 @@ public class ShowsListActivity extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
-
-
 		switch(id) {
 		case NEW_FEED:
 			dialog = new SubscriptionDialog(this);
 			registerReceiver(refreshReceiver, 
 					new IntentFilter(SubscriptionDialog.FINISHED));
+			break;
+		case UNSUBSCRIBE:
+			if (mDialogId < 0)
+				return null;
+			Show show = shows.get(mDialogId);
+			dialog = Tools.createUnsubscribeDialog(this, new DialogInterface.OnClickListener() {
+				BroadcastReceiver finishedReceiver;
+				ProgressDialog progressDialog;
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					Show show = shows.get(mDialogId);
+					// Register the broadcast receiver
+					finishedReceiver = new BroadcastReceiver() {
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							// Clean up the mess that was made.
+							unregisterReceiver(finishedReceiver);
+							mDialogId = -1;
+							progressDialog.cancel();
+							refreshList();
+						}
+					};
+					registerReceiver(finishedReceiver, new IntentFilter(UnsubscribeService.FINISHED + show.getId()));
+					
+					// Pop up a dialog while waiting
+					progressDialog =
+						ProgressDialog.show(ShowsListActivity.this, "",
+								ShowsListActivity.this.getString(R.string.unsubscribing_from_show)
+								+ show.getTitle()
+								+ ShowsListActivity.this.getString(R.string.end_quotation));
+					progressDialog.setCancelable(false);
+					progressDialog.show();
+					
+					// Start the service
+					Intent service = new Intent();
+					service.putExtra(UnsubscribeService.SHOW_ID, show.getId());
+					service.setClass(ShowsListActivity.this, UnsubscribeService.class);
+					startService(service);
+				}
+			}, show.getTitle(), show.getId());
 			break;
 		default:
 			dialog = null;

@@ -16,15 +16,18 @@ package net.leifandersen.mobile.android.netcatch.activities;
 import java.sql.Date;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -86,7 +89,7 @@ public class EpisodesListActivity extends ListActivity {
 
 	public static final String SHOW_ID = "id";
 	public static final String SHOW_NAME = "name";
-	
+
 	private String mShowName;
 	private int mShowID;
 	private EpisodeAdapter mAdapter;
@@ -151,35 +154,44 @@ public class EpisodesListActivity extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
-
 		switch(id) {
 		case NEW_FEED:
 			dialog = new SubscriptionDialog(this);
 			break;
 		case UNSUBSCRIBE:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(getResources().getString(R.string.unsubscribe_question) 
-					+ mShowName + getResources().getString(R.string.question_punctuation))
-					.setCancelable(false)
-					.setPositiveButton(getResources().getString(R.string.ok), 
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							// Unsubscribe from the show
-							Intent service = new Intent();
-							service.putExtra(UnsubscribeService.SHOW_ID, mShowID);
-							service.setClass(EpisodesListActivity.this, UnsubscribeService.class);
-							startService(service);
+			dialog = Tools.createUnsubscribeDialog(this, new DialogInterface.OnClickListener() {
+				BroadcastReceiver finishedReceiver;
+				ProgressDialog progressDialog;		
+				public void onClick(DialogInterface dialog, int id) {
+					// Register the broadcast receiver
+					finishedReceiver = new BroadcastReceiver() {
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							// Clean up the mess that was made.
+							unregisterReceiver(finishedReceiver);
+							progressDialog.cancel();
+							refreshList();
 							finish();
 						}
-					})
-					.setNegativeButton(getResources().getString(R.string.cancel), 
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							// Cancel the dialog 
-							dialog.cancel();
-						}
-					});
-			dialog = builder.create();
+					};
+					registerReceiver(finishedReceiver, new IntentFilter(UnsubscribeService.FINISHED + mShowID));
+					
+					// Pop up a dialog while waiting
+					progressDialog =
+						ProgressDialog.show(EpisodesListActivity.this, "",
+								EpisodesListActivity.this.getString(R.string.unsubscribing_from_show)
+								+ mShowName
+								+ EpisodesListActivity.this.getString(R.string.end_quotation));
+					progressDialog.setCancelable(false);
+					progressDialog.show();
+
+					// Unsubscribe from the show
+					Intent service = new Intent();
+					service.putExtra(UnsubscribeService.SHOW_ID, mShowID);
+					service.setClass(EpisodesListActivity.this, UnsubscribeService.class);
+					startService(service);
+				}
+			}, mShowName, mShowID);
 			break;
 		default:
 			dialog = null;
@@ -192,7 +204,6 @@ public class EpisodesListActivity extends ListActivity {
 		setListAdapter(mAdapter);
 
 		// Get a list of all of the elements.
-		// TODO, make sure to get it in the write order!
 		// Add the list to the adapter
 		Cursor c = managedQuery(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI
 				+ "/" + mShowID + "/episodes"), null, null, null, null);

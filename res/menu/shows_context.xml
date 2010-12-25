@@ -14,10 +14,8 @@
    limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/home_item"
-		android:title="@string/home" />
-	<item android:id="@+id/new_show_item"
-		android:title="@string/new_show" />
-	<item android:id="@+id/preferences_item"
-		android:title="@string/preferences" />	
+	
+	
+		
+<item android:title="@string/unsubscribe" android:id="@+id/unsubscribe_item"></item>
 </menu>

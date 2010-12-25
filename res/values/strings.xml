@@ -56,4 +56,6 @@
 <string name="unsubscribe">Unsubscribe</string>
 <string name="unsubscribe_question">Unsubscribe from \"</string>
 <string name="question_punctuation">\"\?</string>
+<string name="unsubscribing_from_show">Unsubscribing from \&quot;</string>
+<string name="end_quotation">\&quot;</string>
 </resources>
