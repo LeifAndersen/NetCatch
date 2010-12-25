@@ -49,6 +49,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
@@ -146,9 +147,15 @@ public class RSSService extends Service {
 		if(show.getImage() != null || (updateMetadata || id == NEW_SHOW)) {
 			try {
 				// Setup files,  save data
-				File file = new File(Environment.
+				File file;
+				if(Build.VERSION.SDK_INT > 7)
+				file = new File(Environment.
 						getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)
 						.getPath() + "/" + show.getTitle() + "/image.png");
+				else {
+					file = new File(Environment.getExternalStorageDirectory(),
+							"PODCASTS/" + show.getTitle() + "/image.png");
+				}
 				saveImage(this, backgroundUpdate, new URL(show.getImagePath()), file);
 				
 				// Add to to class to be writen to database
