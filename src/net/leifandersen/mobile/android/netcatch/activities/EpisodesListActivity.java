@@ -115,7 +115,7 @@ public class EpisodesListActivity extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.layout.episodes_menu, menu);
+		inflater.inflate(R.menu.episodes_options, menu);
 		return true;
 	}
 

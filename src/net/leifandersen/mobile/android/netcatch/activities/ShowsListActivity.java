@@ -35,12 +35,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -119,14 +121,14 @@ public class ShowsListActivity extends ListActivity {
 	}
 
 	private static final int NEW_FEED = 1;
-	
+
 	private BroadcastReceiver refreshReceiver;
 	private LinearLayout background;
 	private FrameLayout header;
 	private TexturedListAdapter adapter;
 	private SharedPreferences sharedPrefs;
 	private List<Show> shows;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -163,9 +165,12 @@ public class ShowsListActivity extends ListActivity {
 				}
 			}
 		});
-		
+
 		// Refresh the list
 		refreshList();
+
+		// Registor the list for context menus
+		registerForContextMenu(getListView());
 	}
 
 	@Override
@@ -183,7 +188,7 @@ public class ShowsListActivity extends ListActivity {
 			NCMain.setColorOverlay(background, header);
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -197,10 +202,10 @@ public class ShowsListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
+
 		// Get the show
 		Show s = shows.get(position);
-		
+
 		// Start up the episode list for that show
 		Intent i = new Intent();
 		i.setClass(this, EpisodesListActivity.class);
@@ -208,11 +213,11 @@ public class ShowsListActivity extends ListActivity {
 		i.putExtra(EpisodesListActivity.SHOW_NAME, s.getTitle());
 		startActivity(i);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.layout.shows_menu, menu);
+		inflater.inflate(R.menu.shows_options, menu);
 		return true;
 	}
 
@@ -236,12 +241,26 @@ public class ShowsListActivity extends ListActivity {
 		}
 		return false;
 	}
-	
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.shows_context, menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		return super.onContextItemSelected(item);
+	}
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		return onCreateDialog(id, new Bundle());
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;

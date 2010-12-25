@@ -130,7 +130,7 @@ public class NCMain extends Activity implements OnClickListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.layout.main_menu, menu);
+		inflater.inflate(R.menu.main_options, menu);
 		return true;
 	}
 
