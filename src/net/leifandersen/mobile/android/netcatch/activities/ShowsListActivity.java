@@ -282,9 +282,9 @@ public class ShowsListActivity extends ListActivity {
 		Dialog dialog = null;
 		switch(id) {
 		case NEW_FEED:
-			dialog = new SubscriptionDialog(this);
+			dialog = Tools.createSubscriptionDialog(this);
 			registerReceiver(refreshReceiver, 
-					new IntentFilter(SubscriptionDialog.FINISHED));
+					new IntentFilter(Tools.SUBSCRIPTION_FINISHED));
 			break;
 		case UNSUBSCRIBE:
 			if (mDialogId < 0)

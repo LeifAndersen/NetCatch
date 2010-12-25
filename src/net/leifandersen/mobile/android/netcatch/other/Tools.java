@@ -14,14 +14,26 @@
 package net.leifandersen.mobile.android.netcatch.other;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class Tools {
+	
+	public static final String SUBSCRIPTION_FINISHED = "SubscriptionDialog Finished";	
+
 	public static boolean checkNetworkState(Context context, boolean backgroundUpdate) {
 		// Get the connectivity manager
 		ConnectivityManager manager = (ConnectivityManager)
@@ -38,6 +50,77 @@ public class Tools {
 			return false;
 		
 		return true;
+	}
+	
+	public static Dialog createSubscriptionDialog(final Context ctx) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
+		// Set up the layout
+		LayoutInflater inflater = 
+			(LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.subscription_feed_dialog, null);
+		final EditText editFeed = (EditText)layout.findViewById(R.id.sfd_editText);
+		builder.setView(layout);
+		builder.setCancelable(false);
+		builder.setPositiveButton(ctx.getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+			BroadcastReceiver finishedReceiver;
+			BroadcastReceiver failedReciever;
+			ProgressDialog progressDialog;
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				final String newFeed = editFeed.getText().toString();
+
+				// Get the feed's data
+				// Set the broadcast reciever
+				finishedReceiver = new BroadcastReceiver() {
+					@Override
+					public void onReceive(Context context, Intent intent) {
+						// Clean up
+						progressDialog.cancel();
+						ctx.unregisterReceiver(finishedReceiver);
+						ctx.unregisterReceiver(failedReciever);
+						
+						// Tell the list to refresh
+						Intent broadcast = new Intent(SUBSCRIPTION_FINISHED);
+						ctx.sendBroadcast(broadcast);
+					}
+				};
+				ctx.registerReceiver(finishedReceiver, new IntentFilter(RSSService.RSSFINISH + newFeed));
+
+				// Set up the failed dialog
+				failedReciever = new BroadcastReceiver() {
+					@Override
+					public void onReceive(Context context, Intent intent) {
+						progressDialog.cancel();
+						Toast.makeText(ctx, "Failed to fetch feed", Toast.LENGTH_LONG);
+						ctx.unregisterReceiver(finishedReceiver);
+						ctx.unregisterReceiver(failedReciever);
+					}
+				};
+				ctx.registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
+				
+				// Show a waiting dialog (that can be canceled)
+				progressDialog =
+					ProgressDialog.show(ctx,
+							"", ctx.getString(R.string.getting_show_details));
+				progressDialog.setCancelable(true);
+				progressDialog.show();
+				
+				// Start the service
+				Intent service = new Intent();
+				service.putExtra(RSSService.FEED, newFeed);
+				service.putExtra(RSSService.BACKGROUND_UPDATE, false);
+				service.setClass(ctx, RSSService.class);
+				ctx.startService(service);
+			}
+		});
+		builder.setNegativeButton(ctx.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
+		return builder.create();
 	}
 	
 	public static Dialog createUnsubscribeDialog(Context context,

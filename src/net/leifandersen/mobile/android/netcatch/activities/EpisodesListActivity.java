@@ -156,7 +156,7 @@ public class EpisodesListActivity extends ListActivity {
 		Dialog dialog = null;
 		switch(id) {
 		case NEW_FEED:
-			dialog = new SubscriptionDialog(this);
+			dialog = Tools.createSubscriptionDialog(this);
 			break;
 		case UNSUBSCRIBE:
 			dialog = Tools.createUnsubscribeDialog(this, new DialogInterface.OnClickListener() {

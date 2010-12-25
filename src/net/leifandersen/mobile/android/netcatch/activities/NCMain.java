@@ -14,6 +14,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.Activity;
@@ -161,7 +162,7 @@ public class NCMain extends Activity implements OnClickListener {
 		switch(id) {
 		
 		case NEW_FEED:
-			dialog = new SubscriptionDialog(this);
+			dialog = Tools.createSubscriptionDialog(this);
 			break;
 		default:
 			dialog = null;
