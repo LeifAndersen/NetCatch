@@ -47,11 +47,13 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -144,7 +146,9 @@ public class RSSService extends Service {
 		}
 
 		// Get the show's image:
-		if(show.getImage() != null || (updateMetadata || id == NEW_SHOW)) {
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);		
+		if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && 
+				show.getImagePath() != null && (updateMetadata || id == NEW_SHOW)) {
 			try {
 				// Setup files,  save data
 				File file;
@@ -239,7 +243,7 @@ public class RSSService extends Service {
 		try {
 			// Make the file
 			file.getParentFile().mkdirs();
-			
+						
 			// Set up the connection
 			URLConnection uCon = url.openConnection();
 			InputStream is = uCon.getInputStream();
@@ -323,7 +327,7 @@ public class RSSService extends Service {
 				Element ima = (Element)imagNode.item(0);
 				if (ima != null) {
 					NodeList urlNode = ima.getElementsByTagName("url");
-					if(urlNode == null || descNode.getLength() < 1)
+					if(urlNode == null || urlNode.getLength() < 1)
 						imageUrl = null;
 					else
 						imageUrl = urlNode.item(0).getFirstChild().getNodeValue();

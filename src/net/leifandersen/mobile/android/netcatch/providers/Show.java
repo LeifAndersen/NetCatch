@@ -14,8 +14,6 @@
 package net.leifandersen.mobile.android.netcatch.providers;
 
 import android.graphics.drawable.Drawable;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * A structure to hold a show object designed only for packing data to pass

@@ -14,6 +14,8 @@
    limitations under the License.
 -->
 <resources>
+    <string name="download_location">Download Location</string>
+    <string name="play">Play</string>
 	<string name="hello">Hello World, NCMain!</string>
 	<string name="app_name">NetCatch</string>
 	<string name="new_show">New Show</string>
@@ -62,4 +64,6 @@
 <string name="move_bottom">Move to Bottom</string>
 <string name="move_up">Move up</string>
 <string name="move_down">Move Down</string>
+<string name="download">Download</string>
+<string name="delete">Delete</string>
 </resources>

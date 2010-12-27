@@ -23,7 +23,8 @@
 			android:summaryOff="@string/download_only"
 			android:summaryOn="@string/download_all"
 			android:key="download" />
-	</PreferenceCategory>
+	<EditTextPreference android:title="@string/download_location" android:key="download_location" android:defaultValue="Podcasts"></EditTextPreference>
+</PreferenceCategory>
 	<PreferenceCategory android:title="@string/media_player_preferences">
 		<CheckBoxPreference android:title="@string/use_widget"
 			android:defaultValue="false"

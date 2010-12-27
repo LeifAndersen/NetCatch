@@ -19,7 +19,6 @@ import java.util.List;
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
-import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
 import android.app.Dialog;
@@ -130,7 +129,7 @@ public class EpisodesListActivity extends ListActivity {
 		
 		Episode e = mEpisodes.get(position);
 		Intent i = new Intent();
-		// TODO i.putExtra();
+		i.putExtra("Foo", e.getId()); // TODO
 		i.setClass(this, EpisodeActivity.class);
 		startActivity(i);
 	}
@@ -171,7 +170,8 @@ public class EpisodesListActivity extends ListActivity {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.episodes_context, menu);
+		// TODO actually set up the proper menu
+		inflater.inflate(R.menu.episodes_context_not_downloaded, menu);
 	}
 	
 	@Override

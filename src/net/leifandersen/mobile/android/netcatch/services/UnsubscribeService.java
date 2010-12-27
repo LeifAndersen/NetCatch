@@ -18,7 +18,7 @@ public class UnsubscribeService extends Service {
 	public static final String FINISHED = "finished ";
 	
 	// Private member variable
-	private int mId;
+	private long mId;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -33,7 +33,7 @@ public class UnsubscribeService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// Setup the paremeters values
-		mId = intent.getIntExtra(SHOW_ID, -1);
+		mId = intent.getLongExtra(SHOW_ID, -1);
 		if(mId < 0)
 			throw new IllegalArgumentException("Bad or no ID");
 		

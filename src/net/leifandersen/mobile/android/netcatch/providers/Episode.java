@@ -13,8 +13,6 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
 
 
