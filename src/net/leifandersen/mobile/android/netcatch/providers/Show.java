@@ -13,9 +13,9 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
-import java.io.Serializable;
-
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * A structure to hold a show object designed only for packing data to pass
@@ -24,13 +24,13 @@ import android.graphics.drawable.Drawable;
  * @author Leif Andersen
  *
  */
-public class Show implements Serializable {
+public class Show {
 
+	private static final long serialVersionUID = 1L;
 	public static final int NO_ID = -1;
 	public static final int DEFAULT = -1;
 	
-	private static final long serialVersionUID = 1L;
-	private int id;
+	private long id;
 	private String title;
 	private String author;
 	private String feed;
@@ -56,7 +56,7 @@ public class Show implements Serializable {
 		this.updateFrequency = updateFrequency;
 	}
 	
-	public Show(int id, String title, String author, String feed, String description, 
+	public Show(long id, String title, String author, String feed, String description, 
 			String imagePath, int episodesToKeep, int updateFrequency) {
 		this.id = id;
 		this.title = title;
@@ -183,14 +183,14 @@ public class Show implements Serializable {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 }

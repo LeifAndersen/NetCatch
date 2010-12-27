@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:title="@string/move_top" android:id="@+id/move_top">
+</item>
+<item android:title="@string/move_up" android:id="@+id/move_up"></item>
+<item android:id="@+id/move_down" android:title="@string/move_down"></item>
+<item android:id="@+id/move_bottom" android:title="@string/move_bottom"></item>
+</menu>

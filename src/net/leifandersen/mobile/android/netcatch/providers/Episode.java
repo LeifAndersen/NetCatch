@@ -13,7 +13,9 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 
 
 /**
@@ -23,23 +25,22 @@ import java.io.Serializable;
  * @author Leif Andersen
  *
  */
-public class Episode implements Serializable {
+public class Episode {
 	
 	public static final int NO_ID = -1;
 	public static final int NO_SHOW = -1;
 	
-	private static final long serialVersionUID = 1L;
 	private String title;
 	private String author;
 	private String description;
 	private String media;
 	private boolean played;
 	private long date;
-	private int showId;
+	private long showId;
 	private int bookmark;
-	private int id;
+	private long id;
 	
-	public Episode(int id, int showId, String title, String author, String description, 
+	public Episode(long id, long showId, String title, String author, String description, 
 			String media, long date, int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
@@ -52,7 +53,7 @@ public class Episode implements Serializable {
 		this.id = id;
 	}
 	
-	public Episode(int showId, String title, String author, String description, 
+	public Episode(long showId, String title, String author, String description, 
 			String media, long date, int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
@@ -166,14 +167,14 @@ public class Episode implements Serializable {
 	/**
 	 * @param showId the showId to set
 	 */
-	public void setShowId(int showId) {
+	public void setShowId(long showId) {
 		this.showId = showId;
 	}
 
 	/**
 	 * @return the showId
 	 */
-	public int getShowId() {
+	public long getShowId() {
 		return showId;
 	}
 
@@ -194,14 +195,14 @@ public class Episode implements Serializable {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 }

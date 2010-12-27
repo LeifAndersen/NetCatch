@@ -14,10 +14,12 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import java.sql.Date;
+import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
+import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
 import android.app.Dialog;
@@ -31,13 +33,16 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -87,15 +92,16 @@ public class EpisodesListActivity extends ListActivity {
 		}
 	}
 
-	public static final String SHOW_ID = "id";
-	public static final String SHOW_NAME = "name";
-
+	public static final String SHOW_ID = "show_id";
+	public static final String SHOW_NAME = "show_name";
+	
 	private String mShowName;
-	private int mShowID;
+	private long mShowID;
 	private EpisodeAdapter mAdapter;
 	private static final int NEW_FEED = 1;
 	private static final int UNSUBSCRIBE = 2;
-
+	private List<Episode> mEpisodes;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,15 +112,29 @@ public class EpisodesListActivity extends ListActivity {
 		Bundle b = getIntent().getExtras();
 		if (b == null)
 			throw new IllegalArgumentException("No Bundle Given");
-		mShowID = b.getInt(SHOW_ID, -1);
+		
+		
+		mShowID = b.getLong(SHOW_ID, -1);
 		mShowName = b.getString(SHOW_NAME);
-		if(mShowID == -1 || mShowName == null)
+		
+		if(mShowID < 0 || mShowName == null)
 			throw new IllegalArgumentException("No show ID and name given");
 
 		// Set the List Adapter
 		refreshList();
 	}
 
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		
+		Episode e = mEpisodes.get(position);
+		Intent i = new Intent();
+		// TODO i.putExtra();
+		i.setClass(this, EpisodeActivity.class);
+		startActivity(i);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -146,6 +166,20 @@ public class EpisodesListActivity extends ListActivity {
 		return false;
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.episodes_context, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		return super.onContextItemSelected(item);
+	}
+	
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		return onCreateDialog(id, new Bundle());

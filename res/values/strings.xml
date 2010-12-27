@@ -58,4 +58,8 @@
 <string name="question_punctuation">\"\?</string>
 <string name="unsubscribing_from_show">Unsubscribing from \&quot;</string>
 <string name="end_quotation">\&quot;</string>
+<string name="move_top">Move to Top</string>
+<string name="move_bottom">Move to Bottom</string>
+<string name="move_up">Move up</string>
+<string name="move_down">Move Down</string>
 </resources>

@@ -133,7 +133,7 @@ public class ShowsListActivity extends ListActivity {
 	private FrameLayout header;
 	private TexturedListAdapter adapter;
 	private SharedPreferences sharedPrefs;
-	private List<Show> shows;
+	private List<Show> mShows;
 
 	// So a dialog knows what to do, because API lower than 8 doesn't
 	// have the bundle option for creating a dialog
@@ -163,7 +163,7 @@ public class ShowsListActivity extends ListActivity {
 			@Override
 			public void onClick(View v) {
 				// Refresh each show in the list
-				for(Show show : shows) {
+				for(Show show : mShows) {
 					Intent service = new Intent();
 					service.putExtra(RSSService.FEED, show.getFeed());
 					service.putExtra(RSSService.ID, show.getId());
@@ -214,13 +214,13 @@ public class ShowsListActivity extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 
 		// Get the show
-		Show s = shows.get(position);
+		Show s = mShows.get(position);
 
 		// Start up the episode list for that show
 		Intent i = new Intent();
-		i.setClass(this, EpisodesListActivity.class);
 		i.putExtra(EpisodesListActivity.SHOW_ID, s.getId());
 		i.putExtra(EpisodesListActivity.SHOW_NAME, s.getTitle());
+		i.setClass(this, EpisodesListActivity.class);
 		startActivity(i);
 	}
 
@@ -289,13 +289,13 @@ public class ShowsListActivity extends ListActivity {
 		case UNSUBSCRIBE:
 			if (mDialogId < 0)
 				return null;
-			Show show = shows.get(mDialogId);
+			Show show = mShows.get(mDialogId);
 			dialog = Tools.createUnsubscribeDialog(this, new DialogInterface.OnClickListener() {
 				BroadcastReceiver finishedReceiver;
 				ProgressDialog progressDialog;
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
-					Show show = shows.get(mDialogId);
+					Show show = mShows.get(mDialogId);
 					// Register the broadcast receiver
 					finishedReceiver = new BroadcastReceiver() {
 						@Override
@@ -336,7 +336,7 @@ public class ShowsListActivity extends ListActivity {
 		// Update the adapter
 		adapter = new TexturedListAdapter(this);
 		setListAdapter(adapter);
-		this.shows = new ArrayList<Show>();
+		this.mShows = new ArrayList<Show>();
 
 		// Get all of the shows
 		Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
@@ -354,7 +354,7 @@ public class ShowsListActivity extends ListActivity {
 						imagePath, Show.DEFAULT, Show.DEFAULT);
 				s.setImage(Drawable.createFromPath(imagePath));
 				adapter.add(s);
-				this.shows.add(s);
+				this.mShows.add(s);
 			} while (shows.moveToNext());
 
 	}
