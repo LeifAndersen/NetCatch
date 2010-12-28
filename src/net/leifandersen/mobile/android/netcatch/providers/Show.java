@@ -35,8 +35,8 @@ public class Show {
 	private Drawable image;
 	private String imagePath;
 	private String description;
-	private int episodesToKeep;
-	private int updateFrequency;
+	private long episodesToKeep;
+	private long updateFrequency;
 	
 	public Show() {
 		
@@ -153,28 +153,28 @@ public class Show {
 	/**
 	 * @param episodesToKeep the episodesToKeep to set
 	 */
-	public void setEpisodesToKeep(int episodesToKeep) {
+	public void setEpisodesToKeep(long episodesToKeep) {
 		this.episodesToKeep = episodesToKeep;
 	}
 
 	/**
 	 * @return the episodesToKeep
 	 */
-	public int getEpisodesToKeep() {
+	public long getEpisodesToKeep() {
 		return episodesToKeep;
 	}
 
 	/**
 	 * @param updateFrequency the updateFrequency to set
 	 */
-	public void setUpdateFrequency(int updateFrequency) {
+	public void setUpdateFrequency(long updateFrequency) {
 		this.updateFrequency = updateFrequency;
 	}
 
 	/**
 	 * @return the updateFrequency
 	 */
-	public int getUpdateFrequency() {
+	public long getUpdateFrequency() {
 		return updateFrequency;
 	}
 

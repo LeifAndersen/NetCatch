@@ -19,6 +19,9 @@ import android.preference.PreferenceActivity;
 
 public class Preferences extends PreferenceActivity {
 
+	public static final long DEFAULT_TIME = -1;
+	public static final String REFRESH_TIME = "refresh_time";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -13,43 +13,37 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<PreferenceScreen android:id="@+id/preferences" 
-	android:layout_width="fill_parent" 
-	android:layout_height="fill_parent" 
-	xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:id="@+id/preferences">
 	<PreferenceCategory android:title="@string/downloading">
-       	<CheckBoxPreference android:title="@string/download_audio"
-			android:defaultValue="true"
-			android:summaryOff="@string/download_only"
-			android:summaryOn="@string/download_all"
-			android:key="download" />
-	<EditTextPreference android:title="@string/download_location" android:key="download_location" android:defaultValue="Podcasts"></EditTextPreference>
-</PreferenceCategory>
+		<ListPreference android:title="@string/refresh_rate"
+			android:key="refresh_rate" android:entries="@array/refresh_strings"
+			android:entryValues="@array/refresh_values" android:defaultValue="0"></ListPreference>
+		<CheckBoxPreference android:title="@string/download_audio"
+			android:defaultValue="true" android:summaryOff="@string/download_only"
+			android:summaryOn="@string/download_all" android:key="download" />
+		<EditTextPreference android:title="@string/download_location"
+			android:key="download_location" android:defaultValue="Podcasts"></EditTextPreference>
+
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/media_player_preferences">
 		<CheckBoxPreference android:title="@string/use_widget"
-			android:defaultValue="false"
-			android:summaryOff="@string/use_widget"
-			android:summaryOn="@string/use_widget"
-			android:key="widget_enable" />
-		<Preference
-			android:key="theme_color"
-			android:title="@string/theme_preference_title"
-			android:summary="@string/theme_preference_summary"
-			>
-			<intent android:action="net.leifandersen.mobile.android.netcatch.activities.ColorChoiceDialogActivity" />
+			android:defaultValue="false" android:summaryOff="@string/use_widget"
+			android:summaryOn="@string/use_widget" android:key="widget_enable" />
+		<Preference android:key="theme_color" android:title="@string/theme_preference_title"
+			android:summary="@string/theme_preference_summary">
+			<intent
+				android:action="net.leifandersen.mobile.android.netcatch.activities.ColorChoiceDialogActivity" />
 		</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/sync_preferences">
 		<CheckBoxPreference android:title="@string/google_reader"
-			android:defaultValue="false"
-			android:summaryOff="@string/no_sync"
-			android:summaryOn="@string/sync"
-			android:key="google_reader_sync" />
+			android:defaultValue="false" android:summaryOff="@string/no_sync"
+			android:summaryOn="@string/sync" android:key="google_reader_sync" />
 		<CheckBoxPreference android:title="@string/gpodder"
-			android:defaultValue="false"
-			android:summaryOff="@string/no_sync"
-			android:summaryOn="@string/sync"
-			android:key="gpodder_sync" />
+			android:defaultValue="false" android:summaryOff="@string/no_sync"
+			android:summaryOn="@string/sync" android:key="gpodder_sync" />
 	</PreferenceCategory>
 </PreferenceScreen>
 		
