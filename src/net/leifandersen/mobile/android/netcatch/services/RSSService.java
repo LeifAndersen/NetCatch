@@ -243,7 +243,10 @@ public class RSSService extends Service {
 		try {
 			// Make the file
 			file.getParentFile().mkdirs();
-						
+			
+			if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
+				  Log.e("RSSService", "Unable to create " + file.getParentFile());
+			
 			// Set up the connection
 			URLConnection uCon = url.openConnection();
 			InputStream is = uCon.getInputStream();
@@ -262,6 +265,7 @@ public class RSSService extends Service {
 			os.close();
 		} catch (Exception e) {
 			// Any exception is probably a newtork faiilure, bail
+			Log.e("RSSService", "Failure to download " + file.getParentFile());
 			return;
 		}
 	}
