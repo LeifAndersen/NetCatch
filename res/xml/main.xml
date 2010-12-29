@@ -14,8 +14,7 @@
    limitations under the License.
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:id="@+id/preferences">
+	android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/preferences">
 	<PreferenceCategory android:title="@string/downloading">
 		<ListPreference android:title="@string/refresh_rate"
 			android:key="refresh_rate" android:entries="@array/refresh_strings"
@@ -33,7 +32,7 @@
 			<intent android:action="net.leifandersen.mobile.android.netcatch.activities.ColorChoiceDialogActivity" />
 		</Preference>
 		
-	<CheckBoxPreference android:defaultValue="false" android:title="@string/internal_player" android:summary="@string/internal_player_description"></CheckBoxPreference><CheckBoxPreference android:title="@string/use_widget" android:defaultValue="false" android:key="widget_enable" android:summary="@string/use_widget" android:dependency="external_player"/>
+	<CheckBoxPreference android:defaultValue="false" android:title="@string/internal_player" android:summary="@string/internal_player_description" android:key="internal_player"></CheckBoxPreference><CheckBoxPreference android:title="@string/use_widget" android:defaultValue="false" android:key="widget_enable" android:summary="@string/use_widget" android:dependency="internal_player"/>
 </PreferenceCategory>
 	<PreferenceCategory android:title="@string/sync_preferences">
 		<CheckBoxPreference android:title="@string/synchronize" android:key="synchronize" android:defaultValue="false" android:summary="@string/synchronize_description"></CheckBoxPreference><CheckBoxPreference android:title="@string/google_reader"

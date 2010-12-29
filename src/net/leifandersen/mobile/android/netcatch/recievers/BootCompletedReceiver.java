@@ -55,7 +55,7 @@ public class BootCompletedReceiver extends BroadcastReceiver{
 					"Interupted, continuting on with work");
 		}
 		
-		Log.w("BootCompletedREceiver",
+		Log.w("BootCompletedReceiver",
 				"Starting up subscriptionAlarms");
 		
 		// Query for all of the shows
