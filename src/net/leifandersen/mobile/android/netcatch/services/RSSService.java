@@ -30,7 +30,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.activities.EpisodeActivity;
-import net.leifandersen.mobile.android.netcatch.activities.NCMain;
 import net.leifandersen.mobile.android.netcatch.activities.Preferences;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
@@ -137,7 +136,7 @@ public class RSSService extends Service {
 		NotificationManager notificationManager =
 			(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE); 
 		Notification notification = 
-			new Notification(R.drawable.notification_icon,
+			new Notification(R.drawable.notification_downloading,
 					getString(R.string.refreshing), System.currentTimeMillis());	
 		Intent notificationIntent = new Intent(this, EpisodeActivity.class);
 		notificationIntent.putExtra(EpisodeActivity.ID, id);
