@@ -21,6 +21,7 @@ public class Preferences extends PreferenceActivity {
 
 	public static final long DEFAULT_TIME = -1;
 	public static final String REFRESH_TIME = "refresh_time";
+	public static final String DOWNLOAD_LOCATION = "download_location";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

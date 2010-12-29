@@ -29,6 +29,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.activities.Preferences;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
@@ -77,13 +78,13 @@ public class RSSService extends Service {
 	public static final String ID = "id";
 	public static final String UPDATE_METADATA = "update_metadata";
 	public static final String BACKGROUND_UPDATE = "background_update";
-	
+
 	private static final int NEW_SHOW = -1;
 	private int id;
 	private String feed;
 	private boolean updateMetadata;
 	private boolean backgroundUpdate;
-	
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -101,7 +102,7 @@ public class RSSService extends Service {
 		feed = intent.getStringExtra(FEED);
 		updateMetadata = intent.getBooleanExtra(UPDATE_METADATA, false);
 		backgroundUpdate = intent.getBooleanExtra(BACKGROUND_UPDATE, true);
-		
+
 		if (feed == null)
 			throw new IllegalArgumentException("No feed placed in intent");
 
@@ -125,9 +126,9 @@ public class RSSService extends Service {
 	 * Get the data from the service's feed.
 	 */
 	public void fetchData() {
-		
+
 		String feed = this.feed;
-		
+
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, backgroundUpdate, feed);
 		if (feedDoc == null) {
@@ -145,30 +146,24 @@ public class RSSService extends Service {
 			return;
 		}
 
-		// Get the show's image:
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);		
+		// Get the show's image:	
 		if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && 
 				show.getImagePath() != null && (updateMetadata || id == NEW_SHOW)) {
 			try {
 				// Setup files,  save data
-				File file;
-				if(Build.VERSION.SDK_INT > 7)
-				file = new File(Environment.
-						getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)
-						.getPath() + "/" + show.getTitle() + "/image.png");
-				else {
-					file = new File(Environment.getExternalStorageDirectory(),
-							"PODCASTS/" + show.getTitle() + "/image.png");
-				}
+				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+				File file = new File(Environment.getExternalStorageDirectory(),
+						pref.getString(Preferences.DOWNLOAD_LOCATION, "PODCASTS")
+						+ "/" + show.getTitle() + "/image.png");
 				saveImage(this, backgroundUpdate, new URL(show.getImagePath()), file);
-				
+
 				// Add to to class to be writen to database
 				show.setImagePath(file.getPath());
 			} catch (Exception e) {
 				// Problems are likely from malformed paths, skip this step
 			}
 		}
-		
+
 		// Write show information
 		ContentValues values = new ContentValues();
 		values.put(ShowsProvider.TITLE, show.getTitle());
@@ -183,7 +178,7 @@ public class RSSService extends Service {
 			// It's a new show
 			// Insert the show into the database
 			getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
-			
+
 			// Get the id of the new show
 			Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
 			c.moveToFirst();
@@ -192,11 +187,11 @@ public class RSSService extends Service {
 		} else if(updateMetadata) {
 			// The show is already in the database.
 			id = this.id;
-			
+
 			// Update the metadata
 			getContentResolver().update(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
 					+ "/" + id), values, null, null);
-			
+
 			// Clear out old episode information from db
 			getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
 					+ "/" + id + "/episodes"), null, null);
@@ -204,12 +199,12 @@ public class RSSService extends Service {
 		else {
 			// Set the id
 			id = this.id;
-			
+
 			// Clear out old episode information from db
 			getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
 					+ "/" + id + "/episodes"), null, null);
 		}
-		
+
 		// Write the episode information
 		for(Episode episode : episodes) {
 			values = new ContentValues();
@@ -221,7 +216,7 @@ public class RSSService extends Service {
 			values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
 			getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
 		}
-		
+
 		// Send out the finish broadcast
 		Intent broadcast = new Intent(RSSFINISH + feed);
 		sendBroadcast(broadcast);
@@ -233,32 +228,32 @@ public class RSSService extends Service {
 		sendBroadcast(broadcast);
 		stopSelf();
 	}
-	
+
 	private static void saveImage(Context context, boolean backgroundUpdate, URL url, File file) {
-		
+
 		if (!Tools.checkNetworkState(context, backgroundUpdate))
 			return;
-		
+
 		// Get the image
 		try {
 			// Make the file
 			file.getParentFile().mkdirs();
-			
+
 			if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
-				  Log.e("RSSService", "Unable to create " + file.getParentFile());
-			
+				Log.e("RSSService", "Unable to create " + file.getParentFile());
+
 			// Set up the connection
 			URLConnection uCon = url.openConnection();
 			InputStream is = uCon.getInputStream();
 			BufferedInputStream bis = new BufferedInputStream(is);
-			
+
 			// Download the data
 			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-            int current = 0;
-            while ((current = bis.read()) != -1) {
-                    baf.append((byte) current);
-            }
-            
+			int current = 0;
+			while ((current = bis.read()) != -1) {
+				baf.append((byte) current);
+			}
+
 			// Write the bits to the file
 			OutputStream os = new FileOutputStream(file);
 			os.write(baf.toByteArray());
@@ -269,9 +264,9 @@ public class RSSService extends Service {
 			return;
 		}
 	}
-	
+
 	private static Document getRSS(Context context, boolean backgroundUpdate, String url) {
-		
+
 		if (!Tools.checkNetworkState(context, backgroundUpdate))
 			return null;
 
@@ -303,28 +298,28 @@ public class RSSService extends Service {
 			// Also, the cast should be okay if the XML is formatted correctly
 			NodeList item = feed.getElementsByTagName("channel");
 			Element el = (Element)item.item(0);
-			
+
 			String title;
 			NodeList titleNode = el.getElementsByTagName("title");
 			if (titleNode == null || titleNode.getLength() < 1)
 				title = context.getString(R.string.default_title);
 			else
 				title = titleNode.item(0).getFirstChild().getNodeValue();
-			
+
 			String author;
 			NodeList authorNode = el.getElementsByTagName("author");
 			if (authorNode == null || authorNode.getLength() < 1)
 				author = context.getString(R.string.default_author);
 			else
 				author = authorNode.item(0).getFirstChild().getNodeValue();
-			
+
 			String desc;
 			NodeList descNode = el.getElementsByTagName("comments");
 			if (descNode == null || descNode.getLength() < 1)
 				desc = context.getString(R.string.default_comments);
 			else
 				desc = descNode.item(0).getFirstChild().getNodeValue();
-			
+
 			String imageUrl;
 			NodeList imagNode = el.getElementsByTagName("image");
 			if(imagNode != null) {
@@ -338,8 +333,8 @@ public class RSSService extends Service {
 				} else
 					imageUrl = null;
 			} else
-				 imageUrl = null;
-			
+				imageUrl = null;
+
 			return new Show(title, author, feedUrl, desc, imageUrl, -1, -1);
 		} catch (Exception e) {
 			// Any parse errors and we'll log and fail
@@ -390,7 +385,7 @@ public class RSSService extends Service {
 					url = "";
 				else 
 					url = urlNode.item(0).getFirstChild().getNodeValue();
-				
+
 				// Convert the date string into the needed integer
 				// TODO, use a non-depricated method
 				long dateMills;
@@ -399,7 +394,7 @@ public class RSSService extends Service {
 				} catch (Exception e) {
 					dateMills = 0;
 				}
-				
+
 				// Add the new episode
 				// ShowId and played doesn't really matter at this point
 				episodes.add(new Episode(title, author, desc, url, dateMills, 0, false));
