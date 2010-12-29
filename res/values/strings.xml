@@ -14,6 +14,15 @@
    limitations under the License.
 -->
 <resources>
+    <string name="sync_tag">Sync Tag</string>
+    <string name="synchronize_description">Synchronize with the web.</string>
+    <string name="synchronize">Synchronize</string>
+    <string name="internal_player_description">Use the built in media player to play episodes</string>
+    <string name="internal_player">Internal Player</string>
+    <string name="wifi_only_description">Only download when using wifi</string>
+    <string name="wifi_only">Wifi Only</string>
+    <string name="queue_only_description">Only download when episode is in the queue</string>
+    <string name="queue_only">Queue Only</string>
     <string name="refresh_rate">Refresh Rate</string>
     <string name="download_location">Download Location</string>
     <string name="play">Play</string>

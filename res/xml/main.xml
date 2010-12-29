@@ -19,31 +19,32 @@
 	<PreferenceCategory android:title="@string/downloading">
 		<ListPreference android:title="@string/refresh_rate"
 			android:key="refresh_rate" android:entries="@array/refresh_strings"
-			android:entryValues="@array/refresh_values" android:defaultValue="0"></ListPreference>
-		<CheckBoxPreference android:title="@string/download_audio"
+			android:entryValues="@array/refresh_values" android:defaultValue="120"></ListPreference>
+		<EditTextPreference android:title="@string/download_location" android:key="download_location" android:defaultValue="Podcasts"></EditTextPreference><CheckBoxPreference android:title="@string/download_audio"
 			android:defaultValue="true" android:summaryOff="@string/download_only"
-			android:summaryOn="@string/download_all" android:key="download" />
-		<EditTextPreference android:title="@string/download_location"
-			android:key="download_location" android:defaultValue="Podcasts"></EditTextPreference>
+			android:summaryOn="@string/download_all" android:key="download"/>
+		
 
-	</PreferenceCategory>
+	<CheckBoxPreference android:key="wifi_only" android:dependency="download" android:title="@string/wifi_only" android:summary="@string/wifi_only_description" android:defaultValue="true"></CheckBoxPreference>
+<CheckBoxPreference android:key="queue_only" android:title="@string/queue_only" android:dependency="download" android:summary="@string/queue_only_description" android:defaultValue="false"></CheckBoxPreference>
+</PreferenceCategory>
 	<PreferenceCategory android:title="@string/media_player_preferences">
-		<CheckBoxPreference android:title="@string/use_widget"
-			android:defaultValue="false" android:summaryOff="@string/use_widget"
-			android:summaryOn="@string/use_widget" android:key="widget_enable" />
-		<Preference android:key="theme_color" android:title="@string/theme_preference_title"
-			android:summary="@string/theme_preference_summary">
-			<intent
-				android:action="net.leifandersen.mobile.android.netcatch.activities.ColorChoiceDialogActivity" />
+		<Preference android:key="theme_color" android:title="@string/theme_preference_title" android:summary="@string/theme_preference_summary">
+			<intent android:action="net.leifandersen.mobile.android.netcatch.activities.ColorChoiceDialogActivity" />
 		</Preference>
-	</PreferenceCategory>
+		
+	<CheckBoxPreference android:defaultValue="false" android:title="@string/internal_player" android:summary="@string/internal_player_description"></CheckBoxPreference><CheckBoxPreference android:title="@string/use_widget" android:defaultValue="false" android:key="widget_enable" android:summary="@string/use_widget" android:dependency="external_player"/>
+</PreferenceCategory>
 	<PreferenceCategory android:title="@string/sync_preferences">
-		<CheckBoxPreference android:title="@string/google_reader"
+		<CheckBoxPreference android:title="@string/synchronize" android:key="synchronize" android:defaultValue="false" android:summary="@string/synchronize_description"></CheckBoxPreference><CheckBoxPreference android:title="@string/google_reader"
 			android:defaultValue="false" android:summaryOff="@string/no_sync"
-			android:summaryOn="@string/sync" android:key="google_reader_sync" />
-		<CheckBoxPreference android:title="@string/gpodder"
+			android:summaryOn="@string/sync" android:key="google_reader_sync" android:dependency="synchronize"/>
+		<EditTextPreference android:key="google_reader_sync_location" android:dependency="google_reader_sync" android:defaultValue="Podcasts" android:title="@string/sync_tag"></EditTextPreference><CheckBoxPreference android:title="@string/gpodder"
 			android:defaultValue="false" android:summaryOff="@string/no_sync"
-			android:summaryOn="@string/sync" android:key="gpodder_sync" />
-	</PreferenceCategory>
+			android:summaryOn="@string/sync" android:key="gpodder_sync" android:dependency="synchronize"/>
+	
+
+
+</PreferenceCategory>
 </PreferenceScreen>
 		
