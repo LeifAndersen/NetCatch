@@ -45,19 +45,21 @@
 		</activity>
 
 		<activity android:name=".activities.Preferences" />
-		
-		<service android:name=".services.RSSService" />		
+
+		<service android:name=".services.RSSService" />
 		<service android:name=".services.UnsubscribeService"></service>
 		<service android:name=".services.MediaDownloadService"></service>
 		<service android:name=".services.MediaPlayerService"></service>
 		<receiver android:name=".recievers.BootCompletedReceiver">
-			<intent-filter android:label="android.intent.action.BOOT_COMPLETED"></intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED"></action>
+			</intent-filter>
 		</receiver>
 		<receiver android:name=".recievers.BootCompletedReceiver"></receiver>
-		
+
 		<provider android:name=".providers.ShowsProvider"
 			android:authorities="net.leifandersen.provider.Shows" />
-		
+
 	</application>
 
 	<uses-sdk android:targetSdkVersion="9" android:minSdkVersion="7" />
