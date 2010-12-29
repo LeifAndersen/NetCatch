@@ -84,7 +84,7 @@ public class RSSService extends Service {
 	public static final String BACKGROUND_UPDATE = "background_update";
 
 	private static final int NEW_SHOW = -1;
-	private int id;
+	private long id;
 	private String feed;
 	private boolean updateMetadata;
 	private boolean backgroundUpdate;
@@ -102,7 +102,7 @@ public class RSSService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// Set up the feed for this service
-		id = intent.getIntExtra(ID, NEW_SHOW);
+		id = intent.getLongExtra(ID, NEW_SHOW);
 		feed = intent.getStringExtra(FEED);
 		updateMetadata = intent.getBooleanExtra(UPDATE_METADATA, false);
 		backgroundUpdate = intent.getBooleanExtra(BACKGROUND_UPDATE, true);
@@ -147,7 +147,7 @@ public class RSSService extends Service {
 				feed, contentIntent);
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
 		notificationManager.notify(1, notification);
-		
+
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, backgroundUpdate, feed);
 		if (feedDoc == null) {
@@ -186,58 +186,59 @@ public class RSSService extends Service {
 		}
 
 		// Write show information
-		ContentValues values = new ContentValues();
-		values.put(ShowsProvider.TITLE, show.getTitle());
-		values.put(ShowsProvider.AUTHOR, show.getAuthor());
-		values.put(ShowsProvider.IMAGE, show.getImagePath());
-		values.put(ShowsProvider.FEED, feed);
-		values.put(ShowsProvider.DESCRIPTION, show.getDescription());
-		values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
-		values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
-		int id;
-		if(this.id == NEW_SHOW) {
-			// It's a new show
-			// Insert the show into the database
-			getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
+		synchronized(this) {
+			ContentValues values = new ContentValues();
+			values.put(ShowsProvider.TITLE, show.getTitle());
+			values.put(ShowsProvider.AUTHOR, show.getAuthor());
+			values.put(ShowsProvider.IMAGE, show.getImagePath());
+			values.put(ShowsProvider.FEED, feed);
+			values.put(ShowsProvider.DESCRIPTION, show.getDescription());
+			values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
+			values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
+			long id;
+			if(this.id == NEW_SHOW) {
+				// It's a new show
+				// Insert the show into the database
+				getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
 
-			// Get the id of the new show
-			Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
-			c.moveToFirst();
-			id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
-			c.close();
-		} else if(updateMetadata) {
-			// The show is already in the database.
-			id = this.id;
+				// Get the id of the new show
+				Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
+				c.moveToFirst();
+				id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
+				c.close();
+			} else if(updateMetadata) {
+				// The show is already in the database.
+				id = this.id;
 
-			// Update the metadata
-			getContentResolver().update(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-					+ "/" + id), values, null, null);
+				// Update the metadata
+				getContentResolver().update(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+						+ "/" + id), values, null, null);
 
-			// Clear out old episode information from db
-			getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-					+ "/" + id + "/episodes"), null, null);
+				// Clear out old episode information from db
+				getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+						+ "/" + id + "/episodes"), null, null);
+			}
+			else {
+				// Set the id
+				id = this.id;
+
+				// Clear out old episode information from db
+				getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+						+ "/" + id + "/episodes"), null, null);
+			}
+
+			// Write the episode information
+			for(Episode episode : episodes) {
+				values = new ContentValues();
+				values.put(ShowsProvider.SHOW_ID, id);
+				values.put(ShowsProvider.TITLE, episode.getTitle());
+				values.put(ShowsProvider.AUTHOR, episode.getAuthor());
+				values.put(ShowsProvider.DATE, episode.getDate());
+				values.put(ShowsProvider.PLAYED, episode.isPlayed());
+				values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
+				getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
+			}
 		}
-		else {
-			// Set the id
-			id = this.id;
-
-			// Clear out old episode information from db
-			getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-					+ "/" + id + "/episodes"), null, null);
-		}
-
-		// Write the episode information
-		for(Episode episode : episodes) {
-			values = new ContentValues();
-			values.put(ShowsProvider.SHOW_ID, id);
-			values.put(ShowsProvider.TITLE, episode.getTitle());
-			values.put(ShowsProvider.AUTHOR, episode.getAuthor());
-			values.put(ShowsProvider.DATE, episode.getDate());
-			values.put(ShowsProvider.PLAYED, episode.isPlayed());
-			values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
-			getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
-		}
-
 		// Send out the finish broadcast, clear notifications, stop self
 		Intent broadcast = new Intent(RSSFINISH + feed);
 		sendBroadcast(broadcast);

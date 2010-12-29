@@ -397,6 +397,7 @@ public class ShowsProvider extends ContentProvider {
 				getContext().getContentResolver().notifyChange(_uri, null);
 				return _uri;
 			}
+			throw new SQLException("Failed to enter datat");
 		case EPISODES:
 			// Fill in empty values
 			if(values.containsKey(SHOW_ID) == false)
@@ -420,6 +421,7 @@ public class ShowsProvider extends ContentProvider {
 				getContext().getContentResolver().notifyChange(_uri, null);
 				return _uri;
 			}
+			throw new SQLException("Failed to enter datat");
 		case SHOW_ID_EPISODES:
 			// Fill in empty values
 			if(values.containsKey(SHOW_ID) == false)
@@ -443,6 +445,7 @@ public class ShowsProvider extends ContentProvider {
 				getContext().getContentResolver().notifyChange(_uri, null);
 				return _uri;
 			}
+			throw new SQLException("Failed to enter datat");
 		case QUEUE:
 			// Fill in empty values
 			if(values.containsKey(EPISODE_ID) == false)
@@ -454,6 +457,7 @@ public class ShowsProvider extends ContentProvider {
 				Uri _uri = ContentUris.withAppendedId(QUEUE_CONTENT_URI, rowId);
 				getContext().getContentResolver().notifyChange(_uri, null);
 			}
+			throw new SQLException("Failed to enter datat");
 		case NEW_EPISODES:
 		case NEW_EPISODE_ID:
 		case LATEST_ID_CASE:
@@ -486,7 +490,8 @@ public class ShowsProvider extends ContentProvider {
 			count = db.update(EPISODES_TABLE_NAME, values, _ID + "=" +
 					uri.getPathSegments().get(1) +
 					(!TextUtils.isEmpty(selection)
-							? " And (" + selection + ')' : ""), selectionArgs);			break;
+							? " And (" + selection + ')' : ""), selectionArgs);
+			break;
 		case QUEUE:
 			count = db.update(QUEUE_TABLE_NAME, values, selection, selectionArgs);
 			break;
@@ -535,7 +540,8 @@ public class ShowsProvider extends ContentProvider {
 			count = db.delete(EPISODES_TABLE_NAME, _ID + "=" 
 					+ uri.getPathSegments().get(1)
 					+ (!TextUtils.isEmpty(selection)
-							? " AND (" + selection + ')' : ""), selectionArgs);			break;
+							? " AND (" + selection + ')' : ""), selectionArgs);
+			break;
 		case QUEUE:
 			count = db.delete(QUEUE_TABLE_NAME, selection, selectionArgs);
 			break;
