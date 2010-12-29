@@ -29,6 +29,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.activities.EpisodeActivity;
+import net.leifandersen.mobile.android.netcatch.activities.NCMain;
 import net.leifandersen.mobile.android.netcatch.activities.Preferences;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
@@ -44,6 +46,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
@@ -60,8 +65,8 @@ import android.util.Log;
  * 
  * A simple service that takes an RSS feed and saves the data from the RSS feed.
  * 
- * Requires either the show object to be pased in, or just a feed, which will create
- * a new show object
+ * Requires either the show object to be pased in, or just a feed,
+ * which will create a new show object
  * 
  * @author Leif Andersen
  *
@@ -128,6 +133,21 @@ public class RSSService extends Service {
 
 		String feed = this.feed;
 
+		// Notify the user
+		NotificationManager notificationManager =
+			(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE); 
+		Notification notification = 
+			new Notification(R.drawable.notification_icon,
+					getString(R.string.refreshing), System.currentTimeMillis());	
+		Intent notificationIntent = new Intent(this, EpisodeActivity.class);
+		notificationIntent.putExtra(EpisodeActivity.ID, id);
+		PendingIntent contentIntent = 
+			PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(this, getString(R.string.refreshing),
+				feed, contentIntent);
+		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		notificationManager.notify(1, notification);
+		
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, backgroundUpdate, feed);
 		if (feedDoc == null) {
@@ -146,8 +166,10 @@ public class RSSService extends Service {
 		}
 
 		// Get the show's image:	
-		if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && 
-				show.getImagePath() != null && (updateMetadata || id == NEW_SHOW)) {
+		if(Environment.MEDIA_MOUNTED.equals(
+				Environment.getExternalStorageState()) && 
+				show.getImagePath() != null &&
+				(updateMetadata || id == NEW_SHOW)) {
 			try {
 				// Setup files,  save data
 				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -216,9 +238,10 @@ public class RSSService extends Service {
 			getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
 		}
 
-		// Send out the finish broadcast
+		// Send out the finish broadcast, clear notifications, stop self
 		Intent broadcast = new Intent(RSSFINISH + feed);
 		sendBroadcast(broadcast);
+		notificationManager.cancel(1);
 		stopSelf();
 	}
 

@@ -13,15 +13,17 @@
  */
 package net.leifandersen.mobile.android.netcatch.activities;
 
+import net.leifandersen.mobile.android.netcatch.R;
 import android.app.Activity;
 import android.os.Bundle;
 
 public class EpisodeActivity extends Activity {
 
+	public static final String ID = "id";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.episode);
 	}
-	
 }
