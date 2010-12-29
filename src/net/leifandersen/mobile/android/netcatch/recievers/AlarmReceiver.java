@@ -11,7 +11,6 @@
  *See the License for the specific language governing permissions and
  *limitations under the License.
  */
-
 package net.leifandersen.mobile.android.netcatch.recievers;
 
 import net.leifandersen.mobile.android.netcatch.activities.Preferences;
@@ -53,7 +52,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 			throw new IllegalArgumentException("Bad parameter's given");
 
 		// Start alarm again, call the rss service
-		startAlarm(context, id, feed, updateFreq);
 		Intent service = new Intent();
 		service.setClass(context, RSSService.class);
 		service.putExtra(RSSService.ID, id);
@@ -85,8 +83,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 		// Start up the alarm.
 		AlarmManager alarmManager = 
 			(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-		alarmManager.set(AlarmManager.RTC,
-				System.currentTimeMillis() + (delay * 60000), 
+		alarmManager.setRepeating(AlarmManager.RTC,
+				System.currentTimeMillis(), delay, 
 				getPendingIntent(context, id, feed, delay));
 	}
 

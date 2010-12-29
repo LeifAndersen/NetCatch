@@ -13,6 +13,7 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
+import net.leifandersen.mobile.android.netcatch.activities.Preferences;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -383,7 +384,7 @@ public class ShowsProvider extends ContentProvider {
 			if (values.containsKey(IMAGE) == false)
 				values.put(IMAGE, "");
 			if (values.containsKey(UPDATE_FREQUENCY) == false)
-				values.put(UPDATE_FREQUENCY, -1);
+				values.put(UPDATE_FREQUENCY, Preferences.DEFAULT_TIME);
 			if (values.containsKey(EPISODES_TO_KEEP) == false)
 				values.put(EPISODES_TO_KEEP, -1);
 			if (values.containsKey(PREVIOUS_UPDATE_TIME) == false)

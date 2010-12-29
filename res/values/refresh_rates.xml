@@ -29,18 +29,18 @@
 <item>1 month</item>
 </string-array>
 <string-array name="refresh_values"><item>0</item>
-<item>5</item>
-<item>10</item>
-<item>15</item>
-<item>30</item>
-<item>60</item>
-<item>120</item>
-<item>360</item>
-<item>720</item>
-<item>1440</item>
-<item>2880</item>
-<item>10080</item>
-<item>43200</item>
+<item>300000</item>
+<item>600000</item>
+<item>900000</item>
+<item>1800000</item>
+<item>3600000</item>
+<item>7200000</item>
+<item>21600000</item>
+<item>43200000</item>
+<item>86400000</item>
+<item>172800000</item>
+<item>604800000</item>
+<item>2592000000</item>
 </string-array>
 
 </resources>
