@@ -77,7 +77,8 @@ public class MediaDownloadService extends Service {
 
 		// If peramiters not provided, bail
 		if(media_url == null || media_location == null || id == -1)
-			throw new IllegalArgumentException("Invalid parameters for MediaDownloadService");
+			throw new IllegalArgumentException(
+					"Invalid parameters for MediaDownloadService");
 
 		// Make the file and url objects, make sure path exists
 		file = new File(media_location);
@@ -85,7 +86,11 @@ public class MediaDownloadService extends Service {
 			url = new URL(media_url);
 		} catch (MalformedURLException e) {
 			// Bad URL given, abort
-			throw new IllegalArgumentException("Bad URL given");
+			// Don't throw exception because it may just be that there
+			//    is no media.
+			Log.e("Downloading", "No URL given");
+			stopSelf();
+			return START_NOT_STICKY;
 		}
 
 		// Start the download in another thread
@@ -112,44 +117,22 @@ public class MediaDownloadService extends Service {
 		}
 
 		try {
-			// Make sure the directory exists
-			file.getParentFile().mkdirs();
-
-			// Set up the connection
-			URLConnection uCon = url.openConnection();
-			InputStream is = uCon.getInputStream();
-			// Download the data
-			// Write the bits to the file
-			byte data[] = new byte[1024];
-			OutputStream os = new FileOutputStream(file);
-			int count = 0;
-			long total = 0;
-			int progress = 0;
-			int lenghtOfFile = uCon.getContentLength();
-
-			while ((count=is.read(data)) != -1)
-			{
-				total += count;
-				int progress_temp = (int)total*100/lenghtOfFile;
-				if(progress_temp%10 == 0 && progress != progress_temp){
-					progress = progress_temp;
-					Log.v("Downloading", "total = "+progress);    
-				}
-				os.write(data, 0, count);
-			}
-
-			os.close();
-			is.close();
-
+			// Actually download the file
+			Tools.downloadFile(url, file);
+			
 			// Finish up, send finished broadcast, stop the service
 			Intent broadcast = new Intent(MEDIA_FINISHED 
 					+ media_url + " " + media_location);
 			sendBroadcast(broadcast);
 			stopSelf();
+			return;
 		} catch (Exception e) {
 			// Any exceptions at this point are likely 
 			// network problem, abort
 			serviceFailed();
+			Log.v("Download", "Download failed url: " + media_url + " file: "
+					+ media_location);
+			return;
 		}
 	}
 
@@ -158,5 +141,6 @@ public class MediaDownloadService extends Service {
 				+ media_url + " " + media_location);
 		sendBroadcast(broadcast);
 		stopSelf();
+		return;
 	}
 }

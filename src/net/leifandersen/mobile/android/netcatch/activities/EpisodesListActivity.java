@@ -14,7 +14,6 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import java.io.File;
-import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +41,18 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Toast;
 
 /**
  * 
@@ -195,40 +195,66 @@ public class EpisodesListActivity extends ListActivity {
 		switch(item.getItemId()) {
 		case R.id.download:
 			// Get the episode in question
-			Episode episode = mEpisodes.get((int)info.id);
+			final Episode episode = mEpisodes.get((int)info.id);
 
 			if(Environment.MEDIA_MOUNTED.equals(
 					Environment.getExternalStorageState()) && 
 					episode.getMediaUrl() != null) {
 				// Calculate the download directory
+				// Setup files,  save data
+				int slashIndex = episode.getMediaUrl().lastIndexOf('/');
+				String filename =
+					episode.getMediaUrl().substring(slashIndex + 1);
+				SharedPreferences pref =
+					PreferenceManager.getDefaultSharedPreferences(this);
+				final File file =
+					new File(Environment.getExternalStorageDirectory(),
+							pref.getString(Preferences.DOWNLOAD_LOCATION,
+									"PODCASTS")
+							+ "/" + mShowName + "/" + filename);
+
+				// Initiate the download
+				Intent service = new Intent();
+				service.setClass(this, MediaDownloadService.class)
+				.putExtra(MediaDownloadService.MEDIA_ID, episode.getId())
+				.putExtra(MediaDownloadService.MEDIA_URL,episode.getMediaUrl())
+				.putExtra(MediaDownloadService.MEDIA_LOCATION, file.getPath())
+				.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
 				try {
-					// Setup files,  save data
-					SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-					File file = new File(Environment.getExternalStorageDirectory(),
-							pref.getString(Preferences.DOWNLOAD_LOCATION, "PODCASTS")
-							+ "/" + mShowName + "/temp.mp3");
-
-					// Initiate the download
-					Intent service = new Intent();
-					service.setClass(this, MediaDownloadService.class)
-					.putExtra(MediaDownloadService.MEDIA_ID, episode.getId())
-					.putExtra(MediaDownloadService.MEDIA_URL,episode.getMediaUrl())
-					.putExtra(MediaDownloadService.MEDIA_LOCATION, file.getPath())
-					.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
 					startService(service);
-
-					// Update the media locatioin in the database
-					ContentValues values = new ContentValues();
-					values.put(ShowsProvider.MEDIA, file.getPath());
-
-					getContentResolver().update(Uri.parse(ShowsProvider.
-							EPISODES_CONTENT_URI + "/" + episode.getId()),
-							values, null, null);
-					Log.i("EpisodeDownload", "Finished downloading episode");
 				} catch (Exception e) {
-					// Problems are likely from malformed paths, skip this step
-					Log.e("Download", "Could not download file");
+					// Any exception at this point is from a bad URL
+					// Let user know and move on.
+					Toast.makeText(getApplicationContext(),
+							getString(R.string.no_media_to_download),
+							Toast.LENGTH_LONG).show();
+					Log.e("Downloading",
+							"Could not download: " + episode.getTitle());
 				}
+
+
+				// Set up the receivers on finish				
+				// finished receiver
+				final BroadcastReceiver receiver = new BroadcastReceiver() {
+					@Override
+					public void onReceive(Context context, Intent intent) {
+						// Update the media locatioin in the database
+						ContentValues values = new ContentValues();
+						values.put(ShowsProvider.MEDIA, file.getPath());
+						getContentResolver().update(Uri.parse(ShowsProvider.
+								EPISODES_CONTENT_URI + "/" + episode.getId()),
+								values, null, null);
+
+						// Finish up, unregister receivers
+						Log.v("EpisodeDownload",
+								"Finished downloading episode");
+						unregisterReceiver(this);
+					}
+				};
+				registerReceiver(receiver,
+						new IntentFilter(MediaDownloadService.MEDIA_FINISHED 
+								+ episode.getMediaUrl() + " "
+								+ file.getPath()));
 				return true;
 			}
 			else
@@ -250,7 +276,8 @@ public class EpisodesListActivity extends ListActivity {
 			dialog = Tools.createSubscriptionDialog(this);
 			break;
 		case UNSUBSCRIBE:
-			dialog = Tools.createUnsubscribeDialog(this, new DialogInterface.OnClickListener() {
+			dialog = Tools.createUnsubscribeDialog(this,
+					new DialogInterface.OnClickListener() {
 				BroadcastReceiver finishedReceiver;
 				ProgressDialog progressDialog;		
 				public void onClick(DialogInterface dialog, int id) {
@@ -265,7 +292,9 @@ public class EpisodesListActivity extends ListActivity {
 							finish();
 						}
 					};
-					registerReceiver(finishedReceiver, new IntentFilter(UnsubscribeService.FINISHED + mShowID));
+					registerReceiver(finishedReceiver,
+							new IntentFilter(UnsubscribeService.FINISHED
+									+mShowID));
 
 					// Pop up a dialog while waiting
 					progressDialog =

@@ -13,6 +13,14 @@
  */
 package net.leifandersen.mobile.android.netcatch.other;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import android.app.AlertDialog;
@@ -25,33 +33,34 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class Tools {
-	
+
 	public static final String SUBSCRIPTION_FINISHED = "SubscriptionDialog Finished";	
 
 	public static boolean checkNetworkState(Context context, boolean backgroundUpdate) {
 		// Get the connectivity manager
 		ConnectivityManager manager = (ConnectivityManager)
 		context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		
+
 		// If user has set not to do background updates, 
 		// And it's a background update, don't get it.
 		if (!manager.getBackgroundDataSetting() && backgroundUpdate)
 			return false;
-		
+
 		// If network is not available, bail
 		NetworkInfo netInfo = manager.getActiveNetworkInfo();
 		if(netInfo == null || netInfo.getState() != NetworkInfo.State.CONNECTED)
 			return false;
-		
+
 		return true;
 	}
-	
+
 	public static Dialog createSubscriptionDialog(final Context ctx) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 
@@ -79,7 +88,7 @@ public class Tools {
 						progressDialog.cancel();
 						ctx.unregisterReceiver(finishedReceiver);
 						ctx.unregisterReceiver(failedReciever);
-						
+
 						// Tell the list to refresh
 						Intent broadcast = new Intent(SUBSCRIPTION_FINISHED);
 						ctx.sendBroadcast(broadcast);
@@ -98,14 +107,14 @@ public class Tools {
 					}
 				};
 				ctx.registerReceiver(failedReciever, new IntentFilter(RSSService.RSSFAILED + newFeed));
-				
+
 				// Show a waiting dialog (that can be canceled)
 				progressDialog =
 					ProgressDialog.show(ctx,
 							"", ctx.getString(R.string.getting_show_details));
 				progressDialog.setCancelable(true);
 				progressDialog.show();
-				
+
 				// Start the service
 				Intent service = new Intent();
 				service.putExtra(RSSService.FEED, newFeed);
@@ -122,23 +131,55 @@ public class Tools {
 		});
 		return builder.create();
 	}
-	
+
 	public static Dialog createUnsubscribeDialog(Context context,
 			DialogInterface.OnClickListener positiveButton, String showName, long showID) {
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setMessage(context.getResources().getString(R.string.unsubscribe_question) 
 				+ showName + context.getResources().getString(R.string.question_punctuation))
 				.setCancelable(false)
 				.setPositiveButton(context.getResources().getString(R.string.ok), 
 						positiveButton)
-				.setNegativeButton(context.getResources().getString(R.string.cancel), 
-						new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						// Cancel the dialog 
-						dialog.cancel();
-					}
-				});
+						.setNegativeButton(context.getResources().getString(R.string.cancel), 
+								new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								// Cancel the dialog 
+								dialog.cancel();
+							}
+						});
 		return builder.create();
+	}
+
+	public static void downloadFile(URL url, File file) throws IOException {
+		// Make sure the directory exists
+		file.getParentFile().mkdirs();
+
+		// Set up the connection
+		URLConnection uCon = url.openConnection();
+		InputStream is = uCon.getInputStream();
+
+		// Download the data
+		// Write the bits to the file
+		byte data[] = new byte[1024];
+		OutputStream os = new FileOutputStream(file);
+		int count = 0;
+		long total = 0;
+		long nextJump = 0;
+
+		while ((count=is.read(data)) != -1)
+		{
+			os.write(data, 0, count);
+
+			// Log specific to android api
+			total += count;
+			if(total > nextJump) {
+				nextJump += 1000000;
+				Log.v("Downloading", total + " bytes downloaded");
+			}
+		}
+
+		os.close();
+		is.close();
 	}
 }

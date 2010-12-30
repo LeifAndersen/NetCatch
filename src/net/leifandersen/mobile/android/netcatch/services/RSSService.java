@@ -404,12 +404,18 @@ public class RSSService extends Service {
 					desc = descNode.item(0).getFirstChild().getNodeValue();
 
 				String url;
-				NodeList urlNode = el.getElementsByTagName("link");
+				NodeList urlNode = el.getElementsByTagName("enclosure");
 				if (urlNode == null || urlNode.getLength() < 1)
 					url = "";
-				else 
-					url = urlNode.item(0).getFirstChild().getNodeValue();
+				else {
+					Element urlEl = (Element)urlNode.item(0);
+					if(urlEl == null)
+						url = "";
+					else
+						url = urlEl.getAttribute("url");
+				}
 
+				
 				// Convert the date string into the needed integer
 				// TODO, use a non-depricated method
 				long dateMills;
