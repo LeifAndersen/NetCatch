@@ -96,6 +96,7 @@ public class QueueListActivity extends ListActivity {
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
 						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
+						c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
 						c.getInt(c.getColumnIndex(ShowsProvider.DATE)),
 						c.getInt(c.getColumnIndex(ShowsProvider.BOOKMARK)),
 						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool

@@ -14,12 +14,14 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import net.leifandersen.mobile.android.netcatch.services.MediaDownloadService;
 import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -43,6 +45,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
  * 
@@ -62,7 +65,7 @@ public class EpisodesListActivity extends ListActivity {
 		LayoutInflater mInflater;
 
 		public EpisodeAdapter(Context context) {
-			super(context, R.layout.episodes_list);
+			super(context, R.layout.episode_list_item);
 			mInflater = getLayoutInflater();
 		}
 
@@ -85,8 +88,7 @@ public class EpisodesListActivity extends ListActivity {
 			holder.description.setText(episode.getDescription());
 			// holder.date.setText(episode.getDate());
 			holder.date.setTag(new Date(episode.getDate()).toString());
-
-			registerForContextMenu(convertView);
+			
 			return convertView;
 		}
 	}
@@ -121,12 +123,15 @@ public class EpisodesListActivity extends ListActivity {
 
 		// Set the List Adapter
 		refreshList();
+		
+		// Registor the list for context menus
+		registerForContextMenu(getListView());
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
+		int foo = position;
 		Episode e = mEpisodes.get(position);
 		Intent i = new Intent();
 		i.putExtra("Foo", e.getId()); // TODO
@@ -176,8 +181,23 @@ public class EpisodesListActivity extends ListActivity {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
-		return super.onContextItemSelected(item);
+		AdapterContextMenuInfo info = 
+			(AdapterContextMenuInfo)item.getMenuInfo();
+		if(info == null)
+			return false;
+		switch(item.getItemId()) {
+		case R.id.download:
+			long id = info.id;
+			Episode episode = mEpisodes.get((int)info.id);
+			Intent service = new Intent();
+			service.putExtra(MediaDownloadService.MEDIA_ID, episode.getId());
+			service.putExtra(MediaDownloadService.MEDIA_URL, episode.getMediaUrl());
+			service.putExtra(MediaDownloadService.MEDIA_LOCATION, "");
+			service.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
+			startService(service);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
@@ -239,6 +259,7 @@ public class EpisodesListActivity extends ListActivity {
 
 		// Get a list of all of the elements.
 		// Add the list to the adapter
+		mEpisodes = new ArrayList<Episode>();
 		Cursor c = managedQuery(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI
 				+ "/" + mShowID + "/episodes"), null, null, null, null);
 		if (c.moveToFirst()) {
@@ -247,10 +268,12 @@ public class EpisodesListActivity extends ListActivity {
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
 						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
+						c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
 						c.getInt(c.getColumnIndex(ShowsProvider.DATE)),
 						c.getInt(c.getColumnIndex(ShowsProvider.BOOKMARK)),
 						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool
 				mAdapter.add(ep);
+				mEpisodes.add(ep);
 			} while (c.moveToNext());
 		}		
 	}

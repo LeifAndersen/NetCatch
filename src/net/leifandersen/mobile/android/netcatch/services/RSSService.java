@@ -233,6 +233,7 @@ public class RSSService extends Service {
 				values.put(ShowsProvider.TITLE, episode.getTitle());
 				values.put(ShowsProvider.AUTHOR, episode.getAuthor());
 				values.put(ShowsProvider.DATE, episode.getDate());
+				values.put(ShowsProvider.MEDIA_URL, episode.getMediaUrl());
 				values.put(ShowsProvider.PLAYED, episode.isPlayed());
 				values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
 				getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
@@ -419,7 +420,7 @@ public class RSSService extends Service {
 
 				// Add the new episode
 				// ShowId and played doesn't really matter at this point
-				episodes.add(new Episode(title, author, desc, url, dateMills, 0, false));
+				episodes.add(new Episode(title, author, desc, "", url, dateMills, 0, false));
 			}
 			return episodes;
 

@@ -413,7 +413,6 @@ public class ShowsProvider extends ContentProvider {
 			if(values.containsKey(DATE) == false)
 				values.put(DATE, java.lang.System.currentTimeMillis());
 			
-			
 			// Insert the item
 			rowId = db.insert(EPISODES_TABLE_NAME, EPISODE, values);
 			if (rowId > 0) { //Added successfully

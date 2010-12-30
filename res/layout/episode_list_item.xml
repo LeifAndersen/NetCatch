@@ -13,19 +13,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<RelativeLayout 
+<LinearLayout 
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content" 
 	android:padding="12dp"
 	android:background="@drawable/ninepatch_blue_back_lg"
+	android:orientation="vertical"
 	>
 	<TextView 
 		android:id="@+id/eli_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="1px"
-		android:focusable="false"
 		android:text="@string/null_feed_title"
 		android:typeface="monospace"
 		android:textSize="20px"
@@ -40,9 +40,7 @@
 		android:id="@+id/eli_description"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/eli_title"
 		android:layout_margin="1px"
-		android:focusable="false"
 		android:text="@string/null_feed_info"
 		android:textSize="13px" 
 		/>
@@ -50,9 +48,7 @@
 		android:id="@+id/eli_release_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/eli_description"
-		android:focusable="false"
 		android:text="@string/null_feed_info"
 		android:textSize="8px" 
 		/>
-</RelativeLayout>
+</LinearLayout>

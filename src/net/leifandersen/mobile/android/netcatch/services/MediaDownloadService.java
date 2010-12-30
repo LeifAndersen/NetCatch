@@ -41,16 +41,16 @@ import android.os.IBinder;
 public class MediaDownloadService extends Service {
 
 	// Input parameters
-	public String MEDIA_URL = "media_url";
-	public String MEDIA_LOCATION = "media_location";
-	public String MEDIA_ID = "media_id";
-	public String BACKGROUND_UPDATE = "background_update";
+	public static final String MEDIA_URL = "media_url";
+	public static final String MEDIA_LOCATION = "media_location";
+	public static final String MEDIA_ID = "media_id";
+	public static final String BACKGROUND_UPDATE = "background_update";
 	
 	// Output results
 	// To be used like: MEDIA_FAILED/FINISHED + media url 
 	// + ' ' + media location
-	public String MEDIA_FAILED = "media_failed ";
-	public String MEDIA_FINISHED = "media_finished ";
+	public static final String MEDIA_FAILED = "media_failed ";
+	public static final String MEDIA_FINISHED = "media_finished ";
 	
 	private String media_url;
 	private String media_location;
@@ -114,6 +114,9 @@ public class MediaDownloadService extends Service {
 		}
 		
 		try {
+			// Make sure the directory exists
+			file.getParentFile().mkdirs();
+			
 			// Set up the connection
 			URLConnection uCon = url.openConnection();
 			InputStream is = uCon.getInputStream();

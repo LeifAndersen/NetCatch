@@ -32,14 +32,16 @@ public class Episode {
 	private String author;
 	private String description;
 	private String media;
+	private String mediaUrl;
 	private boolean played;
 	private long date;
 	private long showId;
 	private int bookmark;
 	private long id;
 	
-	public Episode(long id, long showId, String title, String author, String description, 
-			String media, long date, int bookmark, boolean played) {
+	public Episode(long id, long showId, String title, String author,
+			String description, String media, String mediaUrl, long date,
+			int bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
@@ -48,15 +50,18 @@ public class Episode {
 		this.played = played;
 		this.showId = showId;
 		this.bookmark = bookmark;
+		this.mediaUrl = mediaUrl;
 		this.id = id;
 	}
 	
 	public Episode(long showId, String title, String author, String description, 
-			String media, long date, int bookmark, boolean played) {
+			String media, String mediaUrl, long date, int bookmark, 
+			boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
 		this.media = media;
+		this.mediaUrl = mediaUrl;
 		this.date = date;
 		this.played = played;
 		this.showId = showId;
@@ -65,11 +70,13 @@ public class Episode {
 	}
 	
 	public Episode(String title, String author, String description, 
-			String media, long date, int bookmark, boolean played) {
+			String media, String mediaUrl, long date, int bookmark,
+			boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
 		this.media = media;
+		this.mediaUrl = mediaUrl;
 		this.date = date;
 		this.played = played;
 		this.showId = NO_ID;
@@ -202,5 +209,19 @@ public class Episode {
 	 */
 	public long getId() {
 		return id;
+	}
+
+	/**
+	 * @param mediaUrl the media_url to set
+	 */
+	public void setMediaUrl(String mediaUrl) {
+		this.mediaUrl = mediaUrl;
+	}
+
+	/**
+	 * @return the mediaUrl
+	 */
+	public String getMediaUrl() {
+		return mediaUrl;
 	}
 }

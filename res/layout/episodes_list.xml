@@ -13,9 +13,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/background"
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent" >
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="@drawable/background_gradient" >
 	<RelativeLayout android:id = "@+id/el_titleBar"
 		android:layout_width = "fill_parent"
 		android:layout_height = "wrap_content"
@@ -23,13 +26,17 @@
 	</RelativeLayout>
 	<ListView android:id="@+id/android:list"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:layout_below="@id/el_titleBar" />
+		android:layout_height="fill_parent" 
+		android:divider="@null"
+		android:cacheColorHint="#00000000"
+		android:paddingTop="20dp" />
 	<TextView android:id="@+id/android:empty"
 		android:layout_width = "wrap_content"
 		android:layout_height = "wrap_content"
 		android:text = "@string/no_episodes"
 		android:textSize = "16px"
+		android:cacheColorHint="#00000000"
+		android:paddingTop="20dp"
 		android:layout_centerHorizontal = "true"
 		android:layout_centerVertical = "true" />
-</RelativeLayout>
+</LinearLayout>

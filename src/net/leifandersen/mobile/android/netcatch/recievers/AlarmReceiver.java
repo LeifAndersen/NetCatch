@@ -57,7 +57,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		service.putExtra(RSSService.ID, id);
 		service.putExtra(RSSService.FEED, feed);
 		service.putExtra(RSSService.BACKGROUND_UPDATE, true);
-		Log.w("AlarmReceiver", "Updating id:" + id + " feed:" + feed);
+		Log.i("AlarmReceiver", "Updating id:" + id + " feed:" + feed);
 		context.startService(service);
 	}
 

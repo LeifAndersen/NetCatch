@@ -262,12 +262,15 @@ public class ShowsListActivity extends ListActivity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterContextMenuInfo info = 
+			(AdapterContextMenuInfo)item.getMenuInfo();
+		if(info == null)
+			return false;
 		switch(item.getItemId()) {
 		case R.id.unsubscribe_item:
 			mDialogId = (int) info.id;
 			showDialog(UNSUBSCRIBE);
-			break;
+			return true;
 		}
 		return false;
 	}

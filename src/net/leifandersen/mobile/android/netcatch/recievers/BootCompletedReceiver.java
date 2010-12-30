@@ -51,11 +51,11 @@ public class BootCompletedReceiver extends BroadcastReceiver{
 		try {
 			Thread.sleep(30000);
 		} catch (InterruptedException e) {
-			Log.e("BootCompletedReceiver",
+			Log.w("BootCompletedReceiver",
 					"Interupted, continuting on with work");
 		}
 		
-		Log.w("BootCompletedReceiver",
+		Log.i("BootCompletedReceiver",
 				"Starting up subscriptionAlarms");
 		
 		// Query for all of the shows
