@@ -181,6 +181,7 @@ public class RSSService extends Service {
 				show.setImagePath(file.getPath());
 			} catch (Exception e) {
 				// Problems are likely from malformed paths, skip this step
+				Log.e("RSSService", "Could not download image");
 			}
 		}
 

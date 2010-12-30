@@ -36,12 +36,12 @@ public class Episode {
 	private boolean played;
 	private long date;
 	private long showId;
-	private int bookmark;
+	private long bookmark;
 	private long id;
 	
 	public Episode(long id, long showId, String title, String author,
 			String description, String media, String mediaUrl, long date,
-			int bookmark, boolean played) {
+			long bookmark, boolean played) {
 		this.title = title;
 		this.author = author;
 		this.description = description;
@@ -55,7 +55,7 @@ public class Episode {
 	}
 	
 	public Episode(long showId, String title, String author, String description, 
-			String media, String mediaUrl, long date, int bookmark, 
+			String media, String mediaUrl, long date, long bookmark, 
 			boolean played) {
 		this.title = title;
 		this.author = author;
@@ -70,7 +70,7 @@ public class Episode {
 	}
 	
 	public Episode(String title, String author, String description, 
-			String media, String mediaUrl, long date, int bookmark,
+			String media, String mediaUrl, long date, long bookmark,
 			boolean played) {
 		this.title = title;
 		this.author = author;
@@ -186,14 +186,14 @@ public class Episode {
 	/**
 	 * @param bookmark the bookmark to set
 	 */
-	public void setBookmark(int bookmark) {
+	public void setBookmark(long bookmark) {
 		this.bookmark = bookmark;
 	}
 
 	/**
 	 * @return the bookmark
 	 */
-	public int getBookmark() {
+	public long getBookmark() {
 		return bookmark;
 	}
 

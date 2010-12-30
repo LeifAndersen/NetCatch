@@ -13,6 +13,8 @@
  */
 package net.leifandersen.mobile.android.netcatch.activities;
 
+import java.io.File;
+import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +29,18 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -88,21 +95,21 @@ public class EpisodesListActivity extends ListActivity {
 			holder.description.setText(episode.getDescription());
 			// holder.date.setText(episode.getDate());
 			holder.date.setTag(new Date(episode.getDate()).toString());
-			
+
 			return convertView;
 		}
 	}
 
 	public static final String SHOW_ID = "show_id";
 	public static final String SHOW_NAME = "show_name";
-	
+
 	private String mShowName;
 	private long mShowID;
 	private EpisodeAdapter mAdapter;
 	private static final int NEW_FEED = 1;
 	private static final int UNSUBSCRIBE = 2;
 	private List<Episode> mEpisodes;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,17 +120,17 @@ public class EpisodesListActivity extends ListActivity {
 		Bundle b = getIntent().getExtras();
 		if (b == null)
 			throw new IllegalArgumentException("No Bundle Given");
-		
-		
+
+
 		mShowID = b.getLong(SHOW_ID, -1);
 		mShowName = b.getString(SHOW_NAME);
-		
+
 		if(mShowID < 0 || mShowName == null)
 			throw new IllegalArgumentException("No show ID and name given");
 
 		// Set the List Adapter
 		refreshList();
-		
+
 		// Registor the list for context menus
 		registerForContextMenu(getListView());
 	}
@@ -138,7 +145,7 @@ public class EpisodesListActivity extends ListActivity {
 		i.setClass(this, EpisodeActivity.class);
 		startActivity(i);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -178,7 +185,7 @@ public class EpisodesListActivity extends ListActivity {
 		// TODO actually set up the proper menu
 		inflater.inflate(R.menu.episodes_context_not_downloaded, menu);
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = 
@@ -187,19 +194,49 @@ public class EpisodesListActivity extends ListActivity {
 			return false;
 		switch(item.getItemId()) {
 		case R.id.download:
-			long id = info.id;
+			// Get the episode in question
 			Episode episode = mEpisodes.get((int)info.id);
-			Intent service = new Intent();
-			service.putExtra(MediaDownloadService.MEDIA_ID, episode.getId());
-			service.putExtra(MediaDownloadService.MEDIA_URL, episode.getMediaUrl());
-			service.putExtra(MediaDownloadService.MEDIA_LOCATION, "");
-			service.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
-			startService(service);
-			return true;
+
+			if(Environment.MEDIA_MOUNTED.equals(
+					Environment.getExternalStorageState()) && 
+					episode.getMediaUrl() != null) {
+				// Calculate the download directory
+				try {
+					// Setup files,  save data
+					SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+					File file = new File(Environment.getExternalStorageDirectory(),
+							pref.getString(Preferences.DOWNLOAD_LOCATION, "PODCASTS")
+							+ "/" + mShowName + "/temp.mp3");
+
+					// Initiate the download
+					Intent service = new Intent();
+					service.setClass(this, MediaDownloadService.class)
+					.putExtra(MediaDownloadService.MEDIA_ID, episode.getId())
+					.putExtra(MediaDownloadService.MEDIA_URL,episode.getMediaUrl())
+					.putExtra(MediaDownloadService.MEDIA_LOCATION, file.getPath())
+					.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
+					startService(service);
+
+					// Update the media locatioin in the database
+					ContentValues values = new ContentValues();
+					values.put(ShowsProvider.MEDIA, file.getPath());
+
+					getContentResolver().update(Uri.parse(ShowsProvider.
+							EPISODES_CONTENT_URI + "/" + episode.getId()),
+							values, null, null);
+					Log.i("EpisodeDownload", "Finished downloading episode");
+				} catch (Exception e) {
+					// Problems are likely from malformed paths, skip this step
+					Log.e("Download", "Could not download file");
+				}
+				return true;
+			}
+			else
+				return false;
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		return onCreateDialog(id, new Bundle());
@@ -229,7 +266,7 @@ public class EpisodesListActivity extends ListActivity {
 						}
 					};
 					registerReceiver(finishedReceiver, new IntentFilter(UnsubscribeService.FINISHED + mShowID));
-					
+
 					// Pop up a dialog while waiting
 					progressDialog =
 						ProgressDialog.show(EpisodesListActivity.this, "",
@@ -264,13 +301,15 @@ public class EpisodesListActivity extends ListActivity {
 				+ "/" + mShowID + "/episodes"), null, null, null, null);
 		if (c.moveToFirst()) {
 			do {
-				Episode ep = new Episode(c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
+				Episode ep = new Episode(
+						c.getLong(c.getColumnIndex(ShowsProvider._ID)), mShowID,
+						c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
 						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
-						c.getInt(c.getColumnIndex(ShowsProvider.DATE)),
-						c.getInt(c.getColumnIndex(ShowsProvider.BOOKMARK)),
+						c.getLong(c.getColumnIndex(ShowsProvider.DATE)),
+						c.getLong(c.getColumnIndex(ShowsProvider.BOOKMARK)),
 						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool
 				mAdapter.add(ep);
 				mEpisodes.add(ep);
