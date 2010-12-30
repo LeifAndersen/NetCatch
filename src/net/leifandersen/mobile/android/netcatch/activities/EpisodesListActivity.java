@@ -220,17 +220,7 @@ public class EpisodesListActivity extends ListActivity {
 				.putExtra(MediaDownloadService.MEDIA_URL,episode.getMediaUrl())
 				.putExtra(MediaDownloadService.MEDIA_LOCATION, file.getPath())
 				.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
-				try {
-					startService(service);
-				} catch (Exception e) {
-					// Any exception at this point is from a bad URL
-					// Let user know and move on.
-					Toast.makeText(getApplicationContext(),
-							getString(R.string.no_media_to_download),
-							Toast.LENGTH_LONG).show();
-					Log.e("Downloading",
-							"Could not download: " + episode.getTitle());
-				}
+				startService(service);
 
 
 				// Set up the receivers on finish				

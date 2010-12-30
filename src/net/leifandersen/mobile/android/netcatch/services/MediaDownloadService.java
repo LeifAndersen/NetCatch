@@ -22,11 +22,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * A service to download media.  Can run in the background, or in the
@@ -88,8 +90,11 @@ public class MediaDownloadService extends Service {
 			// Bad URL given, abort
 			// Don't throw exception because it may just be that there
 			//    is no media.
-			Log.e("Downloading", "No URL given");
-			stopSelf();
+			Log.e("Downloading", "Bad URL given");
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.no_media_to_download),
+					Toast.LENGTH_LONG).show();
+			serviceFailed();
 			return START_NOT_STICKY;
 		}
 
@@ -129,6 +134,9 @@ public class MediaDownloadService extends Service {
 		} catch (Exception e) {
 			// Any exceptions at this point are likely 
 			// network problem, abort
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.no_media_to_download),
+					Toast.LENGTH_LONG).show();
 			serviceFailed();
 			Log.v("Download", "Download failed url: " + media_url + " file: "
 					+ media_location);
