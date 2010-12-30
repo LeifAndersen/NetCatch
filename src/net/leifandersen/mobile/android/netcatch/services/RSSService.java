@@ -171,11 +171,14 @@ public class RSSService extends Service {
 				(updateMetadata || id == NEW_SHOW)) {
 			try {
 				// Setup files,  save data
-				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+				SharedPreferences pref =
+					PreferenceManager.getDefaultSharedPreferences(this);
 				File file = new File(Environment.getExternalStorageDirectory(),
-						pref.getString(Preferences.DOWNLOAD_LOCATION, "PODCASTS")
+						pref.getString(Preferences.DOWNLOAD_LOCATION,
+								"PODCASTS")
 						+ "/" + show.getTitle() + "/image.png");
-				saveImage(this, backgroundUpdate, new URL(show.getImagePath()), file);
+				Tools.downloadFile(this, backgroundUpdate,
+						new URL(show.getImagePath()), file);
 
 				// Add to to class to be writen to database
 				show.setImagePath(file.getPath());
@@ -193,16 +196,20 @@ public class RSSService extends Service {
 			values.put(ShowsProvider.IMAGE, show.getImagePath());
 			values.put(ShowsProvider.FEED, feed);
 			values.put(ShowsProvider.DESCRIPTION, show.getDescription());
-			values.put(ShowsProvider.UPDATE_FREQUENCY, show.getUpdateFrequency());
-			values.put(ShowsProvider.EPISODES_TO_KEEP, show.getEpisodesToKeep());
+			values.put(ShowsProvider.UPDATE_FREQUENCY,
+					show.getUpdateFrequency());
+			values.put(ShowsProvider.EPISODES_TO_KEEP,
+					show.getEpisodesToKeep());
 			long id;
 			if(this.id == NEW_SHOW) {
 				// It's a new show
 				// Insert the show into the database
-				getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
+				getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI,
+						values);
 
 				// Get the id of the new show
-				Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
+				Cursor c = getContentResolver().query(
+						ShowsProvider.LATEST_ID_URI, null, null, null, null);
 				c.moveToFirst();
 				id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
 				c.close();
@@ -211,20 +218,23 @@ public class RSSService extends Service {
 				id = this.id;
 
 				// Update the metadata
-				getContentResolver().update(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-						+ "/" + id), values, null, null);
+				getContentResolver().update(
+						Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+								+ "/" + id), values, null, null);
 
 				// Clear out old episode information from db
-				getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-						+ "/" + id + "/episodes"), null, null);
+				getContentResolver().delete(
+						Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+								+ "/" + id + "/episodes"), null, null);
 			}
 			else {
 				// Set the id
 				id = this.id;
 
 				// Clear out old episode information from db
-				getContentResolver().delete(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
-						+ "/" + id + "/episodes"), null, null);
+				getContentResolver().delete(
+						Uri.parse(ShowsProvider.SHOWS_CONTENT_URI 
+								+ "/" + id + "/episodes"), null, null);
 			}
 
 			// Write the episode information
@@ -237,7 +247,8 @@ public class RSSService extends Service {
 				values.put(ShowsProvider.MEDIA_URL, episode.getMediaUrl());
 				values.put(ShowsProvider.PLAYED, episode.isPlayed());
 				values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
-				getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI, values);
+				getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI,
+						values);
 			}
 		}
 		// Send out the finish broadcast, clear notifications, stop self
@@ -253,43 +264,8 @@ public class RSSService extends Service {
 		stopSelf();
 	}
 
-	private static void saveImage(Context context, boolean backgroundUpdate, URL url, File file) {
-
-		if (!Tools.checkNetworkState(context, backgroundUpdate))
-			return;
-
-		// Get the image
-		try {
-			// Make the file
-			file.getParentFile().mkdirs();
-
-			if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
-				Log.e("RSSService", "Unable to create " + file.getParentFile());
-
-			// Set up the connection
-			URLConnection uCon = url.openConnection();
-			InputStream is = uCon.getInputStream();
-			BufferedInputStream bis = new BufferedInputStream(is);
-
-			// Download the data
-			ByteArrayBuffer baf = new ByteArrayBuffer(50);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-				baf.append((byte) current);
-			}
-
-			// Write the bits to the file
-			OutputStream os = new FileOutputStream(file);
-			os.write(baf.toByteArray());
-			os.close();
-		} catch (Exception e) {
-			// Any exception is probably a newtork faiilure, bail
-			Log.e("RSSService", "Failure to download " + file.getParentFile());
-			return;
-		}
-	}
-
-	private static Document getRSS(Context context, boolean backgroundUpdate, String url) {
+	private static Document getRSS(Context context, boolean backgroundUpdate,
+			String url) {
 
 		if (!Tools.checkNetworkState(context, backgroundUpdate))
 			return null;
@@ -316,7 +292,8 @@ public class RSSService extends Service {
 		}
 	}
 
-	private static Show getShowFromRSS(Context context, Document feed, String feedUrl) {
+	private static Show getShowFromRSS(Context context, Document feed,
+			String feedUrl) {
 		try {
 			// There should be one channel in the feed, get it.
 			// Also, the cast should be okay if the XML is formatted correctly
@@ -353,7 +330,8 @@ public class RSSService extends Service {
 					if(urlNode == null || urlNode.getLength() < 1)
 						imageUrl = null;
 					else
-						imageUrl = urlNode.item(0).getFirstChild().getNodeValue();
+						imageUrl =
+							urlNode.item(0).getFirstChild().getNodeValue();
 				} else
 					imageUrl = null;
 			} else
@@ -367,13 +345,15 @@ public class RSSService extends Service {
 		}
 	}
 
-	private static List<Episode> getEpisodesFromRSS(Context context, Document feed) {
+	private static List<Episode> getEpisodesFromRSS(Context context,
+			Document feed) {
 		try {
 			ArrayList<Episode> episodes = new ArrayList<Episode>();
 			NodeList items = feed.getElementsByTagName("item");
 			for(int i = 0; i < items.getLength(); i++) {
 				// Fetch the elements
-				Element el = (Element)items.item(i);  // Safe if it's an actual feed.
+				// Safe if it's an actual feed.
+				Element el = (Element)items.item(i);
 
 				String title;
 				NodeList titleNode = el.getElementsByTagName("title");
@@ -415,7 +395,7 @@ public class RSSService extends Service {
 						url = urlEl.getAttribute("url");
 				}
 
-				
+
 				// Convert the date string into the needed integer
 				// TODO, use a non-depricated method
 				long dateMills;
@@ -427,7 +407,8 @@ public class RSSService extends Service {
 
 				// Add the new episode
 				// ShowId and played doesn't really matter at this point
-				episodes.add(new Episode(title, author, desc, "", url, dateMills, 0, false));
+				episodes.add(new Episode(title, author, desc, "", url,
+						dateMills, 0, false));
 			}
 			return episodes;
 

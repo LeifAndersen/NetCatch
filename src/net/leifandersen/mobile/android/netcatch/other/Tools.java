@@ -151,7 +151,13 @@ public class Tools {
 		return builder.create();
 	}
 
-	public static void downloadFile(URL url, File file) throws IOException {
+	public static void downloadFile(Context context, boolean backgroundUpdate, 
+			URL url, File file) throws IOException {
+		
+		// Check to see if you should download this
+		if (!checkNetworkState(context, backgroundUpdate))
+			return;
+		
 		// Make sure the directory exists
 		file.getParentFile().mkdirs();
 

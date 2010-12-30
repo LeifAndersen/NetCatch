@@ -123,7 +123,7 @@ public class MediaDownloadService extends Service {
 
 		try {
 			// Actually download the file
-			Tools.downloadFile(url, file);
+			Tools.downloadFile(this, backgroundUpdate, url, file);
 			
 			// Finish up, send finished broadcast, stop the service
 			Intent broadcast = new Intent(MEDIA_FINISHED 
