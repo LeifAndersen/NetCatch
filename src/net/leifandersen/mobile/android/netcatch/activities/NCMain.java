@@ -14,6 +14,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
@@ -37,8 +38,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -57,30 +56,31 @@ public class NCMain extends Activity implements OnClickListener {
 	private static final int COLOR_CHANGE_ACTIVITY_RESULT = 10;
 	private static Typeface vera, veraBold;
 	private static HomeScreenViewHolder homeViews;
-	public static ColorFilter overlay = null;
 	protected SharedPreferences sharedPrefs;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		overlay = new PorterDuffColorFilter(sharedPrefs.getInt("theme_color", Color.parseColor("#FFAAAAAA")), PorterDuff.Mode.MULTIPLY);
-		
+
 		vera = Typeface.createFromAsset(getAssets(), "Vera.ttf");
 		veraBold = Typeface.createFromAsset(getAssets(), "VeraBd.ttf");
-		
-		/* Any new additions to the layout XML which require modification should be
-		 * added to the HomeScreenViewHolder, set in the following block, and added
-		 * to their respective layout modification method (setTypeface, etc.)
+
+		/* Any new additions to the layout XML which require modification should
+		 * be added to the HomeScreenViewHolder, set in the following block, and
+		 * added to their respective layout modification method (setTypeface,
+		 * etc.)
 		 * 
 		 * @author Kevin Coppock
 		 */
 		homeViews = new HomeScreenViewHolder();
 		homeViews.titleText = (TextView)findViewById(R.id.title_text);
-		homeViews.playerEpisodeTitle = (TextView)findViewById(R.id.player_episode_title);
-		homeViews.playerEpisodeTime = (TextView)findViewById(R.id.player_episode_time);
+		homeViews.playerEpisodeTitle = 
+			(TextView)findViewById(R.id.player_episode_title);
+		homeViews.playerEpisodeTime = 
+			(TextView)findViewById(R.id.player_episode_time);
 		homeViews.miniPlayer = (RelativeLayout)findViewById(R.id.player);
 		homeViews.header = (FrameLayout)findViewById(R.id.header);
 		homeViews.iconQueue = (ImageButton)findViewById(R.id.icon_queue);
@@ -92,39 +92,45 @@ public class NCMain extends Activity implements OnClickListener {
 		setTypeface(veraBold, 
 				homeViews.titleText, 
 				homeViews.playerEpisodeTitle);
-		
+
 		//need to change to pull color from SharedPreferences ~Kevin
-		setColorOverlay( 
+		HueColorFilter.setColorOverlay(new PorterDuffColorFilter(sharedPrefs
+				.getInt("theme_color", Color.parseColor("#FFAAAAAA")),
+				PorterDuff.Mode.MULTIPLY),
 				homeViews.iconQueue,
 				homeViews.iconFeeds,
 				homeViews.iconNew,
 				homeViews.miniPlayer,
 				homeViews.header);
-		
+
 		homeViews.iconQueue.setOnClickListener(this);
 		homeViews.iconFeeds.setOnClickListener(this);
 		homeViews.iconNew.setOnClickListener(this);
-		
+
 		// Set up the refresh button
-		findViewById(R.id.btn_refresh).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// Get each element from the database
-				Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
-				shows.moveToFirst();
-				do {
-					String feed = shows.getString(shows.getColumnIndex(ShowsProvider.FEED));
-					Intent service = new Intent();
-					service.putExtra(RSSService.FEED, feed);
-					service.putExtra(RSSService.ID, shows.getInt(shows.getColumnIndex(ShowsProvider._ID)));
-					service.putExtra(RSSService.UPDATE_METADATA, true);
-					service.putExtra(RSSService.BACKGROUND_UPDATE, false);
-					service.setClass(NCMain.this, RSSService.class);
-					startService(service);
-					Log.w("NCMain", "Refreshing: " + feed);
-				} while(shows.moveToNext());
-			}
-		});
+		findViewById(R.id.btn_refresh).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// Get each element from the database
+						Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, 
+								null, null, null, null);
+						shows.moveToFirst();
+						do {
+							String feed = shows.getString(shows.getColumnIndex(
+									ShowsProvider.FEED));
+							Intent service = new Intent();
+							service.putExtra(RSSService.FEED, feed);
+							service.putExtra(RSSService.ID, shows.getInt(shows
+									.getColumnIndex(ShowsProvider._ID)));
+							service.putExtra(RSSService.UPDATE_METADATA, true);
+							service.putExtra(RSSService.BACKGROUND_UPDATE, false);
+							service.setClass(NCMain.this, RSSService.class);
+							startService(service);
+							Log.w("NCMain", "Refreshing: " + feed);
+						} while(shows.moveToNext());
+					}
+				});
 	}
 
 	@Override
@@ -149,17 +155,17 @@ public class NCMain extends Activity implements OnClickListener {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		return onCreateDialog(id, null);
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		Dialog dialog = null;
 		switch(id) {
-		
+
 		case NEW_FEED:
 			dialog = Tools.createSubscriptionDialog(this);
 			break;
@@ -168,7 +174,7 @@ public class NCMain extends Activity implements OnClickListener {
 		}
 		return dialog;
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -177,11 +183,12 @@ public class NCMain extends Activity implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		int x = sharedPrefs.getInt("theme_color", -1);
 		if(x != -1) {
-			overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
-			setColorOverlay(overlay,
+			ColorFilter overlay = new PorterDuffColorFilter(x,
+					PorterDuff.Mode.MULTIPLY);
+			HueColorFilter.setColorOverlay(overlay, overlay,
 					homeViews.iconQueue,
 					homeViews.iconFeeds,
 					homeViews.iconNew,
@@ -222,61 +229,25 @@ public class NCMain extends Activity implements OnClickListener {
 			break;
 		}
 	};
-	
+
 	static class HomeScreenViewHolder {
 		TextView
-			titleText,
-			playerEpisodeTitle,
-			playerEpisodeTime;
+		titleText,
+		playerEpisodeTitle,
+		playerEpisodeTime;
 		ImageButton
-			iconNew,
-			iconQueue,
-			iconFeeds;
+		iconNew,
+		iconQueue,
+		iconFeeds;
 		RelativeLayout
-			miniPlayer;
+		miniPlayer;
 		FrameLayout
-			header;
+		header;
 	}
-	
-	/* This is intended for changing the theme according to user preferences. Not the most
-	 * versatile method right now, will have to modify if other types of views need overriding.
-	 * 
-	 * @author Kevin Coppock 12/14/2010
-	 */
-	public static void setColorOverlay(ColorFilter cf, Object...params) {
-		for (Object v : params) {
-			if(v.getClass() == RelativeLayout.class 
-					|| v.getClass() == FrameLayout.class
-					|| v.getClass() == LinearLayout.class) {
-				((View)v).getBackground().setColorFilter(cf);
-			} else if (v.getClass() == ImageButton.class) {
-				((ImageButton)v).getDrawable().setColorFilter(cf);
-			} else if (v.getClass() == ImageView.class) {
-				((ImageView)v).getDrawable().setColorFilter(overlay);
-			}
-		}
-	}
-	
-	//constructor assuming the default ColorFilter
-	public static void setColorOverlay(Object...params) {
-		if(overlay != null) {
-			for (Object v : params) {
-				if(v.getClass() == RelativeLayout.class 
-						|| v.getClass() == FrameLayout.class
-						|| v.getClass() == LinearLayout.class) {
-					((View)v).getBackground().setColorFilter(overlay);
-				} else if (v.getClass() == ImageButton.class) {
-					((ImageButton)v).getDrawable().setColorFilter(overlay);
-				} else if (v.getClass() == ImageView.class) {
-					((ImageView)v).getDrawable().setColorFilter(overlay);
-				}
-			}
-		}
-	}
-	
-	/* This is just for purposes of simplifying the typeface change for the home screen,
-	 * as many TextViews can be passed as necessary, to ease additional TextView additions
-	 * to the layout.
+
+	/* This is just for purposes of simplifying the typeface change for the home
+	 * screen, as many TextViews can be passed as necessary, to ease additional
+	 * TextView additions to the layout.
 	 * 
 	 * @author Kevin Coppock 12/14/2010
 	 */
@@ -285,20 +256,21 @@ public class NCMain extends Activity implements OnClickListener {
 			tv.setTypeface(tf);
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent i) {
 		switch(requestCode) {
 		case COLOR_CHANGE_ACTIVITY_RESULT:
 			if(resultCode == RESULT_CANCELED) return;
-			overlay = new PorterDuffColorFilter(i.getIntExtra("color", 0), PorterDuff.Mode.MULTIPLY);
-			setColorOverlay(
-					homeViews.iconQueue,
-					homeViews.iconFeeds,
-					homeViews.iconNew,
-					homeViews.miniPlayer,
-					homeViews.header);
+			HueColorFilter.setColorOverlay(
+					new PorterDuffColorFilter(i.getIntExtra("color", 0),
+							PorterDuff.Mode.MULTIPLY),
+							homeViews.iconQueue,
+							homeViews.iconFeeds,
+							homeViews.iconNew,
+							homeViews.miniPlayer,
+							homeViews.header);
 		}
-		
+
 	}
 }

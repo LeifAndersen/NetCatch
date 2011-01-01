@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -81,7 +82,8 @@ public class ShowsListActivity extends ListActivity {
 		public TexturedListAdapter(Context context) {
 			super(context, R.layout.show);
 			vera = Typeface.createFromAsset(context.getAssets(), "Vera.ttf");
-			veraBold = Typeface.createFromAsset(context.getAssets(), "VeraBd.ttf");
+			veraBold = Typeface.createFromAsset(context.getAssets(),
+			"VeraBd.ttf");
 			mInflator = getLayoutInflater();
 		}
 
@@ -96,7 +98,8 @@ public class ShowsListActivity extends ListActivity {
 				// Setup the viewholder elements
 				holder.title = (TextView)v.findViewById(R.id.list_feed_title);
 				holder.counts = (TextView)v.findViewById(R.id.list_feed_counts);
-				holder.updateDate = (TextView)v.findViewById(R.id.list_feed_update_time);
+				holder.updateDate = 
+					(TextView)v.findViewById(R.id.list_feed_update_time);
 				holder.art = (ImageView)v.findViewById(R.id.list_album_art);
 
 				// Save the viewholder
@@ -138,7 +141,7 @@ public class ShowsListActivity extends ListActivity {
 	// So a dialog knows what to do, because API lower than 8 doesn't
 	// have the bundle option for creating a dialog
 	private int mDialogId = -1;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -148,7 +151,10 @@ public class ShowsListActivity extends ListActivity {
 		// Set up the view
 		background = (LinearLayout)findViewById(R.id.background);
 		header = (FrameLayout)findViewById(R.id.header);
-		NCMain.setColorOverlay(background, header);
+		int x = sharedPrefs.getInt("theme_color", -1);
+		if(x != -1)
+			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+					PorterDuff.Mode.MULTIPLY), background, header);
 
 		// Set up the refresh receiver
 		refreshReceiver = new BroadcastReceiver() {
@@ -159,22 +165,26 @@ public class ShowsListActivity extends ListActivity {
 		};
 
 		// Set up the refresh button
-		findViewById(R.id.btn_refresh).setOnClickListener(new OnClickListener() {	
-			@Override
-			public void onClick(View v) {
-				// Refresh each show in the list
-				for(Show show : mShows) {
-					Intent service = new Intent();
-					service.putExtra(RSSService.FEED, show.getFeed());
-					service.putExtra(RSSService.ID, show.getId());
-					service.putExtra(RSSService.UPDATE_METADATA, true);
-					service.putExtra(RSSService.BACKGROUND_UPDATE, false);
-					service.setClass(ShowsListActivity.this, RSSService.class);
-					startService(service);
-					Log.w("ShowsListAcitivity", "Refreshing: " + show.getFeed());
-				}
-			}
-		});
+		findViewById(R.id.btn_refresh).setOnClickListener(
+				new OnClickListener() {	
+					@Override
+					public void onClick(View v) {
+						// Refresh each show in the list
+						for(Show show : mShows) {
+							Intent service = new Intent();
+							service.putExtra(RSSService.FEED, show.getFeed());
+							service.putExtra(RSSService.ID, show.getId());
+							service.putExtra(RSSService.UPDATE_METADATA, true);
+							service.putExtra(RSSService.BACKGROUND_UPDATE,
+									false);
+							service.setClass(ShowsListActivity.this,
+									RSSService.class);
+							startService(service);
+							Log.w("ShowsListAcitivity", 
+									"Refreshing: " + show.getFeed());
+						}
+					}
+				});
 
 		// Refresh the list
 		refreshList();
@@ -194,8 +204,9 @@ public class ShowsListActivity extends ListActivity {
 		super.onResume();
 		int x = sharedPrefs.getInt("theme_color", -1);
 		if(x != -1) {
-			NCMain.overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
-			NCMain.setColorOverlay(background, header);
+			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+					PorterDuff.Mode.MULTIPLY),
+					background, header);
 		}
 	}
 
@@ -293,7 +304,8 @@ public class ShowsListActivity extends ListActivity {
 			if (mDialogId < 0)
 				return null;
 			Show show = mShows.get(mDialogId);
-			dialog = Tools.createUnsubscribeDialog(this, new DialogInterface.OnClickListener() {
+			dialog = Tools.createUnsubscribeDialog(this,
+					new DialogInterface.OnClickListener() {
 				BroadcastReceiver finishedReceiver;
 				ProgressDialog progressDialog;
 				@Override
@@ -310,21 +322,26 @@ public class ShowsListActivity extends ListActivity {
 							refreshList();
 						}
 					};
-					registerReceiver(finishedReceiver, new IntentFilter(UnsubscribeService.FINISHED + show.getId()));
-					
+					registerReceiver(finishedReceiver,
+							new IntentFilter(UnsubscribeService.FINISHED
+									+ show.getId()));
+
 					// Pop up a dialog while waiting
 					progressDialog =
 						ProgressDialog.show(ShowsListActivity.this, "",
-								ShowsListActivity.this.getString(R.string.unsubscribing_from_show)
-								+ show.getTitle()
-								+ ShowsListActivity.this.getString(R.string.end_quotation));
+								ShowsListActivity.this.getString(
+										R.string.unsubscribing_from_show)
+										+ show.getTitle()
+										+ ShowsListActivity.this.getString(
+												R.string.end_quotation));
 					progressDialog.setCancelable(false);
 					progressDialog.show();
-					
+
 					// Start the service
 					Intent service = new Intent();
 					service.putExtra(UnsubscribeService.SHOW_ID, show.getId());
-					service.setClass(ShowsListActivity.this, UnsubscribeService.class);
+					service.setClass(ShowsListActivity.this,
+							UnsubscribeService.class);
 					startService(service);
 				}
 			}, show.getTitle(), show.getId());
@@ -342,18 +359,24 @@ public class ShowsListActivity extends ListActivity {
 		this.mShows = new ArrayList<Show>();
 
 		// Get all of the shows
-		Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null, null, null);
+		Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, null, null,
+				null, null);
 
 		// Populate the view
 		if(shows.moveToFirst())
 			do {
-				String imagePath = shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
+				String imagePath = 
+					shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
 				Show s = new Show(
 						shows.getInt(shows.getColumnIndex(ShowsProvider._ID)),
-						shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)),
-						shows.getString(shows.getColumnIndex(ShowsProvider.AUTHOR)),
-						shows.getString(shows.getColumnIndex(ShowsProvider.FEED)),
-						shows.getString(shows.getColumnIndex(ShowsProvider.DESCRIPTION)),
+						shows.getString(shows
+								.getColumnIndex(ShowsProvider.TITLE)),
+						shows.getString(shows
+								.getColumnIndex(ShowsProvider.AUTHOR)),
+						shows.getString(shows
+								.getColumnIndex(ShowsProvider.FEED)),
+						shows.getString(shows
+								.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						imagePath, Show.DEFAULT, Show.DEFAULT);
 				s.setImage(Drawable.createFromPath(imagePath));
 				adapter.add(s);

@@ -18,6 +18,12 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class HueColorFilter extends ColorFilter {
 	
@@ -43,5 +49,42 @@ public class HueColorFilter extends ColorFilter {
 		}
 		bmp.setPixels(newPixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
 		return new BitmapDrawable(bmp);		
+	}
+	
+	/* This is intended for changing the theme according to user preferences. Not the most
+	 * versatile method right now, will have to modify if other types of views need overriding.
+	 * 
+	 * @author Kevin Coppock 12/14/2010
+	 */
+	public static void setColorOverlay(ColorFilter overlay, ColorFilter cf,
+			Object...params) {
+		for (Object v : params) {
+			if(v.getClass() == RelativeLayout.class 
+					|| v.getClass() == FrameLayout.class
+					|| v.getClass() == LinearLayout.class) {
+				((View)v).getBackground().setColorFilter(cf);
+			} else if (v.getClass() == ImageButton.class) {
+				((ImageButton)v).getDrawable().setColorFilter(cf);
+			} else if (v.getClass() == ImageView.class) {
+				((ImageView)v).getDrawable().setColorFilter(overlay);
+			}
+		}
+	}
+	
+	//constructor assuming the default ColorFilter
+	public static void setColorOverlay(ColorFilter overlay, Object...params) {
+		if(overlay != null) {
+			for (Object v : params) {
+				if(v.getClass() == RelativeLayout.class 
+						|| v.getClass() == FrameLayout.class
+						|| v.getClass() == LinearLayout.class) {
+					((View)v).getBackground().setColorFilter(overlay);
+				} else if (v.getClass() == ImageButton.class) {
+					((ImageButton)v).getDrawable().setColorFilter(overlay);
+				} else if (v.getClass() == ImageView.class) {
+					((ImageView)v).getDrawable().setColorFilter(overlay);
+				}
+			}
+		}
 	}
 }
