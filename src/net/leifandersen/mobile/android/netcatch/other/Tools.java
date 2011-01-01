@@ -101,7 +101,8 @@ public class Tools {
 					@Override
 					public void onReceive(Context context, Intent intent) {
 						progressDialog.cancel();
-						Toast.makeText(ctx, "Failed to fetch feed", Toast.LENGTH_LONG);
+						Toast.makeText(ctx, "Failed to fetch feed", 
+								Toast.LENGTH_LONG).show();
 						ctx.unregisterReceiver(finishedReceiver);
 						ctx.unregisterReceiver(failedReciever);
 					}

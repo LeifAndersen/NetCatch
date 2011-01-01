@@ -19,14 +19,12 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
-	android:background="@drawable/background_gradient"
-	>
+	android:background="@drawable/background_gradient" >
 	<FrameLayout								
 		android:id="@+id/header"
 		android:layout_width="fill_parent"
 		android:layout_height="60dp"
-		android:background="@drawable/ninepatch_blue_back_large"
-		>
+		android:background="@drawable/ninepatch_blue_back_large" >
 		<ImageView
 			android:id="@+id/btn_refresh"
 			android:layout_width="60dp"
@@ -34,8 +32,7 @@
 			android:paddingBottom="5px"
 			android:layout_gravity="right|top"			
 			android:src="@drawable/btn_refresh"
-			android:scaleType="center"
-			/>
+			android:scaleType="center" />
 		<TextView
 			android:id="@+id/title_text"
 			android:layout_width="wrap_content"
@@ -50,8 +47,7 @@
 			android:shadowColor="#A5000000"
 			android:shadowDx="1"
 			android:shadowDy="1"
-			android:shadowRadius="3"
-			/>
+			android:shadowRadius="3" />
 	</FrameLayout>
 	<ListView
 		android:id="@+id/android:list"

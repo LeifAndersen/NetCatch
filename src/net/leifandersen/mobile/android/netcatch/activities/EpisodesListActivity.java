@@ -122,13 +122,13 @@ public class EpisodesListActivity extends ListActivity {
 	private static final int UNSUBSCRIBE = 2;
 	private List<Episode> mEpisodes;
 	private SharedPreferences mSharedPrefs;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.episodes_list);
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		
+
 		// Get the show name
 		// If no show was passed in, the activity was called poorly, abort.
 		Bundle b = getIntent().getExtras();
@@ -149,7 +149,7 @@ public class EpisodesListActivity extends ListActivity {
 		if(x != -1)
 			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY), background, header);
-		
+
 		// Set the List Adapter
 		refreshList();
 
@@ -160,18 +160,18 @@ public class EpisodesListActivity extends ListActivity {
 	@Override
 	protected void onRestart() {
 		super.onResume();
-		
+
 		// Set up the color
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
 			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY),
 					background, header);
-		
+
 		// Refresh the list
 		refreshList();
 	}
-	
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
@@ -261,7 +261,7 @@ public class EpisodesListActivity extends ListActivity {
 				final File file =
 					new File(Environment.getExternalStorageDirectory(),
 							pref.getString(Preferences.DOWNLOAD_LOCATION,
-									"PODCASTS")
+							"PODCASTS")
 							+ "/" + mShowName + "/" + filename);
 
 				// Initiate the download
@@ -288,7 +288,7 @@ public class EpisodesListActivity extends ListActivity {
 
 						// Finish up, unregister receivers
 						Log.v("EpisodeDownload",
-								"Finished downloading episode");
+						"Finished downloading episode");
 						unregisterReceiver(this);
 					}
 				};
@@ -309,16 +309,16 @@ public class EpisodesListActivity extends ListActivity {
 					Toast.makeText(this, R.string.could_not_delete,
 							Toast.LENGTH_LONG).show();
 				}
-					// Clear out the location in the episode object
-					episode.setMedia(null);
-					
-					// Remove it form the database too.
-					ContentValues v = new ContentValues();
-					v.put(ShowsProvider.MEDIA, "");
-					getContentResolver().update(Uri.parse(
-							ShowsProvider.EPISODES_CONTENT_URI + "/" 
-							+ episode.getId()), v, null, null);
-					return true;
+				// Clear out the location in the episode object
+				episode.setMedia(null);
+
+				// Remove it form the database too.
+				ContentValues v = new ContentValues();
+				v.put(ShowsProvider.MEDIA, "");
+				getContentResolver().update(Uri.parse(
+						ShowsProvider.EPISODES_CONTENT_URI + "/" 
+						+ episode.getId()), v, null, null);
+				return true;
 
 			}
 			else
@@ -365,9 +365,9 @@ public class EpisodesListActivity extends ListActivity {
 						ProgressDialog.show(EpisodesListActivity.this, "",
 								EpisodesListActivity.this.getString(
 										R.string.unsubscribing_from_show)
-								+ mShowName
-								+ EpisodesListActivity.this.getString(
-										R.string.end_quotation));
+										+ mShowName
+										+ EpisodesListActivity.this.getString(
+												R.string.end_quotation));
 					progressDialog.setCancelable(false);
 					progressDialog.show();
 
@@ -395,7 +395,7 @@ public class EpisodesListActivity extends ListActivity {
 		mEpisodes = new ArrayList<Episode>();
 		Cursor c = managedQuery(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI
 				+ "/" + mShowID + "/episodes"), null, null, null, null);
-		if (c.moveToFirst()) {
+		if (c.moveToFirst())
 			do {
 				Episode ep = new Episode(
 						c.getLong(c.getColumnIndex(ShowsProvider._ID)), mShowID,
@@ -403,15 +403,14 @@ public class EpisodesListActivity extends ListActivity {
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
 						c.getString(
 								c.getColumnIndex(ShowsProvider.DESCRIPTION)),
-						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
-						c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
-						c.getLong(c.getColumnIndex(ShowsProvider.DATE)),
-						c.getLong(c.getColumnIndex(ShowsProvider.BOOKMARK)),
-						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ 
-						false); // TODO, actually get the bool
+								c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
+								c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
+								c.getLong(c.getColumnIndex(ShowsProvider.DATE)),
+								c.getLong(c.getColumnIndex(ShowsProvider.BOOKMARK)),
+								/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ 
+								false); // TODO, actually get the bool
 				mAdapter.add(ep);
 				mEpisodes.add(ep);
 			} while (c.moveToNext());
-		}
 	}
 }

@@ -379,6 +379,5 @@ public class ShowsListActivity extends ListActivity {
 				adapter.add(s);
 				this.mShows.add(s);
 			} while (shows.moveToNext());
-
 	}
 }

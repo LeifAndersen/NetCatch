@@ -173,6 +173,11 @@ public class ShowsProvider extends ContentProvider {
 	 */
 	public static final String EPISODE_ID = "episode_id";
 	
+	/**
+	 * The placement in the queue
+	 */
+	public static final String QUEUE_PLACEMENT = "queue_placement";
+	
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "Shows";
 	private static final String SHOWS_TABLE_NAME = "shows";
@@ -207,6 +212,7 @@ public class ShowsProvider extends ContentProvider {
 		"CREATE TABLE " + QUEUE_TABLE_NAME + " ("
 		+ _ID + " INTEGER PRIMARY KEY,"
 		+ EPISODE_ID + " INTEGER NOT NULL,"
+		+ QUEUE_PLACEMENT + " INTEGER,"
 		+ "FOREIGN KEY (" + EPISODE_ID + ") REFERENCES " + 
 		EPISODES_TABLE_NAME + " (" + _ID + ")" + ");";
 
@@ -293,26 +299,47 @@ public class ShowsProvider extends ContentProvider {
 			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
 		case SHOWS:
 			qb.setTables(SHOWS_TABLE_NAME);
+			
+			// Set up the order;
+			if(TextUtils.isEmpty(sortOrder))
+				sortOrder = TITLE;
 			break;
 		case SHOW_ID_EPISODES:
 			qb.setTables(EPISODES_TABLE_NAME);
 			qb.appendWhere(SHOW_ID + "=" + uri.getPathSegments().get(1));
+			
+			// Set up the order;
+			if(TextUtils.isEmpty(sortOrder))
+				sortOrder = DATE;
 			break;
 		case EPISODE_ID_CASE:
 			qb.appendWhere(_ID + "=" + uri.getPathSegments().get(1));
 		case EPISODES:
 			qb.setTables(EPISODES_TABLE_NAME);
+
+			// Set up the order;
+			if(TextUtils.isEmpty(sortOrder))
+				sortOrder = DATE;
 			break;
 		case QUEUE_ID_CASE:
-			qb.appendWhere(QUEUE_TABLE_NAME + "." + _ID + "=" + uri.getPathSegments().get(1) + " AND ");
+			qb.appendWhere(QUEUE_TABLE_NAME + "." + _ID + "="
+					+ uri.getPathSegments().get(1) + " AND ");
 		case QUEUE:
 			qb.appendWhere(EPISODE_ID + "=" + EPISODES_TABLE_NAME + "." + _ID);
 			qb.setTables(QUEUE_TABLE_NAME + ", " + EPISODES_TABLE_NAME);
+			
+			// Set up the order;
+			if(TextUtils.isEmpty(sortOrder))
+				sortOrder = QUEUE_PLACEMENT;
 			break;
 		case NEW_EPISODE_ID:
 			qb.appendWhere(DATE + "<" + uri.getPathSegments().get(1));
 		case NEW_EPISODES:
 			qb.setTables(EPISODES_TABLE_NAME);
+			
+			// Set up the order;
+			if(TextUtils.isEmpty(sortOrder))
+				sortOrder = TITLE;
 			break;
 		case LATEST_ID_CASE:
 			SQLiteDatabase db = mOpenHelper.getReadableDatabase();
@@ -322,10 +349,6 @@ public class ShowsProvider extends ContentProvider {
 		default:
 			throw new IllegalArgumentException("Unkown URI " + uri);
 		}
-
-		// Set up the order;
-		if(TextUtils.isEmpty(sortOrder))
-			sortOrder = TITLE;
 
 		// Get the database and run the query
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
@@ -449,6 +472,8 @@ public class ShowsProvider extends ContentProvider {
 			// Fill in empty values
 			if(values.containsKey(EPISODE_ID) == false)
 				throw new SQLException("Episode not in database");
+			if(values.containsKey(QUEUE_PLACEMENT) == false)
+				values.put(QUEUE_PLACEMENT, -1);
 			
 			// Insert the item
 			rowId = db.insert(QUEUE_TABLE_CREATE, QUEUE_STRING, values);

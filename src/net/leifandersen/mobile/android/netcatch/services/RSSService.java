@@ -81,7 +81,8 @@ public class RSSService extends Service {
 	private String feed;
 	private boolean updateMetadata;
 	private boolean backgroundUpdate;
-
+	private NotificationManager mNotificationManager;
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -127,7 +128,7 @@ public class RSSService extends Service {
 		String feed = this.feed;
 
 		// Notify the user
-		NotificationManager notificationManager =
+		mNotificationManager =
 			(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE); 
 		Notification notification = 
 			new Notification(R.drawable.notification_downloading,
@@ -139,7 +140,7 @@ public class RSSService extends Service {
 		notification.setLatestEventInfo(this, getString(R.string.refreshing),
 				feed, contentIntent);
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		notificationManager.notify(1, notification);
+		mNotificationManager.notify(1, notification);
 
 		// Download the RSS feed
 		Document feedDoc = getRSS(this, backgroundUpdate, feed);
@@ -245,16 +246,18 @@ public class RSSService extends Service {
 						values);
 			}
 		}
+		
 		// Send out the finish broadcast, clear notifications, stop self
 		Intent broadcast = new Intent(RSSFINISH + feed);
 		sendBroadcast(broadcast);
-		notificationManager.cancel(1);
+		mNotificationManager.cancel(1);
 		stopSelf();
 	}
 
 	private void serviceFailed(String feed) {
 		Intent broadcast = new Intent(RSSFAILED + feed);
 		sendBroadcast(broadcast);
+		mNotificationManager.cancel(1);
 		stopSelf();
 	}
 
