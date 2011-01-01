@@ -39,6 +39,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -80,11 +81,15 @@ public class EpisodesListActivity extends ListActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder;
 			if(convertView == null) {
-				convertView = mInflater.inflate(R.layout.episode_list_item, null);
+				convertView =
+					mInflater.inflate(R.layout.episode_list_item, null);
 				holder = new ViewHolder();
-				holder.title = (TextView)convertView.findViewById(R.id.eli_title);
-				holder.description = (TextView)convertView.findViewById(R.id.eli_description);
-				holder.date = (TextView)convertView.findViewById(R.id.eli_release_date);
+				holder.title = 
+					(TextView)convertView.findViewById(R.id.eli_title);
+				holder.description =
+					(TextView)convertView.findViewById(R.id.eli_description);
+				holder.date =
+					(TextView)convertView.findViewById(R.id.eli_release_date);
 				convertView.setTag(holder);
 			}
 			else
@@ -128,17 +133,18 @@ public class EpisodesListActivity extends ListActivity {
 		if(mShowID < 0 || mShowName == null)
 			throw new IllegalArgumentException("No show ID and name given");
 
+		
+		
 		// Set the List Adapter
 		refreshList();
 
-		// Registor the list for context menus
+		// Register the list for context menus
 		registerForContextMenu(getListView());
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		int foo = position;
 		Episode e = mEpisodes.get(position);
 		Intent i = new Intent();
 		i.putExtra("Foo", e.getId()); // TODO
@@ -181,22 +187,37 @@ public class EpisodesListActivity extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		// If menuInfo is null abort
+		if(menuInfo == null)
+			return;
 		MenuInflater inflater = getMenuInflater();
-		// TODO actually set up the proper menu
-		inflater.inflate(R.menu.episodes_context_not_downloaded, menu);
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		Episode episode = mEpisodes.get((int)info.id);
+		if(TextUtils.isEmpty(episode.getMedia())) {
+			if(episode.isPlayed())
+				inflater.inflate(
+						R.menu.episodes_context_not_downloaded_played, menu);
+			else
+				inflater.inflate(
+						R.menu.episodes_context_not_downloaded_unplayed, menu);
+		}
+		else {
+			if(episode.isPlayed())
+				inflater.inflate(
+						R.menu.episodes_context_downloaded_played, menu);
+			else
+				inflater.inflate(
+						R.menu.episodes_context_downloaded_unplayed, menu);
+		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = 
 			(AdapterContextMenuInfo)item.getMenuInfo();
-		if(info == null)
-			return false;
+		final Episode episode = mEpisodes.get((int)info.id);
 		switch(item.getItemId()) {
 		case R.id.download:
-			// Get the episode in question
-			final Episode episode = mEpisodes.get((int)info.id);
-
 			if(Environment.MEDIA_MOUNTED.equals(
 					Environment.getExternalStorageState()) && 
 					episode.getMediaUrl() != null) {
@@ -249,6 +270,29 @@ public class EpisodesListActivity extends ListActivity {
 			}
 			else
 				return false;
+		case R.id.delete:
+			if(Environment.MEDIA_MOUNTED.equals(
+					Environment.getExternalStorageState()) && 
+					episode.getMedia() != null) {
+				File file = new File(episode.getMedia());
+				if(!file.delete()) {
+					Toast.makeText(this, R.string.could_not_delete,
+							Toast.LENGTH_LONG).show();
+				}
+					// Clear out the location in the episode object
+					episode.setMedia(null);
+					
+					// Remove it form the database too.
+					ContentValues v = new ContentValues();
+					v.put(ShowsProvider.MEDIA, "");
+					getContentResolver().update(Uri.parse(
+							ShowsProvider.EPISODES_CONTENT_URI + "/" 
+							+ episode.getId()), v, null, null);
+					return true;
+
+			}
+			else
+				return false;
 		}
 		return false;
 	}
@@ -289,16 +333,19 @@ public class EpisodesListActivity extends ListActivity {
 					// Pop up a dialog while waiting
 					progressDialog =
 						ProgressDialog.show(EpisodesListActivity.this, "",
-								EpisodesListActivity.this.getString(R.string.unsubscribing_from_show)
+								EpisodesListActivity.this.getString(
+										R.string.unsubscribing_from_show)
 								+ mShowName
-								+ EpisodesListActivity.this.getString(R.string.end_quotation));
+								+ EpisodesListActivity.this.getString(
+										R.string.end_quotation));
 					progressDialog.setCancelable(false);
 					progressDialog.show();
 
 					// Unsubscribe from the show
 					Intent service = new Intent();
 					service.putExtra(UnsubscribeService.SHOW_ID, mShowID);
-					service.setClass(EpisodesListActivity.this, UnsubscribeService.class);
+					service.setClass(EpisodesListActivity.this,
+							UnsubscribeService.class);
 					startService(service);
 				}
 			}, mShowName, mShowID);
@@ -324,15 +371,17 @@ public class EpisodesListActivity extends ListActivity {
 						c.getLong(c.getColumnIndex(ShowsProvider._ID)), mShowID,
 						c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
-						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION)),
+						c.getString(
+								c.getColumnIndex(ShowsProvider.DESCRIPTION)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
 						c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
 						c.getLong(c.getColumnIndex(ShowsProvider.DATE)),
 						c.getLong(c.getColumnIndex(ShowsProvider.BOOKMARK)),
-						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ false); // TODO, actually get the bool
+						/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ 
+						false); // TODO, actually get the bool
 				mAdapter.add(ep);
 				mEpisodes.add(ep);
 			} while (c.moveToNext());
-		}		
+		}
 	}
 }

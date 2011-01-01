@@ -66,7 +66,6 @@ public class NCMain extends Activity implements OnClickListener {
 		setContentView(R.layout.main);
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		overlay = null;
 		overlay = new PorterDuffColorFilter(sharedPrefs.getInt("theme_color", Color.parseColor("#FFAAAAAA")), PorterDuff.Mode.MULTIPLY);
 		
 		vera = Typeface.createFromAsset(getAssets(), "Vera.ttf");
@@ -181,7 +180,6 @@ public class NCMain extends Activity implements OnClickListener {
 		
 		int x = sharedPrefs.getInt("theme_color", -1);
 		if(x != -1) {
-			overlay = null;
 			overlay = new PorterDuffColorFilter(x, PorterDuff.Mode.MULTIPLY);
 			setColorOverlay(overlay,
 					homeViews.iconQueue,

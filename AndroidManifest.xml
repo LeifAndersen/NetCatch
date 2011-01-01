@@ -46,9 +46,11 @@
 
 		<activity android:name=".activities.Preferences" />
 		<activity android:name=".activities.EpisodeActivity"></activity>
+		<activity android:name=".activities.NewEpisodeListActivity"
+			android:theme="@android:style/Theme.NoTitleBar"></activity>
 
-		<service android:name=".services.RSSService" >
-</service>
+		<service android:name=".services.RSSService">
+		</service>
 		<service android:name=".services.UnsubscribeService"></service>
 		<service android:name=".services.MediaDownloadService"></service>
 		<service android:name=".services.MediaPlayerService"></service>
@@ -62,7 +64,7 @@
 		<provider android:name=".providers.ShowsProvider"
 			android:authorities="net.leifandersen.provider.Shows" />
 
-</application>
+	</application>
 
 	<uses-sdk android:targetSdkVersion="9" android:minSdkVersion="7" />
 
