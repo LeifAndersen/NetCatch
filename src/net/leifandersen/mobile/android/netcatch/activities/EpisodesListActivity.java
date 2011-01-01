@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -35,6 +36,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -51,6 +54,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,18 +113,22 @@ public class EpisodesListActivity extends ListActivity {
 	public static final String SHOW_ID = "show_id";
 	public static final String SHOW_NAME = "show_name";
 
+	private LinearLayout background;
+	private FrameLayout header;
 	private String mShowName;
 	private long mShowID;
 	private EpisodeAdapter mAdapter;
 	private static final int NEW_FEED = 1;
 	private static final int UNSUBSCRIBE = 2;
 	private List<Episode> mEpisodes;
-
+	private SharedPreferences mSharedPrefs;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.episodes_list);
-
+		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
 		// Get the show name
 		// If no show was passed in, the activity was called poorly, abort.
 		Bundle b = getIntent().getExtras();
@@ -133,7 +142,13 @@ public class EpisodesListActivity extends ListActivity {
 		if(mShowID < 0 || mShowName == null)
 			throw new IllegalArgumentException("No show ID and name given");
 
-		
+		// Set up the view
+		background = (LinearLayout)findViewById(R.id.background);
+		header = (FrameLayout)findViewById(R.id.header);
+		int x = mSharedPrefs.getInt("theme_color", -1);
+		if(x != -1)
+			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+					PorterDuff.Mode.MULTIPLY), background, header);
 		
 		// Set the List Adapter
 		refreshList();
@@ -142,6 +157,21 @@ public class EpisodesListActivity extends ListActivity {
 		registerForContextMenu(getListView());
 	}
 
+	@Override
+	protected void onRestart() {
+		super.onResume();
+		
+		// Set up the color
+		int x = mSharedPrefs.getInt("theme_color", -1);
+		if(x != -1)
+			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+					PorterDuff.Mode.MULTIPLY),
+					background, header);
+		
+		// Refresh the list
+		refreshList();
+	}
+	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);

@@ -196,18 +196,15 @@ public class ShowsListActivity extends ListActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		refreshList();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
+		
+		// Get the color set up
 		int x = sharedPrefs.getInt("theme_color", -1);
-		if(x != -1) {
+		if(x != -1)
 			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
-					PorterDuff.Mode.MULTIPLY),
-					background, header);
-		}
+					PorterDuff.Mode.MULTIPLY),background, header);
+		
+		// Refresh the list
+		refreshList();
 	}
 
 	@Override

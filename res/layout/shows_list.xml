@@ -53,7 +53,6 @@
 			android:shadowRadius="3"
 			/>
 	</FrameLayout>
-	
 	<ListView
 		android:id="@+id/android:list"
 		android:layout_width="fill_parent"

@@ -13,14 +13,9 @@
  */
 package net.leifandersen.mobile.android.netcatch.services;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +34,6 @@ import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.ByteArrayBuffer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
