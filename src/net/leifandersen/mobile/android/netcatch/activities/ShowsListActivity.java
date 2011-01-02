@@ -245,7 +245,7 @@ public class ShowsListActivity extends ListActivity {
 			do {
 				String imagePath = shows.getString(shows.getColumnIndex(ShowsProvider.IMAGE));
 				Show s = new Show(
-						shows.getInt(shows.getColumnIndex(ShowsProvider._ID)),
+						shows.getInt(shows.getColumnIndex(ShowsProvider.SHOW_ID)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.TITLE)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.AUTHOR)),
 						shows.getString(shows.getColumnIndex(ShowsProvider.FEED)),

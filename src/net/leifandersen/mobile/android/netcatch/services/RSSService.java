@@ -147,9 +147,9 @@ public class RSSService extends Service {
 			getContentResolver().insert(ShowsProvider.SHOWS_CONTENT_URI, values);
 			
 			// Get the id of the new show
-			Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
-			c.moveToFirst();
-			id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
+		//	Cursor c = getContentResolver().query(ShowsProvider.LATEST_ID_URI, null, null, null, null);
+		//	c.moveToFirst();
+		//	id = c.getInt(c.getColumnIndex(ShowsProvider.LATEST_ID));
 		} else if(updateMetadata) {
 			// The show is already in the database.
 			id = this.id;
@@ -170,7 +170,7 @@ public class RSSService extends Service {
 		// Write the episode information
 		for(Episode episode : episodes) {
 			values = new ContentValues();
-			values.put(ShowsProvider.SHOW_ID, id);
+	//		values.put(ShowsProvider.SHOW_ID, id);
 			values.put(ShowsProvider.TITLE, episode.getTitle());
 			values.put(ShowsProvider.AUTHOR, episode.getAuthor());
 			values.put(ShowsProvider.DATE, episode.getDate());
