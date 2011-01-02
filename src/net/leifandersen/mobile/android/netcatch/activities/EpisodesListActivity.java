@@ -395,7 +395,7 @@ public class EpisodesListActivity extends ListActivity {
 		mEpisodes = new ArrayList<Episode>();
 		Cursor c = managedQuery(Uri.parse(ShowsProvider.SHOWS_CONTENT_URI
 				+ "/" + mShowID + "/episodes"), null, null, null, null);
-		if (c.moveToFirst())
+		if (c.moveToLast())
 			do {
 				Episode ep = new Episode(
 						c.getLong(c.getColumnIndex(ShowsProvider._ID)), mShowID,
@@ -411,6 +411,6 @@ public class EpisodesListActivity extends ListActivity {
 								false); // TODO, actually get the bool
 				mAdapter.add(ep);
 				mEpisodes.add(ep);
-			} while (c.moveToNext());
+			} while (c.moveToPrevious());
 	}
 }

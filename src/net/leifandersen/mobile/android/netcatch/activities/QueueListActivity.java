@@ -14,16 +14,23 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class QueueListActivity extends ListActivity {
@@ -69,14 +76,36 @@ public class QueueListActivity extends ListActivity {
 	}
 	
 	private QueueAdapter mAdapter;
-	
+	private LinearLayout background;
+	private FrameLayout header;
+	private SharedPreferences mSharedPrefs;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.queue);
+		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		// Set up the view
+		background = (LinearLayout)findViewById(R.id.background);
+		header = (FrameLayout)findViewById(R.id.header);
+		int x = mSharedPrefs.getInt("theme_color", -1);
+		if(x != -1)
+			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+					PorterDuff.Mode.MULTIPLY), background, header);
 		
 		// Refresh the list
 		refreshList();
+	}
+	
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		
+		// Set up the view
+		int x = mSharedPrefs.getInt("theme_color", -1);
+		if(x != -1)
+			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+					PorterDuff.Mode.MULTIPLY), background, header);
 	}
 	
 	private void refreshList() {
