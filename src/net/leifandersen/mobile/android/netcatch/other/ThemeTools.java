@@ -25,11 +25,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-public class HueColorFilter extends ColorFilter {
+public class ThemeTools extends ColorFilter {
 	
 	private static float hsv[];
 	private static float hue;
-	public HueColorFilter() {
+	public ThemeTools() {
 		
 	}
 	

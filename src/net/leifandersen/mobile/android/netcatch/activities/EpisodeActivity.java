@@ -22,6 +22,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 public class EpisodeActivity extends Activity {
 
@@ -60,7 +62,11 @@ public class EpisodeActivity extends Activity {
 					ShowsProvider.IS_PLAYED);
 		c.close();
 
-
+		if(TextUtils.isEmpty(mEpisode.getMedia())) {
+			Toast.makeText(this, "Please download episode first",
+					Toast.LENGTH_LONG).show();
+			finish();
+		}
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_VIEW);
 		intent.setDataAndType((Uri.parse("file://" + mEpisode.getMedia())),

@@ -14,7 +14,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
+import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.RSSService;
@@ -94,7 +94,7 @@ public class NCMain extends Activity implements OnClickListener {
 				homeViews.playerEpisodeTitle);
 
 		//need to change to pull color from SharedPreferences ~Kevin
-		HueColorFilter.setColorOverlay(new PorterDuffColorFilter(sharedPrefs
+		ThemeTools.setColorOverlay(new PorterDuffColorFilter(sharedPrefs
 				.getInt("theme_color", Color.parseColor("#FFAAAAAA")),
 				PorterDuff.Mode.MULTIPLY),
 				homeViews.iconQueue,
@@ -188,7 +188,7 @@ public class NCMain extends Activity implements OnClickListener {
 		if(x != -1) {
 			ColorFilter overlay = new PorterDuffColorFilter(x,
 					PorterDuff.Mode.MULTIPLY);
-			HueColorFilter.setColorOverlay(overlay, overlay,
+			ThemeTools.setColorOverlay(overlay, overlay,
 					homeViews.iconQueue,
 					homeViews.iconFeeds,
 					homeViews.iconNew,
@@ -262,7 +262,7 @@ public class NCMain extends Activity implements OnClickListener {
 		switch(requestCode) {
 		case COLOR_CHANGE_ACTIVITY_RESULT:
 			if(resultCode == RESULT_CANCELED) return;
-			HueColorFilter.setColorOverlay(
+			ThemeTools.setColorOverlay(
 					new PorterDuffColorFilter(i.getIntExtra("color", 0),
 							PorterDuff.Mode.MULTIPLY),
 							homeViews.iconQueue,

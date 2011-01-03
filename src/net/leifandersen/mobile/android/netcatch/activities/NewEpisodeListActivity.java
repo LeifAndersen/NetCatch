@@ -1,6 +1,6 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
-import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
+import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.R;
 import android.app.ListActivity;
@@ -50,7 +50,7 @@ public class NewEpisodeListActivity extends ListActivity {
 		header = (FrameLayout)findViewById(R.id.header);
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
-			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY), background, header);
 	}
 	
@@ -61,7 +61,7 @@ public class NewEpisodeListActivity extends ListActivity {
 		// Set up the view
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
-			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY), background, header);
 	}
 }

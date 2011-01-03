@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
+import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -147,7 +147,7 @@ public class EpisodesListActivity extends ListActivity {
 		header = (FrameLayout)findViewById(R.id.header);
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
-			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY), background, header);
 
 		// Set the List Adapter
@@ -164,7 +164,7 @@ public class EpisodesListActivity extends ListActivity {
 		// Set up the color
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
-			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY),
 					background, header);
 
@@ -319,10 +319,13 @@ public class EpisodesListActivity extends ListActivity {
 						ShowsProvider.EPISODES_CONTENT_URI + "/" 
 						+ episode.getId()), v, null, null);
 				return true;
-
 			}
 			else
 				return false;
+		case R.id.play:
+			Intent intent = new Intent();
+			intent.putExtra(EpisodeActivity.ID, episode.getId());
+			startActivity(intent);
 		}
 		return false;
 	}

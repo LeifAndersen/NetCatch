@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.other.HueColorFilter;
+import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -153,7 +153,7 @@ public class ShowsListActivity extends ListActivity {
 		header = (FrameLayout)findViewById(R.id.header);
 		int x = sharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
-			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY), background, header);
 
 		// Set up the refresh receiver
@@ -200,7 +200,7 @@ public class ShowsListActivity extends ListActivity {
 		// Get the color set up
 		int x = sharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
-			HueColorFilter.setColorOverlay(new PorterDuffColorFilter(x, 
+			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY),background, header);
 		
 		// Refresh the list
