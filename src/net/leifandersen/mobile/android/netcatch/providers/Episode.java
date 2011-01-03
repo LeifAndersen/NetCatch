@@ -13,9 +13,6 @@
  */
 package net.leifandersen.mobile.android.netcatch.providers;
 
-
-
-
 /**
  * A structure to hold an episode object designed only for packing data to pass
  * in between methods

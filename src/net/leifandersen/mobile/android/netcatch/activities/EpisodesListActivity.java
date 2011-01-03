@@ -177,7 +177,7 @@ public class EpisodesListActivity extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 		Episode e = mEpisodes.get(position);
 		Intent i = new Intent();
-		i.putExtra("Foo", e.getId()); // TODO
+		i.putExtra(EpisodeActivity.ID, e.getId()); // TODO
 		i.setClass(this, EpisodeActivity.class);
 		startActivity(i);
 	}
@@ -401,14 +401,14 @@ public class EpisodesListActivity extends ListActivity {
 						c.getLong(c.getColumnIndex(ShowsProvider._ID)), mShowID,
 						c.getString(c.getColumnIndex(ShowsProvider.TITLE)),
 						c.getString(c.getColumnIndex(ShowsProvider.AUTHOR)),
-						c.getString(
-								c.getColumnIndex(ShowsProvider.DESCRIPTION)),
-								c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
-								c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
-								c.getLong(c.getColumnIndex(ShowsProvider.DATE)),
-								c.getLong(c.getColumnIndex(ShowsProvider.BOOKMARK)),
-								/*c.getString(c.getColumnIndex(ShowsProvider.PLAYED))*/ 
-								false); // TODO, actually get the bool
+						c.getString(c.getColumnIndex(ShowsProvider.DESCRIPTION))
+						,
+						c.getString(c.getColumnIndex(ShowsProvider.MEDIA)),
+						c.getString(c.getColumnIndex(ShowsProvider.MEDIA_URL)),
+						c.getLong(c.getColumnIndex(ShowsProvider.DATE)),
+						c.getLong(c.getColumnIndex(ShowsProvider.BOOKMARK)),
+						c.getLong(c.getColumnIndex(ShowsProvider.PLAYED)) == 
+							ShowsProvider.IS_PLAYED);
 				mAdapter.add(ep);
 				mEpisodes.add(ep);
 			} while (c.moveToPrevious());

@@ -82,7 +82,7 @@ public class RSSService extends Service {
 	private boolean updateMetadata;
 	private boolean backgroundUpdate;
 	private NotificationManager mNotificationManager;
-	
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -170,7 +170,7 @@ public class RSSService extends Service {
 					PreferenceManager.getDefaultSharedPreferences(this);
 				File file = new File(Environment.getExternalStorageDirectory(),
 						pref.getString(Preferences.DOWNLOAD_LOCATION,
-								"PODCASTS")
+						"PODCASTS")
 						+ "/" + show.getTitle() + "/image.png");
 				Tools.downloadFile(this, backgroundUpdate,
 						new URL(show.getImagePath()), file);
@@ -240,13 +240,16 @@ public class RSSService extends Service {
 				values.put(ShowsProvider.AUTHOR, episode.getAuthor());
 				values.put(ShowsProvider.DATE, episode.getDate());
 				values.put(ShowsProvider.MEDIA_URL, episode.getMediaUrl());
-				values.put(ShowsProvider.PLAYED, episode.isPlayed());
+				if(episode.isPlayed())
+					values.put(ShowsProvider.PLAYED, ShowsProvider.IS_PLAYED);
+				else
+					values.put(ShowsProvider.PLAYED, ShowsProvider.NOT_PLAYED);
 				values.put(ShowsProvider.DESCRIPTION, episode.getDescription());
 				getContentResolver().insert(ShowsProvider.EPISODES_CONTENT_URI,
 						values);
 			}
 		}
-		
+
 		// Send out the finish broadcast, clear notifications, stop self
 		Intent broadcast = new Intent(RSSFINISH + feed);
 		sendBroadcast(broadcast);

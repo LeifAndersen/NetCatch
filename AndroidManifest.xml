@@ -30,7 +30,12 @@
 			android:name=".activities.ShowsListActivity" />
 
 		<activity android:name=".activities.EpisodesListActivity"
-			android:theme="@android:style/Theme.NoTitleBar" />
+			android:theme="@android:style/Theme.NoTitleBar" ><intent-filter>
+<data android:mimeType="application/rss+xml"></data>
+
+<category android:name="android.intent.category.BROWSABLE"></category>
+</intent-filter>
+</activity>
 
 		<activity android:name=".activities.QueueListActivity"
 			android:theme="@android:style/Theme.NoTitleBar" />

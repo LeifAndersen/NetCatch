@@ -166,6 +166,15 @@ public class ShowsProvider extends ContentProvider {
 	 */
 	public static final String BOOKMARK = "position";
 	
+	/**
+	 * Comparison in the database to see if it was played
+	 */
+	public static final int IS_PLAYED = 1;
+	
+	/**
+	 * Comparison to the database to see if it was not played
+	 */
+	public static final int NOT_PLAYED = 0;
 	
 	// For the queue
 	/**
@@ -205,7 +214,7 @@ public class ShowsProvider extends ContentProvider {
 		+ MEDIA_URL + " TEXT,"
 		+ DATE + " INTEGER, "
 		+ BOOKMARK + " INTEGER,"
-		+ PLAYED + " BOOLEAN,"
+		+ PLAYED + " INTEGER,"
 		+ "FOREIGN KEY (" + SHOW_ID + ") REFERENCES " +
 		SHOWS_TABLE_NAME + " (" + _ID + ")" + ");";
 	private static final String QUEUE_TABLE_CREATE =
