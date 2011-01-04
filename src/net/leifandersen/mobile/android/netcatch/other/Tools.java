@@ -68,7 +68,9 @@ public class Tools {
 		LayoutInflater inflater = 
 			(LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(R.layout.subscription_feed_dialog, null);
-		final EditText editFeed = (EditText)layout.findViewById(R.id.sfd_editText);
+		final EditText editFeed =
+			(EditText)layout.findViewById(R.id.sfd_editText);
+		editFeed.setText("");
 		builder.setView(layout);
 		builder.setCancelable(false);
 		builder.setPositiveButton(ctx.getString(android.R.string.ok), new DialogInterface.OnClickListener() {

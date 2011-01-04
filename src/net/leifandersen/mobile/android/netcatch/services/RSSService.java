@@ -49,6 +49,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -75,7 +76,8 @@ public class RSSService extends Service {
 	public static final String ID = "id";
 	public static final String UPDATE_METADATA = "update_metadata";
 	public static final String BACKGROUND_UPDATE = "background_update";
-
+	public static final String NAME = "name";
+	
 	private static final int NEW_SHOW = -1;
 	private long id;
 	private String feed;
@@ -252,6 +254,10 @@ public class RSSService extends Service {
 
 		// Send out the finish broadcast, clear notifications, stop self
 		Intent broadcast = new Intent(RSSFINISH + feed);
+		Bundle returnBundle = new Bundle();
+		returnBundle.putLong(ID, id);
+		returnBundle.putString(NAME, show.getTitle());
+		broadcast.putExtra(SHOW, returnBundle);
 		sendBroadcast(broadcast);
 		mNotificationManager.cancel(1);
 		stopSelf();

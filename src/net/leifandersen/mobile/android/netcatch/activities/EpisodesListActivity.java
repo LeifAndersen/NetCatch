@@ -24,7 +24,9 @@ import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
 import net.leifandersen.mobile.android.netcatch.services.MediaDownloadService;
+import net.leifandersen.mobile.android.netcatch.services.RSSService;
 import net.leifandersen.mobile.android.netcatch.services.UnsubscribeService;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -43,6 +45,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.text.style.SubscriptSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -54,6 +57,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -120,27 +124,21 @@ public class EpisodesListActivity extends ListActivity {
 	private EpisodeAdapter mAdapter;
 	private static final int NEW_FEED = 1;
 	private static final int UNSUBSCRIBE = 2;
+	private static final int IMPLICIT_NEW_FEED = 3;
 	private List<Episode> mEpisodes;
 	private SharedPreferences mSharedPrefs;
-
+	private String mFeed;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.episodes_list);
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		// Get the show name
-		// If no show was passed in, the activity was called poorly, abort.
-		Bundle b = getIntent().getExtras();
-		if (b == null)
-			throw new IllegalArgumentException("No Bundle Given");
-
-
-		mShowID = b.getLong(SHOW_ID, -1);
-		mShowName = b.getString(SHOW_NAME);
-
-		if(mShowID < 0 || mShowName == null)
-			throw new IllegalArgumentException("No show ID and name given");
+		if(getIntent().getDataString() == null)
+			explicitInitiate();
+		else
+			implicitInitiate();
 
 		// Set up the view
 		background = (LinearLayout)findViewById(R.id.background);
@@ -155,6 +153,26 @@ public class EpisodesListActivity extends ListActivity {
 
 		// Register the list for context menus
 		registerForContextMenu(getListView());
+	}
+
+	private void implicitInitiate() {
+		mFeed = getIntent().getDataString();
+		showDialog(IMPLICIT_NEW_FEED);
+	}
+
+	private void explicitInitiate() {
+		// Get the show name
+		// If no show was passed in, the activity was called poorly, abort.
+		Bundle b = getIntent().getExtras();
+		if (b == null)
+			throw new IllegalArgumentException("No Bundle Given");
+
+
+		mShowID = b.getLong(SHOW_ID, -1);
+		mShowName = b.getString(SHOW_NAME);
+
+		if(mShowID < 0 || mShowName == null)
+			throw new IllegalArgumentException("No show ID and name given");
 	}
 
 	@Override
@@ -382,6 +400,113 @@ public class EpisodesListActivity extends ListActivity {
 					startService(service);
 				}
 			}, mShowName, mShowID);
+			break;
+		case IMPLICIT_NEW_FEED:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+			// Set up the layout
+			LayoutInflater inflater = 
+				(LayoutInflater)getSystemService(
+						Context.LAYOUT_INFLATER_SERVICE);
+			View layout = inflater.inflate(R.layout.subscription_feed_dialog,
+					null);
+			final EditText editFeed = 
+				(EditText)layout.findViewById(R.id.sfd_editText);
+			editFeed.setText(mFeed);
+			builder.setView(layout);
+			builder.setCancelable(false);
+			builder.setPositiveButton(getString(android.R.string.ok),
+					new DialogInterface.OnClickListener() {
+				BroadcastReceiver finishedReceiver;
+				BroadcastReceiver failedReciever;
+				ProgressDialog progressDialog;
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					final String newFeed = editFeed.getText().toString();
+
+					// Get the feed's data
+					// Set the broadcast reciever
+					finishedReceiver = new BroadcastReceiver() {
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							// Clean up
+							progressDialog.cancel();
+							unregisterReceiver(finishedReceiver);
+							unregisterReceiver(failedReciever);
+
+							// Refresh the list
+							mShowID = intent.getLongExtra(RSSService.ID, -1);
+							mShowName = intent.getStringExtra(RSSService.NAME);
+							if(mShowID < 0) {
+								finish();
+								return;
+							}
+							refreshList();
+						}
+					};
+					registerReceiver(finishedReceiver,
+							new IntentFilter(RSSService.RSSFINISH + newFeed));
+
+					// Set up the failed dialog
+					failedReciever = new BroadcastReceiver() {
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							progressDialog.dismiss();
+							Toast.makeText(EpisodesListActivity.this,
+									"Failed to fetch feed", 
+									Toast.LENGTH_LONG).show();
+							unregisterReceiver(finishedReceiver);
+							unregisterReceiver(failedReciever);
+							finish();
+						}
+					};
+					registerReceiver(failedReciever,
+							new IntentFilter(RSSService.RSSFAILED + newFeed));
+
+					// Show a waiting dialog (that can be canceled)
+					progressDialog =
+						ProgressDialog.show(EpisodesListActivity.this,
+								"", getString(R.string.getting_show_details));
+					progressDialog.setOnCancelListener(
+							new DialogInterface.OnCancelListener() {
+								@Override
+								public void onCancel(DialogInterface dialog) {
+									try {
+										unregisterReceiver(finishedReceiver);
+									} catch (Exception e) {
+										Log.w("EpisodesListActivity",
+												"finishedReceiver already " + 
+												"unregistered");
+									} try {
+										unregisterReceiver(failedReciever);
+									} catch (Exception e) {
+										Log.w("EpisodesListActivity",
+												"failedReceiver already " + 
+												"unregistered");
+									}
+									finish();
+								}
+							});
+					progressDialog.setCancelable(true);
+					progressDialog.show();
+
+					// Start the service
+					Intent service = new Intent();
+					service.putExtra(RSSService.FEED, newFeed);
+					service.putExtra(RSSService.BACKGROUND_UPDATE, false);
+					service.setClass(EpisodesListActivity.this,
+							RSSService.class);
+					startService(service);
+				}
+			});
+			builder.setNegativeButton(getString(android.R.string.cancel),
+					new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			dialog = builder.create();
 			break;
 		default:
 			dialog = null;
