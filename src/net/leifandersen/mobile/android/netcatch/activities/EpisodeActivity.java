@@ -66,6 +66,7 @@ public class EpisodeActivity extends Activity {
 			Toast.makeText(this, "Please download episode first",
 					Toast.LENGTH_LONG).show();
 			finish();
+			return;
 		}
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_VIEW);
