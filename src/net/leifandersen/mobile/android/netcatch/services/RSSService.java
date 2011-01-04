@@ -234,6 +234,9 @@ public class RSSService extends Service {
 								+ "/" + id + "/episodes"), null, null);
 			}
 
+			// Store the id
+			this.id = id;
+			
 			// Write the episode information
 			for(Episode episode : episodes) {
 				values = new ContentValues();
@@ -254,10 +257,8 @@ public class RSSService extends Service {
 
 		// Send out the finish broadcast, clear notifications, stop self
 		Intent broadcast = new Intent(RSSFINISH + feed);
-		Bundle returnBundle = new Bundle();
-		returnBundle.putLong(ID, id);
-		returnBundle.putString(NAME, show.getTitle());
-		broadcast.putExtra(SHOW, returnBundle);
+		broadcast.putExtra(ID, id);
+		broadcast.putExtra(NAME, show.getTitle());
 		sendBroadcast(broadcast);
 		mNotificationManager.cancel(1);
 		stopSelf();

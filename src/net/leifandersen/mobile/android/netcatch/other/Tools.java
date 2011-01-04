@@ -87,7 +87,7 @@ public class Tools {
 					@Override
 					public void onReceive(Context context, Intent intent) {
 						// Clean up
-						progressDialog.cancel();
+						progressDialog.dismiss();
 						ctx.unregisterReceiver(finishedReceiver);
 						ctx.unregisterReceiver(failedReciever);
 
@@ -102,7 +102,7 @@ public class Tools {
 				failedReciever = new BroadcastReceiver() {
 					@Override
 					public void onReceive(Context context, Intent intent) {
-						progressDialog.cancel();
+						progressDialog.dismiss();
 						Toast.makeText(ctx, "Failed to fetch feed", 
 								Toast.LENGTH_LONG).show();
 						ctx.unregisterReceiver(finishedReceiver);
@@ -183,7 +183,7 @@ public class Tools {
 			// Log specific to android api
 			total += count;
 			if(total > nextJump) {
-				nextJump += 1000000;
+				nextJump += 5000000;
 				Log.v("Downloading", total + " bytes downloaded");
 			}
 		}

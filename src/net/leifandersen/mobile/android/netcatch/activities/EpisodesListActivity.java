@@ -45,7 +45,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.text.style.SubscriptSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -430,7 +429,7 @@ public class EpisodesListActivity extends ListActivity {
 						@Override
 						public void onReceive(Context context, Intent intent) {
 							// Clean up
-							progressDialog.cancel();
+							progressDialog.dismiss();
 							unregisterReceiver(finishedReceiver);
 							unregisterReceiver(failedReciever);
 
