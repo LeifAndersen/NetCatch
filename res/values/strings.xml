@@ -76,7 +76,8 @@
 <string name="move_down">Move Down</string>
 <string name="download">Download</string>
 <string name="delete">Delete</string>
-<string name="refreshing">NetCatch Refreshing</string>
+<string name="netcatch_refreshing">NetCatch Refreshing</string>
 <string name="no_media_to_download">There was no media to download</string>
 <string name="could_not_delete">Problem deleting file</string>
+<string name="netcatch_downloading">NetCatch Downloading</string>
 </resources>

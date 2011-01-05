@@ -228,6 +228,7 @@ public class ShowsListActivity extends ListActivity {
 		Intent i = new Intent();
 		i.putExtra(EpisodesListActivity.SHOW_ID, s.getId());
 		i.putExtra(EpisodesListActivity.SHOW_NAME, s.getTitle());
+		i.putExtra(EpisodesListActivity.SHOW_FEED, s.getFeed());
 		i.setClass(this, EpisodesListActivity.class);
 		startActivity(i);
 	}

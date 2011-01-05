@@ -112,23 +112,33 @@ public class NCMain extends Activity implements OnClickListener {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// Get each element from the database
-						Cursor shows = managedQuery(ShowsProvider.SHOWS_CONTENT_URI, 
-								null, null, null, null);
-						if(shows.moveToFirst())
-							do {
-								String feed = shows.getString(shows.getColumnIndex(
-										ShowsProvider.FEED));
-								Intent service = new Intent();
-								service.putExtra(RSSService.FEED, feed);
-								service.putExtra(RSSService.ID, shows.getInt(shows
-										.getColumnIndex(ShowsProvider._ID)));
-								service.putExtra(RSSService.UPDATE_METADATA, true);
-								service.putExtra(RSSService.BACKGROUND_UPDATE, false);
-								service.setClass(NCMain.this, RSSService.class);
-								startService(service);
-								Log.w("NCMain", "Refreshing: " + feed);
-							} while(shows.moveToNext());
+						// Make sure only one is going at a time, so that
+						// the system isn't getting overloaded
+						synchronized (NCMain.this) {
+							// Get each element from the database
+							Cursor shows = managedQuery(
+									ShowsProvider.SHOWS_CONTENT_URI, 
+									null, null, null, null);
+							if(shows.moveToFirst())
+								do {
+									String feed =
+										shows.getString(shows.getColumnIndex(
+											ShowsProvider.FEED));
+									Intent service = new Intent();
+									service.putExtra(RSSService.FEED, feed);
+									service.putExtra(RSSService.ID,
+											shows.getInt(shows.getColumnIndex(
+													ShowsProvider._ID)));
+									service.putExtra(
+											RSSService.UPDATE_METADATA, true);
+									service.putExtra(RSSService
+											.BACKGROUND_UPDATE, false);
+									service.setClass(
+											NCMain.this, RSSService.class);
+									startService(service);
+									Log.w("NCMain", "Refreshing: " + feed);
+								} while(shows.moveToNext());
+						}
 					}
 				});
 	}

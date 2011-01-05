@@ -25,6 +25,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.R;
 import net.leifandersen.mobile.android.netcatch.activities.EpisodeActivity;
+import net.leifandersen.mobile.android.netcatch.activities.EpisodesListActivity;
+import net.leifandersen.mobile.android.netcatch.activities.NCMain;
 import net.leifandersen.mobile.android.netcatch.activities.Preferences;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
@@ -133,14 +135,15 @@ public class RSSService extends Service {
 		mNotificationManager =
 			(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE); 
 		Notification notification = 
-			new Notification(R.drawable.notification_downloading,
-					getString(R.string.refreshing), System.currentTimeMillis());	
-		Intent notificationIntent = new Intent(this, EpisodeActivity.class);
-		notificationIntent.putExtra(EpisodeActivity.ID, id);
+			new Notification(R.drawable.status_update,
+					getString(R.string.netcatch_refreshing),
+					System.currentTimeMillis());	
+		Intent notificationIntent =
+			new Intent(this, NCMain.class);
 		PendingIntent contentIntent = 
 			PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification.setLatestEventInfo(this, getString(R.string.refreshing),
-				feed, contentIntent);
+		notification.setLatestEventInfo(this,
+				getString(R.string.netcatch_refreshing), feed, contentIntent);
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
 		mNotificationManager.notify(1, notification);
 

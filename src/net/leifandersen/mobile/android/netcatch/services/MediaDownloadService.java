@@ -18,9 +18,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.activities.EpisodeActivity;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
+import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -53,6 +61,7 @@ public class MediaDownloadService extends Service {
 	private long id;
 	private URL url;
 	private File file;
+	private NotificationManager mNotificationManager;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -73,9 +82,9 @@ public class MediaDownloadService extends Service {
 		id = intent.getLongExtra(MEDIA_ID, -1);
 
 		// If peramiters not provided, bail
-		if(media_url == null || media_location == null || id == -1)
+		if(media_url == null || media_location == null || id < 0)
 			throw new IllegalArgumentException(
-					"Invalid parameters for MediaDownloadService");
+			"Invalid parameters for MediaDownloadService");
 
 		// Make the file and url objects, make sure path exists
 		file = new File(media_location);
@@ -110,6 +119,23 @@ public class MediaDownloadService extends Service {
 
 	private void downloadMedia() {
 
+		// Notify the user
+		mNotificationManager =
+			(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE); 
+		Notification notification = 
+			new Notification(R.drawable.status_download,
+					getString(R.string.netcatch_downloading),
+					System.currentTimeMillis());	
+		Intent notificationIntent = new Intent(this, EpisodeActivity.class);
+		notificationIntent.putExtra(EpisodeActivity.ID, id);
+		PendingIntent contentIntent = 
+			PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(this,
+				getString(R.string.netcatch_downloading), media_url,
+				contentIntent);
+		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		mNotificationManager.notify(2, notification);
+
 		// Check network state
 		if(!Tools.checkNetworkState(this, backgroundUpdate)) {
 			serviceFailed();
@@ -119,11 +145,20 @@ public class MediaDownloadService extends Service {
 		try {
 			// Actually download the file
 			Tools.downloadFile(this, backgroundUpdate, url, file);
-			
+
+			// Write it to the database
+			ContentValues values = new ContentValues();
+			values.put(ShowsProvider.MEDIA, media_location);
+			getContentResolver().update(Uri.parse(
+					ShowsProvider.EPISODES_CONTENT_URI + "/" + id), values,
+					null, null);
+			Log.v("MediaDownloadService", "Finished downloading: " + media_url);
+
 			// Finish up, send finished broadcast, stop the service
 			Intent broadcast = new Intent(MEDIA_FINISHED 
 					+ media_url + " " + media_location);
 			sendBroadcast(broadcast);
+			mNotificationManager.cancel(2);
 			stopSelf();
 			return;
 		} catch (Exception e) {
@@ -143,6 +178,7 @@ public class MediaDownloadService extends Service {
 		Intent broadcast = new Intent(MEDIA_FAILED 
 				+ media_url + " " + media_location);
 		sendBroadcast(broadcast);
+		mNotificationManager.cancel(2);
 		stopSelf();
 		return;
 	}

@@ -53,6 +53,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
@@ -115,7 +116,8 @@ public class EpisodesListActivity extends ListActivity {
 
 	public static final String SHOW_ID = "show_id";
 	public static final String SHOW_NAME = "show_name";
-
+	public static final String SHOW_FEED = "show_feed";
+	
 	private LinearLayout background;
 	private FrameLayout header;
 	private String mShowName;
@@ -147,6 +149,17 @@ public class EpisodesListActivity extends ListActivity {
 			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
 					PorterDuff.Mode.MULTIPLY), background, header);
 
+		// Set up the refresh button
+		findViewById(R.id.btn_refresh).setOnClickListener(
+				new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent refresh = new Intent();
+				refresh.putExtra(RSSService.FEED, mFeed);
+				refresh.putExtra(RSSService.ID, mShowID);
+			}
+		});
+		
 		// Set the List Adapter
 		refreshList();
 
@@ -169,9 +182,11 @@ public class EpisodesListActivity extends ListActivity {
 
 		mShowID = b.getLong(SHOW_ID, -1);
 		mShowName = b.getString(SHOW_NAME);
-
-		if(mShowID < 0 || mShowName == null)
-			throw new IllegalArgumentException("No show ID and name given");
+		mFeed = b.getString(SHOW_FEED);
+		
+		if(mShowID < 0 || mShowName == null || mFeed == null)
+			throw new IllegalArgumentException("No show ID, name " +
+					"or feed given");
 	}
 
 	@Override
@@ -289,30 +304,6 @@ public class EpisodesListActivity extends ListActivity {
 				.putExtra(MediaDownloadService.MEDIA_LOCATION, file.getPath())
 				.putExtra(MediaDownloadService.BACKGROUND_UPDATE, false);
 				startService(service);
-
-
-				// Set up the receivers on finish				
-				// finished receiver
-				final BroadcastReceiver receiver = new BroadcastReceiver() {
-					@Override
-					public void onReceive(Context context, Intent intent) {
-						// Update the media locatioin in the database
-						ContentValues values = new ContentValues();
-						values.put(ShowsProvider.MEDIA, file.getPath());
-						getContentResolver().update(Uri.parse(ShowsProvider.
-								EPISODES_CONTENT_URI + "/" + episode.getId()),
-								values, null, null);
-
-						// Finish up, unregister receivers
-						Log.v("EpisodeDownload",
-						"Finished downloading episode");
-						unregisterReceiver(this);
-					}
-				};
-				registerReceiver(receiver,
-						new IntentFilter(MediaDownloadService.MEDIA_FINISHED 
-								+ episode.getMediaUrl() + " "
-								+ file.getPath()));
 				return true;
 			}
 			else
@@ -488,7 +479,10 @@ public class EpisodesListActivity extends ListActivity {
 							});
 					progressDialog.setCancelable(true);
 					progressDialog.show();
-
+					
+					// Save the feed
+					mFeed = newFeed;
+					
 					// Start the service
 					Intent service = new Intent();
 					service.putExtra(RSSService.FEED, newFeed);
