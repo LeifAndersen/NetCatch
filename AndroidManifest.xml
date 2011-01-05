@@ -14,8 +14,7 @@
    limitations under the License.
 -->
 <manifest package="net.leifandersen.mobile.android.netcatch"
-	android:versionCode="1" android:versionName="1.0"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+	android:versionCode="1" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.0.1">
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:debuggable="true">
 		<activity android:label="@string/app_name" android:name=".activities.NCMain"

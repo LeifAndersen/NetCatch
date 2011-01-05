@@ -24,8 +24,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.leifandersen.mobile.android.netcatch.R;
-import net.leifandersen.mobile.android.netcatch.activities.EpisodeActivity;
-import net.leifandersen.mobile.android.netcatch.activities.EpisodesListActivity;
 import net.leifandersen.mobile.android.netcatch.activities.NCMain;
 import net.leifandersen.mobile.android.netcatch.activities.Preferences;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
@@ -51,7 +49,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -407,7 +404,7 @@ public class RSSService extends Service {
 
 
 				// Convert the date string into the needed integer
-				// TODO, use a non-depricated method
+				// TODO, use a non-deprecated method
 				long dateMills;
 				try {
 					dateMills = Date.parse(date);

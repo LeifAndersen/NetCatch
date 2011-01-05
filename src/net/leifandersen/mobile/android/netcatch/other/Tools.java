@@ -184,7 +184,7 @@ public class Tools {
 			total += count;
 			if(total > nextJump) {
 				nextJump += 5000000;
-				Log.v("Downloading", total + " bytes downloaded");
+				Log.v("Downloading", total + " bytes downloaded: " + url);
 			}
 		}
 
