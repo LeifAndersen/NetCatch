@@ -14,6 +14,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.GlobalVars;
 import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -54,19 +55,18 @@ public class NCMain extends Activity implements OnClickListener {
 
 	private static final int NEW_FEED = 1;
 	private static final int COLOR_CHANGE_ACTIVITY_RESULT = 10;
-	private static Typeface vera, veraBold;
 	private static HomeScreenViewHolder homeViews;
 	protected SharedPreferences sharedPrefs;
+	private GlobalVars globalVars;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
+		globalVars = (GlobalVars)getApplicationContext();
+		globalVars.initializeGlobalVars();
+		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-		vera = Typeface.createFromAsset(getAssets(), "Vera.ttf");
-		veraBold = Typeface.createFromAsset(getAssets(), "VeraBd.ttf");
 
 		/* Any new additions to the layout XML which require modification should
 		 * be added to the HomeScreenViewHolder, set in the following block, and
@@ -87,9 +87,9 @@ public class NCMain extends Activity implements OnClickListener {
 		homeViews.iconFeeds = (ImageButton)findViewById(R.id.icon_feeds);
 		homeViews.iconNew = (ImageButton)findViewById(R.id.icon_new);
 
-		setTypeface(vera, 
+		setTypeface(globalVars.getVera(), 
 				homeViews.playerEpisodeTime);
-		setTypeface(veraBold, 
+		setTypeface(globalVars.getVeraBold(), 
 				homeViews.titleText, 
 				homeViews.playerEpisodeTitle);
 
@@ -242,17 +242,17 @@ public class NCMain extends Activity implements OnClickListener {
 
 	static class HomeScreenViewHolder {
 		TextView
-		titleText,
-		playerEpisodeTitle,
-		playerEpisodeTime;
+			titleText,
+			playerEpisodeTitle,
+			playerEpisodeTime;
 		ImageButton
-		iconNew,
-		iconQueue,
-		iconFeeds;
-		RelativeLayout
-		miniPlayer;
+			iconNew,
+			iconQueue,
+			iconFeeds;
+			RelativeLayout
+			miniPlayer;
 		FrameLayout
-		header;
+			header;
 	}
 
 	/* This is just for purposes of simplifying the typeface change for the home

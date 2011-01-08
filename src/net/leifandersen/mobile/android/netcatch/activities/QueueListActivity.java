@@ -14,6 +14,7 @@
 package net.leifandersen.mobile.android.netcatch.activities;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.GlobalVars;
 import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
 import net.leifandersen.mobile.android.netcatch.providers.ShowsProvider;
@@ -35,6 +36,8 @@ import android.widget.TextView;
 
 public class QueueListActivity extends ListActivity {
 
+	private GlobalVars globalVars;
+	
 	private static class ViewHolder {
 		TextView title;
 		TextView description;
@@ -66,9 +69,15 @@ public class QueueListActivity extends ListActivity {
 				holder = (ViewHolder)convertView.getTag();
 			
 			Episode episode = getItem(position);
+			
 			holder.title.setText(episode.getTitle());
+			holder.title.setTypeface(globalVars.getVeraBold());
+			
 			holder.description.setText(episode.getDescription());
+			holder.description.setTypeface(globalVars.getVera());
+			
 			holder.date.setText(((Long)episode.getDate()).toString());
+			holder.date.setTypeface(globalVars.getVera());
 			
 			registerForContextMenu(convertView);
 			return convertView;
@@ -78,16 +87,21 @@ public class QueueListActivity extends ListActivity {
 	private QueueAdapter mAdapter;
 	private LinearLayout background;
 	private FrameLayout header;
+	private TextView headerText;
 	private SharedPreferences mSharedPrefs;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.queue);
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		globalVars = (GlobalVars)getApplicationContext();
 		
 		// Set up the view
 		background = (LinearLayout)findViewById(R.id.background);
 		header = (FrameLayout)findViewById(R.id.header);
+		headerText = (TextView)header.findViewById(R.id.title_text);
+		headerText.setTypeface(globalVars.getVeraBold());
+		
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
 			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 

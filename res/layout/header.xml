@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright 2010 NetCatch Team
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<FrameLayout								
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/header"
+	android:layout_width="fill_parent"
+	android:layout_height="60dp"
+	android:background="@drawable/ninepatch_blue_back_large" >
+	<ImageView
+		android:id="@+id/btn_refresh"
+		android:layout_width="60dp"
+		android:layout_height="fill_parent"
+		android:paddingBottom="5px"
+		android:layout_gravity="right|top"			
+		android:src="@drawable/btn_refresh"
+		android:scaleType="center" />
+	<TextView
+		android:id="@+id/title_text"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:paddingLeft="15dp"
+		android:paddingBottom="5px"
+		android:gravity="center_vertical"
+		android:text="NetCatch"
+		android:textColor="@android:color/white"
+		android:textStyle="bold"
+		android:textSize="24sp"
+		android:shadowColor="#A5000000"
+		android:shadowDx="1"
+		android:shadowDy="1"
+		android:shadowRadius="3" />
+</FrameLayout>

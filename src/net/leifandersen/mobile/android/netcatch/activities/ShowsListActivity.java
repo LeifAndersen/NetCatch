@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.GlobalVars;
 import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Show;
@@ -41,21 +42,21 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
  * 
@@ -67,6 +68,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
  */
 public class ShowsListActivity extends ListActivity {
 
+	private GlobalVars globalVars;
+	
 	private static final class ViewHolder {
 		TextView title;
 		TextView counts;
@@ -76,15 +79,11 @@ public class ShowsListActivity extends ListActivity {
 
 	private class TexturedListAdapter extends ArrayAdapter<Show> {
 
-		final Typeface vera, veraBold;
-		LayoutInflater mInflator;
+		LayoutInflater mInflater;
 
 		public TexturedListAdapter(Context context) {
 			super(context, R.layout.show);
-			vera = Typeface.createFromAsset(context.getAssets(), "Vera.ttf");
-			veraBold = Typeface.createFromAsset(context.getAssets(),
-			"VeraBd.ttf");
-			mInflator = getLayoutInflater();
+			mInflater = getLayoutInflater();
 		}
 
 		@Override
@@ -92,7 +91,7 @@ public class ShowsListActivity extends ListActivity {
 			ViewHolder holder;
 			if (v == null) {
 				// Setup the view and holder
-				v = mInflator.inflate(R.layout.show, null);
+				v = mInflater.inflate(R.layout.show, null);
 				holder = new ViewHolder();
 
 				// Setup the viewholder elements
@@ -112,13 +111,13 @@ public class ShowsListActivity extends ListActivity {
 
 			//TODO placeholders until Show class description is finalized
 			holder.title.setText(s.getTitle());
-			holder.title.setTypeface(veraBold);
+			holder.title.setTypeface(globalVars.getVeraBold());
 
 			holder.counts.setText(s.getDescription());
-			holder.counts.setTypeface(vera);
+			holder.counts.setTypeface(globalVars.getVera());
 
 			holder.updateDate.setText(s.getFeed());
-			holder.updateDate.setTypeface(vera);
+			holder.updateDate.setTypeface(globalVars.getVera());
 
 			if(s.getImage() == null)
 				holder.art.setImageResource(R.drawable.image_album_background);
@@ -134,6 +133,7 @@ public class ShowsListActivity extends ListActivity {
 	private BroadcastReceiver refreshReceiver;
 	private LinearLayout background;
 	private FrameLayout header;
+	private TextView headerText;
 	private TexturedListAdapter adapter;
 	private SharedPreferences sharedPrefs;
 	private List<Show> mShows;
@@ -147,10 +147,14 @@ public class ShowsListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.shows_list);
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
+		globalVars = (GlobalVars)getApplicationContext();
+		
 		// Set up the view
 		background = (LinearLayout)findViewById(R.id.background);
 		header = (FrameLayout)findViewById(R.id.header);
+		headerText = (TextView)header.findViewById(R.id.title_text);
+		headerText.setTypeface(globalVars.getVeraBold());
+		
 		int x = sharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
 			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 

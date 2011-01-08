@@ -20,41 +20,8 @@
 	android:layout_height="fill_parent"
 	android:background="@drawable/background_tile"
 	>
-	
-	<!-- FrameLayout for the NetCatch Title Bar -->
-		
-	<FrameLayout								
-		android:id="@+id/header"
-		android:layout_width="fill_parent"
-		android:layout_height="60dp"
-		android:background="@drawable/ninepatch_blue_back_large"
-		>
-		<ImageView
-			android:id="@+id/btn_refresh"
-			android:layout_width="60dp"
-			android:layout_height="fill_parent"
-			android:paddingBottom="5px"
-			android:layout_gravity="right|top"			
-			android:src="@drawable/btn_refresh"
-			android:scaleType="center"
-			/>
-		<TextView
-			android:id="@+id/title_text"
-			android:layout_width="wrap_content"
-			android:layout_height="fill_parent"
-			android:paddingLeft="15dp"
-			android:paddingBottom="5px"
-			android:gravity="center_vertical"
-			android:text="NetCatch"
-			android:textColor="@android:color/white"
-			android:textStyle="bold"
-			android:textSize="24sp"
-			android:shadowColor="#A5000000"
-			android:shadowDx="1"
-			android:shadowDy="1"
-			android:shadowRadius="3"
-			/>
-	</FrameLayout>
+			
+	<include layout="@layout/header" />
 	
 	<!-- This layout contains the home screen icon grid -->
 	

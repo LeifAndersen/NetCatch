@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.leifandersen.mobile.android.netcatch.R;
+import net.leifandersen.mobile.android.netcatch.other.GlobalVars;
 import net.leifandersen.mobile.android.netcatch.other.ThemeTools;
 import net.leifandersen.mobile.android.netcatch.other.Tools;
 import net.leifandersen.mobile.android.netcatch.providers.Episode;
@@ -71,9 +72,11 @@ import android.widget.Toast;
  */
 public class EpisodesListActivity extends ListActivity {
 
+	private GlobalVars globalVars;
+	
 	private static final class ViewHolder {
 		TextView title;
-		TextView description;
+		//TextView description;
 		TextView date;
 	}
 
@@ -82,7 +85,7 @@ public class EpisodesListActivity extends ListActivity {
 		LayoutInflater mInflater;
 
 		public EpisodeAdapter(Context context) {
-			super(context, R.layout.episode_list_item);
+			super(context, R.layout.episode);
 			mInflater = getLayoutInflater();
 		}
 
@@ -90,25 +93,31 @@ public class EpisodesListActivity extends ListActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder;
 			if(convertView == null) {
-				convertView =
-					mInflater.inflate(R.layout.episode_list_item, null);
+				convertView = mInflater.inflate(R.layout.episode, null);
 				holder = new ViewHolder();
-				holder.title = 
-					(TextView)convertView.findViewById(R.id.eli_title);
-				holder.description =
-					(TextView)convertView.findViewById(R.id.eli_description);
-				holder.date =
-					(TextView)convertView.findViewById(R.id.eli_release_date);
+				holder.title = (TextView)convertView.findViewById(R.id.episode_title);
+				//holder.description = (TextView)convertView.findViewById(R.id.eli_description);
+				holder.date = (TextView)convertView.findViewById(R.id.episode_date);
 				convertView.setTag(holder);
 			}
 			else
 				holder = (ViewHolder)convertView.getTag();
 
 			Episode episode = getItem(position);
-			holder.title.setText(episode.getTitle());
-			holder.description.setText(episode.getDescription());
-			// holder.date.setText(episode.getDate());
-			holder.date.setTag(new Date(episode.getDate()).toString());
+			
+			if (episode != null) {
+				holder.title.setText(episode.getTitle());
+				holder.title.setTypeface(globalVars.getVeraBold());
+	
+				String dateText = "Published " + (new Date(episode.getDate())).toLocaleString();
+				holder.date.setText(dateText);
+				holder.date.setTypeface(globalVars.getVera());
+			}
+			
+			//holder.title.setText(episode.getTitle());
+			//holder.description.setText(episode.getDescription());
+			//holder.date.setText(episode.getDate());
+			//holder.date.setTag(new Date(episode.getDate()).toString());
 
 			return convertView;
 		}
@@ -120,6 +129,7 @@ public class EpisodesListActivity extends ListActivity {
 	
 	private LinearLayout background;
 	private FrameLayout header;
+	private TextView headerText;
 	private String mShowName;
 	private long mShowID;
 	private EpisodeAdapter mAdapter;
@@ -135,7 +145,8 @@ public class EpisodesListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.episodes_list);
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
+		globalVars = (GlobalVars)getApplicationContext();
+		
 		if(getIntent().getDataString() == null)
 			explicitInitiate();
 		else
@@ -144,6 +155,9 @@ public class EpisodesListActivity extends ListActivity {
 		// Set up the view
 		background = (LinearLayout)findViewById(R.id.background);
 		header = (FrameLayout)findViewById(R.id.header);
+		headerText = (TextView)header.findViewById(R.id.title_text);
+		headerText.setTypeface(globalVars.getVeraBold());
+		
 		int x = mSharedPrefs.getInt("theme_color", -1);
 		if(x != -1)
 			ThemeTools.setColorOverlay(new PorterDuffColorFilter(x, 
